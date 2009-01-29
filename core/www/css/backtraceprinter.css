@@ -1,0 +1,47 @@
+@CHARSET "ISO-8859-1";
+@IMPORT url("/framework/www/css/reset.css");
+
+body
+{
+  font-family:Verdana,Helvetica,sans-serif;
+}
+
+#errorInfo
+{
+  margin:10px 10px 20px 10px;
+}
+
+#errorType, #customMessage
+{
+  color:#ff0000;
+  font-size:20px;
+  font-weight:bold;
+}
+
+#backtrace
+{
+  border-bottom:1px solid #c88a8a;
+  background-color:#ffdddd;
+}
+
+#backtrace .traceLine
+{
+  border-top:1px solid #c88a8a;
+  padding:5px 0px;
+}
+
+#backtrace .traceNumber
+{
+  color:#c88a8a;
+  float:left;
+  font-size:12px;
+  font-weight:bold;
+  margin-left:4px;
+  width:32px;
+}
+
+#backtrace .traceMessage
+{
+  float:left;
+  width:95%;
+}
