@@ -3,10 +3,10 @@
 require_once'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
 
 class App {
-	public static $projectBasePath = null;
+	public static $projectName = null;
 	public static $instance = null;
 
-	private static $_modules=array();
+	private $modules=array();
 
 	// CONSTRUCTION ------------------------------------------------------------
 	private function __construct() {
@@ -27,18 +27,22 @@ class App {
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 
-		if (!defined('CORE_PATH'))
-			throw new Core_Exception('Path to framework (CORE_PATH) not set');
-
-		if (self::$projectBasePath != null)
+		if (self::$projectName != null)
 			throw new Core_Exception('Double boot');
 			
-		$backtrace=debug_backtrace();
-		self::$projectBasePath = CORE_PATH.'/../'.dirname($backtrace[0]['file']);
+		$backtrace = debug_backtrace();
+		$projectPath = explode('/', str_replace('\\', '/', dirname($backtrace[0]['file'])));
+		self::$projectName = min($projectPath);
 			
 		if (!$GLOBALS['memcache']->get('CORE_booted'))
 			self::systemCheck();
-			
+		
+		// get project modules
+		require_once '../config/modules.php';	
+		
+		// initialize router
+		Router::get()->init();
+		
 		$GLOBALS['memcache']->set('CORE_booted', true);
 	}
 
@@ -52,23 +56,25 @@ class App {
 	 * @param $module_ the module
 	 * @return unknown_type
 	 */
-	public function addModule($name_, $module_) {
-		if(!in_array($name_, self::$_modules))
-			self::$_modules[$name_]=$module_;
+	public function addModule(Module $module) {
+		if(!in_array($module->getName(), $this->modules)) {
+			$this->modules[$module->getName()]=$module;
+			Router::get()->addModuleRoute($module->getRouteName(), $module);
+		}
 		else
-			throw new Core_Exception('A module with this name has already been added: '.$name_);
+			throw new Core_Exception('A module with this name has already been added: '.$name);
 	}
 
 	/**
 	 * Returns a registered module
 	 * @param $name_ the name of the module
-	 * @return the module
+	 * @return the module or null if it doesn't exist
 	 */
-	public function getModule($name_) {
-		if(!isset(self::$_modules[$name_]))
-			throw new Core_Exception('Module doesn\'t exist: '.$name_);
+	public function getModule($name) {
+		if(!isset($this->modules[$name]))
+			return null;
 		else
-			return self::$_modules[$name_];
+			return $this->modules[$name];
 	}
 	
 	public static function get() {
@@ -115,8 +121,15 @@ class App_Autoloader {
 	 * @param $basePath a base path relative to which the search is made
 	 * @return String the path of the file the searched class is in
 	 */
-	private static function getClassPath($className, $basePath = CORE_PATH) {
+	private static function getClassPath($className) {
 		$parts = explode('_', $className);
+		$isProjectClass = ($parts[0] == App::$projectName);
+		
+		if ($isProjectClass)
+			$basePath = '../..';
+		else
+			$basePath = '../../CORE';
+			
 		$parts = array_map('strtolower', $parts);
 
 		//"normal" classes
@@ -128,18 +141,19 @@ class App_Autoloader {
 			for ($j = $i; $j < count($parts); $j++)
 				$file .= $parts[$j];
 			$path .= '/'.$file.'.php';
-
 			if (self::correctClassPath($className, $path))
 				return $path;
 		}
 		
 		//framework classes
-		$path = $basePath.'/'.$className.'/'.$className.'.php';
-		if (self::correctClassPath($className, $path))
-			return $path;
-		$path = $basePath.'/'.$className.'.php';
-		if (self::correctClassPath($className, $path))
-			return $path;
+		if (!$isProjectClass) {
+			$path = $basePath.'/'.$className.'/'.$className.'.php';
+			if (self::correctClassPath($className, $path))
+				return $path;
+			$path = $basePath.'/'.$className.'.php';
+			if (self::correctClassPath($className, $path))
+				return $path;
+		}
 
 		if (!$GLOBALS['memcache']->get('CORE_booted'))
 			throw new Core_Exception('Tried to load a class before engine finished booting.');
@@ -169,7 +183,7 @@ class App_Autoloader {
 function dump() {
 	foreach (func_get_args() as $arg) {
 		if ('cli'==PHP_SAPI)
-		var_dump($arg);
+			var_dump($arg);
 		else {
 			if (empty($GLOBALS['ob_flushed']))
 				$GLOBALS['ob_flushed']=true;

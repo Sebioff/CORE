@@ -1,0 +1,99 @@
+/*
+ *  Updated:  17.07.2008 (d.m.Y)
+ */
+
+body 
+{
+  line-height:100%;
+  color:#000;
+  background:#fff;
+}
+
+input, textarea, select
+{
+  margin:0;
+  padding:0;
+  font-family:inherit;
+  font-size:100%;
+  vertical-align:middle;
+}
+
+a
+{
+  cursor:pointer;
+  text-decoration:none;
+  color:inherit;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
+em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt,
+var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption,
+tbody, tfoot, thead, tr, th, td
+{
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-weight:inherit;
+  font-style:inherit;
+  font-size:100%;
+  line-height:100%;
+  font-family:inherit;
+  vertical-align:baseline;
+}
+
+th, td
+{
+  vertical-align:top;
+}
+
+ol, ul 
+{
+  list-style:none;
+}
+
+/* tables still need 'cellspacing="0"' in the markup for IE */
+table 
+{
+  border-collapse:collapse;
+  border-spacing:0;
+}
+
+caption, th, td 
+{
+  text-align:left;
+  font-weight:normal;
+}
+
+a img
+{
+  border:none;
+}
+
+/* LAYOUT ELEMENTS ---------------------------------------------------------- */
+.hidden
+{ /* invisible elements */
+  display:none;
+}
+
+.clear
+{ /* break floating elements (MUST used after a floating element) <br class="clear" /> */
+  clear:both;
+  font-size:0px;
+  height:0px;
+  line-height:0px;
+  margin:0px;
+  padding:0px;
+}
+
+/* set in outer element to clear after this element */
+html* .clearfix { /* if ie */
+  zoom:1;
+} .clearfix:after {
+  clear:both;
+  content:".";
+  display:block;
+  height:0px;
+  visibility:hidden;
+}

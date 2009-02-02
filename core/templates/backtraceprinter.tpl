@@ -15,7 +15,7 @@
 		  <div class="traceLine clearfix">
 		    <div class="traceNumber">#<?= $traceCount-$nr ?></div>
 			<div class="traceMessage">
-			  <?= isset($backtraceMessage['class'])?$backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function']:$backtraceMessage['function'] ?>('<?= join("', '",$backtraceMessage['args']) ?>')
+			  <?= isset($backtraceMessage['class'])?$backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function']:$backtraceMessage['function'] ?>('<?= isset($backtraceMessage['args']) ? join("', '",$backtraceMessage['args']) : '' ?>')
 			  <? if (isset($backtraceMessage['file'])): ?>
 			  	in <?= $backtraceMessage['file'].'('.$backtraceMessage['line'].')' ?>
 			  <? endif;?>
