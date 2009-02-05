@@ -181,17 +181,10 @@ class App_Autoloader {
  * Dumps values in readable format
  */
 function dump() {
-	foreach (func_get_args() as $arg) {
-		if ('cli'==PHP_SAPI)
-			var_dump($arg);
-		else {
-			if (empty($GLOBALS['ob_flushed']))
-				$GLOBALS['ob_flushed']=true;
-			echo '<div class="ob_dump" style="display:inline-block; position:relative;z-index:1000;"><table style="background-color:green;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
-			var_dump($arg);
-			echo '</pre></td></tr></table></div>';
-		}
-	}
+  Core_Dump::dump(func_get_args());
+}
+function dump_flat() {
+  Core_Dump::dump_flat(func_get_args());
 }
 
 ?>
