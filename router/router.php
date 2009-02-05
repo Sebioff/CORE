@@ -12,11 +12,12 @@ class Router {
 		require_once '../config/routes.php';
 		
 		$requestURI = explode('/', $_SERVER['REQUEST_URI']);
+		if (!isset($this->moduleRoutes[$requestURI[1]]))
+			throw new Core_Exception('Route to module does not exist: '.$requestURI[1]);
+		
 		$module = $this->moduleRoutes[$requestURI[1]];
-		if ($module) {
-			$module->init();
-			$module->display();
-		}
+		$module->init();
+		$module->display();
 	}
 	
 	public function addModuleRoute($routeName, Module $module) {
@@ -27,6 +28,11 @@ class Router {
 			throw new Core_Exception('A module route with this name has already been added: '.$routeName);
 	}
 	
+	/**
+	 * Adds a route to a static file, e.g. stylesheets, JavaScript-files...
+	 * @param $routeName
+	 * @param $path the path to where this route links to
+	 */
 	public function addStaticRoute($routeName, $path) {
 		$this->staticRoutes[$routeName] = '/'.$path;
 	}
