@@ -5,7 +5,7 @@
   //===========================================================================
   // Core_DB_Record:
   //===========================================================================
-  class DB_Record
+  class Core_DB_Record
   {
     // construction
     function __construct(DB_Container $container_)
