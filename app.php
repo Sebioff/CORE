@@ -77,14 +77,31 @@ class App {
 			return $this->modules[$name];
 	}
 	
-	public static function get() {
-    	return (self::$instance) ? self::$instance : self::$instance = new self();
-  	}
+	/**
+	 * Magic function such as get{name of module}Module
+	 * @return depends on type of magic method
+	 * in this case: the module
+	 */
+	public function __call($name, $params) {
+		if(preg_match('/^get(.*)Module$/', $name, $matches))
+		{
+			$module=$this->getModule(ucfirst($matches[1]));
+			if(!$module)
+				$module=$this->getModule(strtolower($matches[1]));
+			return $module;
+		}
+		else
+			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
+	}
 	
-  	/**
-  	 * Checks that basic server configurations are set as needed
-  	 * @return unknown_type
-  	 */
+	public static function get() {
+		return (self::$instance) ? self::$instance : self::$instance = new self();
+  }
+	
+  /**
+   * Checks that basic server configurations are set as needed
+   * @return unknown_type
+   */
 	private static function systemCheck() {
 		foreach(array('zip', 'xmlreader', 'mbstring', 'gd', 'mysql') as $extension)
 			if(!extension_loaded($extension))
