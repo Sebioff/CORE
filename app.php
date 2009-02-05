@@ -133,7 +133,7 @@ class App_Autoloader {
 		$parts = array_map('strtolower', $parts);
 
 		//"normal" classes
-		for ($i = count($parts)-1; $i >= 0; $i--) {
+		for($i = count($parts)-1; $i >= 0; $i--) {
 			$path = $basePath;
 			for ($j = 0; $j < $i; $j++)
 				$path .= '/'.$parts[$j];
@@ -146,7 +146,7 @@ class App_Autoloader {
 		}
 		
 		//framework classes
-		if (!$isProjectClass) {
+		if(!$isProjectClass) {
 			$path = $basePath.'/'.$className.'/'.$className.'.php';
 			if (self::correctClassPath($className, $path))
 				return $path;
@@ -155,7 +155,7 @@ class App_Autoloader {
 				return $path;
 		}
 
-		if (!$GLOBALS['memcache']->get('CORE_booted'))
+		if(!$GLOBALS['memcache']->get('CORE_booted'))
 			throw new Core_Exception('Tried to load a class before engine finished booting.');
 
 		return false;
@@ -169,7 +169,7 @@ class App_Autoloader {
 	 * @return boolean true if the path is correct, false otherwhise
 	 */
 	private static function correctClassPath($className, $path) {
-		if (file_exists($path)) {
+		if(file_exists($path)) {
 			$GLOBALS['memcache']->set($className, $path);
 			return true;
 		}
