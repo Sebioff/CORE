@@ -20,8 +20,8 @@ class Core_Dump {
     foreach(func_get_args() as $arg)
     {
       ob_flush();
-      if(empty($GLOBALS['vivego_ob_flushed']))
-        $GLOBALS['vivego_ob_flushed']=true;
+      if(empty($GLOBALS['ob_flushed']))
+        $GLOBALS['ob_flushed']=true;
       echo '<div style="position:relative;z-index:1000;"><table style="background-color:gray;border:1px solid black;margin-top:5px;"><tr><td style="color:white;padding:5px;"><pre>';
       if($arg===true)
         echo 'true (bool)';
@@ -101,7 +101,7 @@ class Core_Dump {
       $first=reset($trace);
       printf("\n\n<span style=\"font-size:10px;\">%s:%s</span>", $first['file'], $first['line']);
       echo '</pre></td></tr></table></div>';
-      if(!empty($GLOBALS['vivego_ob_started']))
+      if(!empty($GLOBALS['_ob_started']))
         ob_flush();
     }
   }
