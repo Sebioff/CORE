@@ -15,7 +15,7 @@
     
     // Class Variables
     private $_vars=array();
-    private $m_container=null;
+    public $container=null;
     // ----
 
     // Setter/Getter
@@ -23,8 +23,6 @@
     {
       if(isset($this->_vars[$var_]))
         return $this->_vars[$var_];
-      elseif(isset($this->{'m_'.$var_}))
-        return $this->{'m_'.$var_};
     	else
         return null;
     }
