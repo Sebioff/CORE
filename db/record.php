@@ -21,10 +21,10 @@
     // Setter/Getter
     public function __get($var_)
     {
-      if(isset($this->{'m_'.$var_}))
-        return $this->{'m_'.$var_};
       if(isset($this->_vars[$var_]))
         return $this->_vars[$var_];
+      elseif(isset($this->{'m_'.$var_}))
+        return $this->{'m_'.$var_};
     	else
         return null;
     }
