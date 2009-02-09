@@ -30,6 +30,12 @@ abstract class IO_Utils {
 		
 		return $files;
 	}
+	
+	/**
+	* returns extension of file
+	*/
+	public static function getExtension($path) 																		{return pathinfo($path, PATHINFO_EXTENSION);}
+	
 }
 
 ?>
