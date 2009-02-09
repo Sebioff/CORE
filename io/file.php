@@ -20,7 +20,7 @@ abstract class IO_File {
 	 * opens the file
 	 * if the file doesn't exist it will be created
 	 */
-	public function open($mode='a') {
+	public function open($mode='r+') {
 		$this->resource=fopen($this->file, $mode);
 	}
 	
