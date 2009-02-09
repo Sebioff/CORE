@@ -4,7 +4,7 @@
  * Handles execution of migration files located under [PROJECT_ROOT]/migrations.
  */
 class Core_MigrationsLoader {
-	const MIGRATION_LOG_FILE = '../config/log/migrations.log.php';
+	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
 	
 	/**
 	 * Loads all migration files from the migration folder (in the order they where
@@ -44,7 +44,7 @@ XML;
 		}
 		
 		// execute migration files if they haven't been before
-		$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolder);
+		$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolder, array('php'));
 		foreach($migrationFiles as $migrationFile) {
 			$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
 			if(!count($result)) {
