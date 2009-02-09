@@ -1,12 +1,12 @@
 <?php
 
-require_once'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
+require_once 'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
 
 class App {
 	public static $projectName = null;
 	public static $instance = null;
 
-	private $modules=array();
+	private $modules = array();
 
 	// CONSTRUCTION ------------------------------------------------------------
 	private function __construct() {
@@ -33,9 +33,15 @@ class App {
 		$backtrace = debug_backtrace();
 		$projectPath = explode('/', str_replace('\\', '/', dirname($backtrace[0]['file'])));
 		self::$projectName = min($projectPath);
-			
-		if (!$GLOBALS['memcache']->get('CORE_booted'))
+		
+		// first boot
+		if (!$GLOBALS['memcache']->get('CORE_booted')) {
 			self::systemCheck();
+		}
+		
+		// TODO: migrations should only in development environment be loaded every
+		// time. On live: probably by calling some route
+		Core_MigrationsLoader::load();
 		
 		// get project modules
 		require_once '../config/modules.php';	
@@ -54,7 +60,6 @@ class App {
 	 * Registers a module.
 	 * @param $name_ the name of the new module
 	 * @param $module_ the module
-	 * @return unknown_type
 	 */
 	public function addModule(Module $module) {
 		if(!in_array($module->getName(), $this->modules)) {
@@ -79,12 +84,10 @@ class App {
 	
 	/**
 	 * Magic function such as get{name of module}Module
-	 * @return depends on type of magic method
-	 * in this case: the module
+	 * @return depends on type of magic method; in this case: the module
 	 */
 	public function __call($name, $params) {
-		if(preg_match('/^get(.*)Module$/', $name, $matches))
-		{
+		if(preg_match('/^get(.*)Module$/', $name, $matches)) {
 			$module=$this->getModule(ucfirst($matches[1]));
 			if(!$module)
 				$module=$this->getModule(strtolower($matches[1]));
@@ -96,12 +99,11 @@ class App {
 	
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
-  }
+	}
 	
-  /**
-   * Checks that basic server configurations are set as needed
-   * @return unknown_type
-   */
+	/**
+	 * Checks that basic server configurations are set as needed
+	 */
 	private static function systemCheck() {
 		foreach(array('zip', 'xmlreader', 'mbstring', 'gd', 'mysql') as $extension)
 			if(!extension_loaded($extension))
@@ -114,9 +116,10 @@ class App {
 	}
 }
 
+// -----------------------------------------------------------------------------
+
 /**
  * Responsible for loading classes.
- * @author Sebastian
  */
 class App_Autoloader {
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -149,7 +152,7 @@ class App_Autoloader {
 			
 		$parts = array_map('strtolower', $parts);
 
-		//"normal" classes
+		// "normal" classes
 		for($i = count($parts)-1; $i >= 0; $i--) {
 			$path = $basePath;
 			for ($j = 0; $j < $i; $j++)
@@ -162,7 +165,7 @@ class App_Autoloader {
 				return $path;
 		}
 		
-		//framework classes
+		// framework classes
 		if(!$isProjectClass) {
 			$path = $basePath.'/'.$className.'/'.$className.'.php';
 			if (self::correctClassPath($className, $path))
@@ -198,10 +201,10 @@ class App_Autoloader {
  * Dumps values in readable format
  */
 function dump() {
-  Core_Dump::dump(func_get_args());
+	Core_Dump::dump(func_get_args());
 }
 function dump_flat() {
-  Core_Dump::dump_flat(func_get_args());
+	Core_Dump::dump_flat(func_get_args());
 }
 
 ?>
