@@ -27,7 +27,7 @@ abstract class IO_File {
 	public function delete() {
 		if($this->exists()) {
 			if(!unlink($this->file))
-				throw new Core_Exception('Unable to delete File please check permissions!');
+				return false;
 			else
 				return true;
 		}
