@@ -11,7 +11,7 @@ class Module {
 	}
 	
 	public function init() {
-		$this->contentPanel = new $this->contentPanel();
+		$this->contentPanel = new $this->contentPanel($this->name.'_content');
 	}
 	
 	public function setRouteName($routeName) {

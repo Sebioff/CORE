@@ -39,9 +39,8 @@ class App {
 			self::systemCheck();
 		}
 		
-		// TODO: migrations should only in development environment be loaded every
-		// time. On live: probably by calling some route
-		Core_MigrationsLoader::load();
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+			Core_MigrationsLoader::load();
 		
 		// get project modules
 		require_once '../config/modules.php';	
@@ -109,10 +108,9 @@ class App {
 			if(!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
-		// TODO can't be uncommented as long as its not clear which settings are needed / wanted
-		//foreach(array('register_globals'=>0, 'magic_quotes_gpc'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1, 'iconv.input_encoding'=>'UTF-8', 'iconv.internal_encoding'=>'UTF-8', 'iconv.output_encoding'=>'UTF-8', 'mbstring.encoding_translation'=>false, 'mbstring.internal_encoding'=>'UTF-8', 'mbstring.http_input'=>'auto', 'mbstring.http_output'=>'pass', 'bcmath.scale'=>10) as $option=>$value)
-			//if($value!=ini_get($option))
-				//throw new COREException('Please verify your PHP configuration: '.$option.' should be "'.$value.'".');
+		foreach(array('register_globals'=>0, 'magic_quotes_gpc'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
+			if($value != ini_get($option))
+				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');
 	}
 }
 

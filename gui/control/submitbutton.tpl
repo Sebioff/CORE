@@ -1,0 +1,1 @@
+<input type="submit" name="<?= $this->getName() ?>" id="<?= $this->getId() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?> />

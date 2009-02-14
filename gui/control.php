@@ -1,33 +1,32 @@
 <?php
 
 abstract class GUI_Control extends GUI_Panel {
-	protected $name;
 	protected $value;
 	
-	private $template;
-	
 	// CONSTRUCTORS ------------------------------------------------------------
-	public function __construct($name, $defaultValue = null) {
-		$this->name = $name;
+	public function __construct($name, $defaultValue = null, $title = '') {
+		parent::__construct($name, $title);
+		$this->value = $defaultValue;
 		// TODO set value from request / session / defaultValue
 	}
 	
-	// CUSTOM METHODS ----------------------------------------------------------
+	// OVERRIDES ---------------------------------------------------------------
 	public function display() {
 		require $this->template;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
-	public function setTemplate($template) {
-		$this->template = $template;
-	}
-	
 	public function getValue() {
 		return $this->value;
 	}
 	
 	public function setValue($value) {
 		$this->value = $value;
+	}
+	
+	public function getId() {
+		// TODO needs to generate unique ids
+		return $this->name;
 	}
 }
 
