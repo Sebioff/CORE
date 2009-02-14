@@ -1,9 +1,10 @@
 <?php
 
 class GUI_Control_Textfield extends GUI_Control {
-	// TODO templates!
-	public function display() {
-		echo '<input type="text">';
+	// CONSTRUCTORS ------------------------------------------------------------
+	public function __construct($name) {
+		parent::__construct($name);
+		$this->setTemplate(dirname(__FILE__).'/textfield.tpl');
 	}
 }
 

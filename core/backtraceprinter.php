@@ -9,7 +9,7 @@ class Core_BacktracePrinter {
 	 */
 	public static function printBacktrace(Array $backtrace, $customMessage = '', $errorType = '') {
 		ob_end_clean();
-		require_once('templates/backtraceprinter.tpl');
+		require_once('backtraceprinter.tpl');
 		exit;
 	}
 }

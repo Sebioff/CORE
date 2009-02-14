@@ -27,7 +27,7 @@ class App {
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 
-		if (self::$projectName != null)
+		if(self::$projectName != null)
 			throw new Core_Exception('Double boot');
 			
 		$backtrace = debug_backtrace();
@@ -35,7 +35,7 @@ class App {
 		self::$projectName = min($projectPath);
 		
 		// first boot
-		if (!$GLOBALS['memcache']->get('CORE_booted')) {
+		if(!$GLOBALS['memcache']->get('CORE_booted')) {
 			self::systemCheck();
 		}
 		
@@ -124,35 +124,49 @@ class App {
 class App_Autoloader {
 	// CUSTOM METHODS ----------------------------------------------------------
 	public static function autoload($className) {
-		$path = false;
-
-		if (!($path = $GLOBALS['memcache']->get($className)))
-			$path = self::getClassPath($className);
-
-		if ($path)
+		$path = null;
+		
+		// is path cached?
+		if(($path = $GLOBALS['memcache']->get($className))) {
 			require_once $path;
-		else
-			trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
+		}
+		// path not cached, search for class
+		else {
+			$parts = explode('_', $className);
+			$isProjectClass = ($parts[0] == App::$projectName);
+			
+			if($isProjectClass) {
+				array_shift($parts);
+				$basePath = '../../'.App::$projectName.'/source';
+			}
+			else
+				$basePath = '../../CORE';
+				
+			$parts = array_map('strtolower', $parts);
+			
+			$path = self::loadClass($className, $parts, $basePath);
+			if (!$isProjectClass) {
+				if (!$path)
+					$path = self::loadClass($className, $parts, $basePath.'/'.$parts[0]);
+				if (!$path)
+					$path = self::loadClass($className, $parts, $basePath.'/core');
+				if (!$path)
+					$path = self::loadClass($className, $parts, $basePath.'/core/'.$parts[0]);
+			}
+		}
+		
+		//if (!class_exists($className, false))
+			//trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
 	}
 
 	/**
 	 * Gets the path of the file a given class is located in
 	 * @param $className the searched class
+	 * @param $parts the splitted parts the classname is constructed of
 	 * @param $basePath a base path relative to which the search is made
 	 * @return String the path of the file the searched class is in
 	 */
-	private static function getClassPath($className) {
-		$parts = explode('_', $className);
-		$isProjectClass = ($parts[0] == App::$projectName);
-		
-		if ($isProjectClass)
-			$basePath = '../..';
-		else
-			$basePath = '../../CORE';
-			
-		$parts = array_map('strtolower', $parts);
-
-		// "normal" classes
+	private static function loadClass($className, Array $parts, $basePath) {
 		for($i = count($parts)-1; $i >= 0; $i--) {
 			$path = $basePath;
 			for ($j = 0; $j < $i; $j++)
@@ -163,22 +177,18 @@ class App_Autoloader {
 			$path .= '/'.$file.'.php';
 			if (self::correctClassPath($className, $path))
 				return $path;
+
+			if ($i != count($parts)-1) {
+				$path = $basePath;
+				for ($j = 0; $j < $i; $j++)
+					$path .= '/'.$parts[$j];
+				$path .= '/'.$parts[count($parts)-1].'.php';
+				if (self::correctClassPath($className, $path))
+					return $path;
+			}
 		}
 		
-		// framework classes
-		if(!$isProjectClass) {
-			$path = $basePath.'/'.$className.'/'.$className.'.php';
-			if (self::correctClassPath($className, $path))
-				return $path;
-			$path = $basePath.'/'.$className.'.php';
-			if (self::correctClassPath($className, $path))
-				return $path;
-		}
-
-		if(!$GLOBALS['memcache']->get('CORE_booted'))
-			throw new Core_Exception('Tried to load a class before engine finished booting.');
-
-		return false;
+		return null;
 	}
 	
 	/**
@@ -190,12 +200,20 @@ class App_Autoloader {
 	 */
 	private static function correctClassPath($className, $path) {
 		if(file_exists($path)) {
-			$GLOBALS['memcache']->set($className, $path);
-			return true;
+			require_once $path;
+
+			if (class_exists($className, false)) {
+				$GLOBALS['memcache']->set($className, $path);
+				return true;
+			}
 		}
 		return false;
 	}
 }
+
+// -----------------------------------------------------------------------------
+
+/* GLOBALLY AVAILABLE FUNCTIONS */
 
 /**
  * Dumps values in readable format
@@ -203,6 +221,9 @@ class App_Autoloader {
 function dump() {
 	Core_Dump::dump(func_get_args());
 }
+/**
+ * For dumping objects in readable format
+ */
 function dump_flat() {
 	Core_Dump::dump_flat(func_get_args());
 }

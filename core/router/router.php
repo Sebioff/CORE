@@ -3,47 +3,19 @@ class Router {
 	private static $instance = null;
 	private $staticRoutes = array();
 	private $moduleRoutes = array();
-	private $route = null;
-	private $params = array();
-	private $requestUri = null;
 	
 	private function __construct() {
 		// Singleton
-		$this->addModuleRoute('core', new Core_Routes('coreroutes'));
-	}
-	
-	private function generateParams() {
-		foreach($this->requestUri as $URI)
-		{
-			if((isset($this->moduleRoutes[$URI])&&$this->route!=$URI))
-				$this->params[]['module']=$URI;
-			else
-				$this->params[]['param']=$URI;
-		}
 	}
 	
 	public function init() {
 		require_once '../config/routes.php';
 		
 		$requestURI = explode('/', $_SERVER['REQUEST_URI']);
-		$i=0;
-		foreach($requestURI as $URI) {
-			if(!mb_strlen($URI))
-				unset($requestURI[$i]);
-			else if(!$this->route) {
-				$this->route=$URI;
-				unset($requestURI[$i]);
-			}
-			$i++;
-		}
+		if (!isset($this->moduleRoutes[$requestURI[1]]))
+			throw new Core_Exception('Route to module does not exist: '.$requestURI[1]);
 		
-		$this->requestUri=$requestURI;
-		$this->generateParams();
-		
-		if (!isset($this->moduleRoutes[$this->route]))
-			throw new Core_Exception('Route to module does not exist: '.$this->route);
-		
-		$module = $this->moduleRoutes[$this->route];
+		$module = $this->moduleRoutes[$requestURI[1]];
 		$module->init();
 		$module->display();
 	}
@@ -67,10 +39,6 @@ class Router {
 	
 	public function getStaticRoute($routeName) {
 		return $this->staticRoutes[$routeName];
-	}
-	
-	public function getParams() {
-		return $this->params;
 	}
 	
 	public static function get() {

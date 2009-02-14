@@ -4,7 +4,7 @@ class Core_Dump {
 	public static function dump() {
 		foreach(func_get_args() as $arg) {
 			if('cli'==PHP_SAPI)
-			var_dump($arg);
+				var_dump($arg);
 			else {
 				echo '<div class="ob_dump" style="display:inline-block; position:relative;z-index:1000;"><table style="background-color:green;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
 				var_dump($arg);
@@ -12,6 +12,7 @@ class Core_Dump {
 			}
 		}
 	}
+	
 	public static function dump_flat() {
 		foreach(func_get_args() as $arg) {
 			ob_flush();
