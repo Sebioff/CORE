@@ -7,11 +7,12 @@ abstract class GUI_Control extends GUI_Panel {
 	private $template;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
-	public function __construct($name) {
+	public function __construct($name, $defaultValue = null) {
 		$this->name = $name;
+		// TODO set value from request / session / defaultValue
 	}
 	
-	// CUSTOM METHODS ----------------------------------------------------------	
+	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
 		require $this->template;
 	}
@@ -21,12 +22,12 @@ abstract class GUI_Control extends GUI_Panel {
 		$this->template = $template;
 	}
 	
-	public function setValue($value) {
-		$this->value = $value;
-	}
-	
 	public function getValue() {
 		return $this->value;
+	}
+	
+	public function setValue($value) {
+		$this->value = $value;
 	}
 }
 
