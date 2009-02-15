@@ -15,15 +15,15 @@ class GUI_Panel {
 	public function __construct($name, $title = '') {
 		$this->name = $name;
 		$this->title = $title;
-		$this->template = dirname(__FILE__).'/panel.tpl';
 		
+		$this->template = dirname(__FILE__).'/panel.tpl';
 		$this->params = new GUI_Params();
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
 		if($this->submitable) {
-			echo sprintf('<form name="%s" action="" method="post">', $this->name);
+			echo sprintf('<form name="%s" action="%s" method="post">', $this->name, $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		

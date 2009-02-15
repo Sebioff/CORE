@@ -4,7 +4,6 @@
  * Encapsulates a connection to the database.
  */
 class DB_Connection {
-	public $database = null;
 	private $connectionOptions = null;
 	private $connection = null;
 	private static $instance = null;
@@ -40,8 +39,7 @@ class DB_Connection {
 				throw new Core_Exception('Can\'t connect to database server: '.mysql_error());
 			
 			// set active database
-			$this->database=$this->connectionOptions['query'];
-			if (!mysql_select_db($this->database, $this->connection))
+			if (!mysql_select_db($this->connectionOptions['query'], $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 		}
 

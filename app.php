@@ -143,18 +143,18 @@ class App_Autoloader {
 			$parts = array_map('strtolower', $parts);
 			
 			$path = self::loadClass($className, $parts, $basePath);
-			if (!$isProjectClass) {
-				if (!$path)
+			if(!$isProjectClass) {
+				if(!$path)
 					$path = self::loadClass($className, $parts, $basePath.'/'.$parts[0]);
-				if (!$path)
+				if(!$path)
 					$path = self::loadClass($className, $parts, $basePath.'/core');
-				if (!$path)
+				if(!$path)
 					$path = self::loadClass($className, $parts, $basePath.'/core/'.$parts[0]);
 			}
 		}
 		
-		//if (!class_exists($className, false))
-			//trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
+		if (!class_exists($className, false))
+			trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
 	}
 
 	/**
@@ -167,21 +167,21 @@ class App_Autoloader {
 	private static function loadClass($className, Array $parts, $basePath) {
 		for($i = count($parts)-1; $i >= 0; $i--) {
 			$path = $basePath;
-			for ($j = 0; $j < $i; $j++)
+			for($j = 0; $j < $i; $j++)
 				$path .= '/'.$parts[$j];
 			$file = '';
-			for ($j = $i; $j < count($parts); $j++)
+			for($j = $i; $j < count($parts); $j++)
 				$file .= $parts[$j];
 			$path .= '/'.$file.'.php';
-			if (self::correctClassPath($className, $path))
+			if(self::correctClassPath($className, $path))
 				return $path;
 
-			if ($i != count($parts)-1) {
+			if($i != count($parts)-1) {
 				$path = $basePath;
-				for ($j = 0; $j < $i; $j++)
+				for($j = 0; $j < $i; $j++)
 					$path .= '/'.$parts[$j];
 				$path .= '/'.$parts[count($parts)-1].'.php';
-				if (self::correctClassPath($className, $path))
+				if(self::correctClassPath($className, $path))
 					return $path;
 			}
 		}
@@ -200,7 +200,7 @@ class App_Autoloader {
 		if(file_exists($path)) {
 			require_once $path;
 
-			if (class_exists($className, false)) {
+			if(class_exists($className, false)) {
 				$GLOBALS['memcache']->set($className, $path);
 				return true;
 			}

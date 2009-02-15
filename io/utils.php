@@ -23,7 +23,7 @@ abstract class IO_Utils {
 		$files = array();
 		if($handle = opendir($path)) {
 			while(false !== ($fileName = readdir($handle))) {
-				if($fileName != "." && $fileName != "..") {
+				if($fileName != '.' && $fileName != '..') {
 					if (!$extensions || in_array(self::getFileExtension($fileName), $extensions))
 						$files[] = $fileName;
 				}

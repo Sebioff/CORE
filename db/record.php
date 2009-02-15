@@ -1,35 +1,29 @@
 <?php
-  // Interfaces:
-  // Core_DB_Record
 
-  //===========================================================================
-  // Core_DB_Record:
-  //===========================================================================
-  class Core_DB_Record
-  {
-    // construction
-    function __construct(DB_Container $container_)
-    {
-      $this->m_container=$container_;
-    }
-    
-    // Class Variables
-    private $_vars=array();
-    public $container=null;
-    // ----
+class DB_Record
+{
+	private $properties = array();
+	
+	// SETTERS / GETTERS -------------------------------------------------------
+	public function __set($property, $value) {
+		$this->properties[$property] = $value;
+	}
+	
+	public function __get($property)
+	{
+		if(isset($this->properties[$property]))
+			return $this->properties[$property];
+		else
+			return null;
+	}
 
-    // Setter/Getter
-    public function __get($var_)
-    {
-      if(isset($this->_vars[$var_]))
-        return $this->_vars[$var_];
-    	else
-        return null;
-    }
-    
-    public function __set($var_, $value_)                                       {$this->_vars[$var_]=$value_;}
-    
-    public function get()                                                       {return $this->_vars;}
-  }
-  //===========================================================================
+	/**
+	 * @return an associative array containing all set properties
+	 */
+	public function getAllProperties()
+	{
+		return $this->properties;
+	}
+}
+
 ?>
