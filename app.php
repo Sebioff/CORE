@@ -45,6 +45,9 @@ class App {
 		// get project modules
 		require_once '../config/modules.php';	
 		
+		// TODO: make configurable in project
+		// initialize language scriptlet
+		Language_Scriptlet::get()->init();
 		// initialize router
 		Router::get()->init();
 		
@@ -108,6 +111,7 @@ class App {
 			if(!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
+		// TODO: handle magic_quotes in db_connection so it can be turned on and off
 		foreach(array('register_globals'=>0, 'magic_quotes_gpc'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
 			if($value != ini_get($option))
 				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');
