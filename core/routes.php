@@ -4,6 +4,8 @@
  * For handling default routes like core/reset
  * @author Patrick
  */
+// TODO PWO: coding style; move to core/router (there are already too many files in core)
+// Core_Routes_DefaultRoutes?
 class Core_Routes extends Module {
 	private $router=null;
 	

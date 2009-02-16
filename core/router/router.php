@@ -1,21 +1,72 @@
 <?php
+
 class Router {
+	// TODO PWO: codingstyle! a=b -> a = b
 	private static $instance = null;
+	/** contains static routes = routes to files/folders */
 	private $staticRoutes = array();
+	// TODO PWO: please document the following attributes
 	private $moduleRoutes = array();
+	private $route = null;
+	private $params = array();
+	private $requestParams = null;
 	
 	private function __construct() {
 		// Singleton
+		$this->addModuleRoute('core', new Core_Routes('coreroutes'));
+	}
+	
+	/**
+	 * generates an array for each module specified in the uri
+	 * eg: /module/param1/param2
+	 * => array('module'=>module, 'params'=>array(param1,param2));
+	 * @return array
+	 */
+	private function generateParams() {
+		$i=-1;
+		$params=array();
+		foreach($this->requestParams as $param)
+		{
+			if(in_array($param, $this->moduleRoutes)) {
+				$i++;
+				$params[$i]=array('module'=>$param, 'params'=>array());
+			}
+			else {
+				if(!isset($params[$i]['module'])) {
+					$i++;
+				}
+				$params[$i]['params'][]=$param;
+			}
+		}
+		$this->params=$params;
 	}
 	
 	public function init() {
 		require_once '../config/routes.php';
 		
-		$requestURI = explode('/', $_SERVER['REQUEST_URI']);
-		if (!isset($this->moduleRoutes[$requestURI[1]]))
-			throw new Core_Exception('Route to module does not exist: '.$requestURI[1]);
+		$languageScriptlet=Language_Scriptlet::get();
 		
-		$module = $this->moduleRoutes[$requestURI[1]];
+		$requestURI = explode('/', $_SERVER['REQUEST_URI']);
+		
+		array_shift($requestURI);
+		$firstParam=array_shift($requestURI);
+		if($languageScriptlet->isLanguageParam($firstParam)) {
+			$this->route=array_shift($requestURI);
+			$languageScriptlet->setLanguage($firstParam);
+		}
+		// TODO PWO if !object instanceof class -> !(object instanceof class) or it won't work ;P
+		elseif(isset($this->moduleRoutes[$firstParam]) && !$this->moduleRoutes[$firstParam] instanceof Core_Routes)
+			$languageScriptlet->switchToDefaultLanguage();
+		else
+			$this->route=$firstParam;
+			
+		$this->requestParams=$requestURI;
+		$this->generateParams();
+		
+		if (!isset($this->moduleRoutes[$this->route]))
+			throw new Core_Exception('Route to module does not exist: '.$this->route);
+		
+		$module = $this->moduleRoutes[$this->route];
 		$module->init();
 		$module->display();
 	}
@@ -41,8 +92,13 @@ class Router {
 		return $this->staticRoutes[$routeName];
 	}
 	
+	public function getParams() {
+		return $this->params;
+	}
+	
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}
 }
+
 ?>

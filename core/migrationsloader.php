@@ -7,7 +7,8 @@ class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
 	
 	public static function reset() {
-		// TODO: delete folder containing migrations-log and re-create
+		// TODO PWO: delete folder containing migrations-log and re-create
+		// TODO PWO: -> give core/reset its own class/module
 		$file=new IO_File(self::MIGRATION_LOG_FILE);
 		if($file->exists())
 			$file->delete();
@@ -27,16 +28,12 @@ class Core_MigrationsLoader {
 		if(file_exists(self::MIGRATION_LOG_FILE))
 			$xml = simplexml_load_file(self::MIGRATION_LOG_FILE);
 		else {
-			$baseMigrationLog = <<<XML
-<?xml version='1.0'?>
-<content>
-</content>
-XML;
+			$baseMigrationLog = '<?xml version=\'1.0\'?><content></content>';
 			$xml = new SimpleXMLElement($baseMigrationLog);
 		}
 		
 		// create xpath to current migration folder if it doesn't exist
-		if (!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
+		if(!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
 			$currentXMLNode = $xml;
 			$fileXPathPartsSize=count($fileXPathParts);
 			for($i = 0; $i < $fileXPathPartsSize; $i++) {

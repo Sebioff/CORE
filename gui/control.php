@@ -23,11 +23,6 @@ abstract class GUI_Control extends GUI_Panel {
 	public function setValue($value) {
 		$this->value = $value;
 	}
-	
-	public function getId() {
-		// TODO needs to generate unique ids
-		return $this->name;
-	}
 }
 
 ?>

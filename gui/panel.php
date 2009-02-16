@@ -9,14 +9,19 @@ class GUI_Panel {
 	private $attributes = array();
 	private $classes = array();
 	private $panels = array();
+	/** decides whether this panel behaves like a formular */
 	private $submitable = false;
+	/** the parent panel */
+	private $parent;
+	/** the unique id used for identifying this panel */
+	private $ID;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $title = '') {
-		$this->name = $name;
-		$this->title = $title;
+		$this->setName($name);
+		$this->setTitle($title);
 		
-		$this->template = dirname(__FILE__).'/panel.tpl';
+		$this->setTemplate(dirname(__FILE__).'/panel.tpl');
 		$this->params = new GUI_Params();
 	}
 	
@@ -39,6 +44,7 @@ class GUI_Panel {
 	}
 	
 	public function addPanel(GUI_Panel $panel) {
+		$panel->setParent($this);
 		$this->panels[$panel->getName()] = $panel;
 		if($panel instanceof GUI_Control_Submitbutton) {
 			$this->submitable = true;
@@ -76,6 +82,13 @@ class GUI_Panel {
 		return $attributeString;
 	}
 	
+	private function generateID() {
+		if ($this->parent)
+			$this->ID = $this->parent->getID().'-'.$this->getName();
+		else
+			$this->ID = $this->getName();
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
 		if(array_key_exists($panelName, $this->panels))
@@ -88,8 +101,30 @@ class GUI_Panel {
 		return $this->name;
 	}
 	
+	public function setName($name) {
+		$this->name = $name;
+		$this->generateID();
+	}
+	
 	public function getTitle() {
 		return $this->title;
+	}
+	
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+	
+	public function getID() {
+		return $this->ID;
+	}
+	
+	public function getParent() {
+		return $this->parent;
+	}
+	
+	protected function setParent(GUI_Panel $parent) {
+		$this->parent = $parent;
+		$this->generateID();
 	}
 	
 	public function setTemplate($template) {

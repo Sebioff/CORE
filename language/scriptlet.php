@@ -1,5 +1,6 @@
 <?php
-	// TODO: rename?
+	// TODO PWO: rename?
+	// TODO PWO: coding style!
 	class Language_Scriptlet {
 		private static $instance = null;
 		public $protocol = 'http';
@@ -15,11 +16,14 @@
 		 * sets default params of the language module
 		 * @return boolean
 		 */
+		// TODO PWO: init() needed or could this be done in the constructor as well?
 		public function init() {
 			$this->setLanguages(array('de', 'en'));
 			$this->setDefaultLanguage('de');
 		}
 		
+		// TODO PWO: setLanguages/setLanguage do quite different things, but the
+		// names are really similiar. rename to setCurrentLanguage or setAvailableLanguages or sth
 		public function setLanguages(array $languages) {
 			$this->languages=$languages;
 		}

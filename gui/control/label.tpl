@@ -1,1 +1,1 @@
-<label for="<?= $this->params->control->getId() ?>" <?= $this->getAttributeString() ?>><?= $this->getValue() ?></label>
+<label for="<?= $this->params->control->getID() ?>" <?= $this->getAttributeString() ?>><?= $this->getValue() ?></label>
