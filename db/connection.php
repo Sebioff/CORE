@@ -53,6 +53,18 @@ class DB_Connection {
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}
+	
+	/**
+	 * deletes all Table in selected Database
+	 * used by eg Core_Routes to reset the Database
+	 */
+	public function deleteTables() {
+		$tables = $this->query('SHOW TABLES');
+		while ($table = mysql_fetch_row($tables)) {
+			$query=sprintf('DROP TABLE `%s`', $table[0]);
+			$this->query($query);
+		}
+	}
 }
 
 ?>
