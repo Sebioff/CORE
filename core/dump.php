@@ -31,7 +31,6 @@ class Core_Dump {
 				printf("Object(%s)\n{\n", get_class($arg));
 				echo " ::: PROPERTIES :::\n";
 
-				//TODO change to reflection + setaccessible (5.3)
 				foreach((array)$arg as $k=>$v) {
 					if(preg_match(sprintf('#^%1$s.+%1$s(.+?)$#', preg_quote(chr(0))), $k, $match))
 					$k=$match[1];
