@@ -7,20 +7,10 @@ class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
 	
 	public static function reset() {
-		$con=DB_Connection::get();
-	
-		$tables = $con->query("SHOW TABLES");
-		while ($table = mysql_fetch_row($tables)) {
-			$query="DROP TABLE `".$table[0]."` ; ";
-			$con->query($query);
-		}
-
+		// TODO: delete folder containing migrations-log and re-create
 		$file=new IO_File(self::MIGRATION_LOG_FILE);
 		if($file->exists())
 			$file->delete();
-		
-		$url=sprintf('http://%s', $_SERVER['SERVER_NAME']);
-		Scriptlet::redirect($url);
 	}
 	
 	/**
