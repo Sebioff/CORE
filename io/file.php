@@ -39,13 +39,9 @@ class IO_File {
 		return unlink($this->file);
 	}
 	
-	// TODO PWO: are append/read neccessary? probably not. user should do this himself
-	// (e.g. by simply opening the file in the correct mode ;))
 	public function append($string) {
-		if($this->mode!='a' && $this->mode!='a+') {
-			$this->close();
-			$this->open('a');
-		}
+		if($this->mode!='a' && $this->mode!='a+')
+			throw new Core_Exception('Wrong write mode for appending chosen: '.$this->mode);
 		fwrite($this->resource, $string);
 	}
 	
