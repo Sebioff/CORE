@@ -2,17 +2,25 @@
 
 class Router {
 	// TODO PWO: codingstyle! a=b -> a = b
-	private static $instance = null;
+	private static $instance=null;
 	/** contains static routes = routes to files/folders */
-	private $staticRoutes = array();
-	// TODO PWO: please document the following attributes
-	private $moduleRoutes = array();
-	private $route = null;
-	private $params = array();
-	private $requestParams = null;
+	private $staticRoutes=array();
+	/**
+	 * moduleRoutes = array of linkling string to modules
+	 * route = current route (mostyl first param)
+	 * params = array of params (following after route param in URL)
+	 * requestParams = params in for of an URI
+	 * mainPanel = tha panel to be displayed everytime
+	 */
+	private $moduleRoutes=array();
+	private $route=null;
+	private $params=array();
+	private $requestParams=null;
+	private $mainPanel=null;
 	
-	private function __construct() {
+	private function __construct($mainPanel=null) {
 		// Singleton
+		$this->mainPanel=$mainPanel;
 		$this->addModuleRoute('core', new Core_Routes('coreroutes'));
 	}
 	
@@ -71,12 +79,17 @@ class Router {
 		$module->display();
 	}
 	
-	public function addModuleRoute($routeName, Module $module) {
-		if(!in_array($routeName, $this->moduleRoutes)) {
+	public function addModuleRoute($routeName, Module $module, $override=false) {
+		if(!in_array($routeName, $this->moduleRoutes)&&!$override) {
 			$this->moduleRoutes[$routeName]=$module;
 		}
 		else
 			throw new Core_Exception('A module route with this name has already been added: '.$routeName);
+	}
+	
+	public function setMainPanel($panelName) {
+		$this->mainPanel=$panelName;
+		$this->addModuleRoute('', new $this->mainPanel('main'));
 	}
 	
 	/**
@@ -96,8 +109,8 @@ class Router {
 		return $this->params;
 	}
 	
-	public static function get() {
-		return (self::$instance) ? self::$instance : self::$instance = new self();
+	public static function get($mainPanel=null) {
+		return (self::$instance) ? self::$instance : self::$instance = new self($mainPanel);
 	}
 }
 
