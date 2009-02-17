@@ -1,7 +1,7 @@
 <html>
   <head>
-    <title>B‰‰m!</title>
-  	<link rel="stylesheet" type="text/css" href="CORE/core/www/css/backtraceprinter.css"/>
+    <title>Error</title>
+  	<link rel="stylesheet" type="text/css" href="./CORE/core/www/css/backtraceprinter.css"/>
   </head>
   <body>
     <div id="errorInfo">
