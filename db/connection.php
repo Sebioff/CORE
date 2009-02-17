@@ -15,7 +15,13 @@ class DB_Connection {
 	 * @see DB_Connection::get()
 	 * @param $connectionOptions a String of the format: mysql://username[:passwort]@server[:port]?database
 	 */
-	public function __construct($connectionOptions = DB_CONNECTION) {
+	public function __construct($connectionOptions = null) {
+		if(!$connectionOptions) {
+			if(Environment::getCurrentEnvironment()==Environment::DEVELOPMENT)
+				$connectionOptions=DB_DEVELOPMENT_CONNECTION;
+			else
+				$connectionOptions=DB_CONNECTION;
+		}
 		$this->connectionOptions = parse_url($connectionOptions);
 	}
 
