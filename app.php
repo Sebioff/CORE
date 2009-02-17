@@ -18,7 +18,7 @@ class App {
 	 * Sets up everything neccessary, e.g. error/exception-handlers.
 	 * Needs to be called before anything else can be done.
 	 */
-	public static function boot() {
+	public static function boot($projectName) {
 		session_start();
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
@@ -30,9 +30,7 @@ class App {
 		if(self::$projectName != null)
 			throw new Core_Exception('Double boot');
 			
-		$backtrace = debug_backtrace();
-		$projectPath = explode('/', str_replace('\\', '/', dirname($backtrace[0]['file'])));
-		self::$projectName = min($projectPath);
+		self::$projectName = $projectName;
 		
 		// first boot
 		if(!$GLOBALS['memcache']->get('CORE_booted')) {
@@ -44,7 +42,7 @@ class App {
 		
 		// get project modules
 		require_once '../config/modules.php';	
-		
+
 		// TODO: make configurable in project
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
@@ -99,20 +97,20 @@ class App {
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
 	}
 	
-	public static function get() {
-		return (self::$instance) ? self::$instance : self::$instance = new self();
+	public static function get($mainPanel=null) {
+		return (self::$instance) ? self::$instance : self::$instance = new self($mainPanel);
 	}
 	
 	/**
 	 * Checks that basic server configurations are set as needed
 	 */
 	private static function systemCheck() {
-		foreach(array('zip', 'xmlreader', 'mbstring', 'gd', 'mysql') as $extension)
+		foreach(array('mbstring', 'gd', 'mysql') as $extension)
 			if(!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
 		// TODO: handle magic_quotes in db_connection so it can be turned on and off
-		foreach(array('register_globals'=>0, 'magic_quotes_gpc'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
+		foreach(array('register_globals'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
 			if($value != ini_get($option))
 				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');
 	}
@@ -133,7 +131,7 @@ class App_Autoloader {
 			require_once $path;
 		}
 		// path not cached, search for class
-		else {
+		if(!$GLOBALS['memcache']->get($className) || !class_exists($className)) {
 			$parts = explode('_', $className);
 			$isProjectClass = ($parts[0] == App::$projectName);
 			
@@ -189,7 +187,6 @@ class App_Autoloader {
 					return $path;
 			}
 		}
-		
 		return null;
 	}
 	
@@ -203,7 +200,6 @@ class App_Autoloader {
 	private static function correctClassPath($className, $path) {
 		if(file_exists($path)) {
 			require_once $path;
-
 			if(class_exists($className, false)) {
 				$GLOBALS['memcache']->set($className, $path);
 				return true;
