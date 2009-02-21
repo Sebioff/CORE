@@ -5,6 +5,7 @@ class Module {
 	
 	private $name = null;
 	private $routeName = null;
+	private $jsRouteReferences = array();
 	
 	public function __construct($name) {
 		$this->name = $name;
@@ -28,6 +29,18 @@ class Module {
 	
 	public function display() {
 		$this->contentPanel->display();
+		$this->displayJsIncludes();
+	}
+	
+	public function addJsRouteReference($routeName, $path) {
+		$this->jsRouteReferences[] = array('routeName' => $routeName, 'path' => $path);
+		dump($this->jsRouteReferences);
+	}
+	
+	public function displayJsIncludes() {
+		foreach($this->jsRouteReferences as $jsRouteReference) {
+			dump(Router::get()->getStaticRoute($jsRouteReference['routeName']));
+		}
 	}
 }
 

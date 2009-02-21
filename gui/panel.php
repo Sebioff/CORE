@@ -5,16 +5,18 @@ class GUI_Panel {
 	protected $params;
 	protected $title;
 	protected $template;
+	/** contains all the errors (as strings) if the validation of this panel failed */
+	protected $errors = array();
 	
 	private $attributes = array();
 	private $classes = array();
-	private $panels = array();
-	/** decides whether this panel behaves like a formular */
-	private $submitable = false;
-	/** the parent panel */
-	private $parent;
 	/** the unique id used for identifying this panel */
 	private $ID;
+	private $panels = array();
+	/** the parent panel */
+	private $parent;
+	/** decides whether this panel behaves like a formular */
+	private $submittable = false;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $title = '') {
@@ -27,15 +29,21 @@ class GUI_Panel {
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
-		if($this->submitable) {
+		if($this->hasBeenSubmitted())
+			$this->validate();
+			
+		if($this->submittable) {
 			echo sprintf('<form name="%s" action="%s" method="post">', $this->name, $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		
 		require $this->template;
 		
-		if($this->submitable)
+		if($this->submittable) {
+			$this->addPanel($hasBeenSubmittedBox = new GUI_Control_HiddenBox('hasbeensubmitted', 1));
+			$hasBeenSubmittedBox->display();
 			echo '</form>', "\n";
+		}
 	}
 	
 	public function displayLabelForPanel($panelName) {
@@ -47,7 +55,7 @@ class GUI_Panel {
 		$panel->setParent($this);
 		$this->panels[$panel->getName()] = $panel;
 		if($panel instanceof GUI_Control_Submitbutton) {
-			$this->submitable = true;
+			$this->submittable = true;
 		}
 	}
 	
@@ -82,11 +90,36 @@ class GUI_Panel {
 		return $attributeString;
 	}
 	
-	private function generateID() {
+	/**
+	 * @return true if this panel has been submitted, false otherwhise
+	 */
+	public function hasBeenSubmitted() {
+		return isset($_POST[$this->getID().'-hasbeensubmitted']);
+	}
+	
+	public function displayErrors() {
+		// TODO create sth like GUI_Panel_Error, we don't want html in our php
+		if($this->hasErrors())
+			echo '<span class="core_gui_error">'.implode('<br />', $this->errors).'</span>';
+	}
+	
+	protected function generateID() {
 		if ($this->parent)
 			$this->ID = $this->parent->getID().'-'.$this->getName();
 		else
 			$this->ID = $this->getName();
+	}
+	
+	/**
+	 * Executes all validators of the controls belonging to this panel.
+	 * Fills Panel::errors with all errors found
+	 */
+	protected function validate() {
+		foreach($this->panels as $panel)
+			foreach($panel->validate() as $error)
+				$this->errors[] = $panel->getTitle().': '.$error;
+			
+		return $this->errors;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -138,6 +171,10 @@ class GUI_Panel {
 	 */
 	public function setAttribute($attribute, $value) {
 		$this->attributes[$attribute] = $value;
+	}
+	
+	public function hasErrors() {
+		return (count($this->errors) > 0);
 	}
 }
 

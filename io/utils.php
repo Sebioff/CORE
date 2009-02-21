@@ -34,6 +34,8 @@ abstract class IO_Utils {
 		return $files;
 	}
 	
+	// TODO add method for getting files recursively from folder
+	
 	/**
 	* returns extension of file
 	*/

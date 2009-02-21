@@ -1,27 +1,21 @@
 <?php
 
 class Router {
-	// TODO PWO: codingstyle! a=b -> a = b
-	private static $instance=null;
+	private static $instance = null;
 	/** contains static routes = routes to files/folders */
-	private $staticRoutes=array();
-	/**
-	 * moduleRoutes = array of linkling string to modules
-	 * route = current route (mostyl first param)
-	 * params = array of params (following after route param in URL)
-	 * requestParams = params in for of an URI
-	 * mainPanel = tha panel to be displayed everytime
-	 */
-	private $moduleRoutes=array();
-	private $route=null;
-	private $params=array();
-	private $requestParams=null;
-	private $mainPanel=null;
+	private $staticRoutes = array();
+	/** mapping of all top-level-routenames to their corresponding module objects **/
+	private $moduleRoutes = array();
+	/** routename of the currenctly active module */
+	private $route = null;
+	/** contains the information which route params are given for each module */
+	private $params = array();
+	/** the single sections of the current URI */
+	private $requestParams = null;
 	
-	private function __construct($mainPanel=null) {
+	private function __construct() {
 		// Singleton
-		$this->mainPanel=$mainPanel;
-		$this->addModuleRoute('core', new Core_Routes('coreroutes'));
+		$this->addModuleRoute('core', new CoreRoutes_Core('coreroutes'));
 	}
 	
 	/**
@@ -31,65 +25,65 @@ class Router {
 	 * @return array
 	 */
 	private function generateParams() {
-		$i=-1;
-		$params=array();
+		$modules = 0;
+		$params = array();
 		foreach($this->requestParams as $param)
 		{
-			if(in_array($param, $this->moduleRoutes)) {
-				$i++;
-				$params[$i]=array('module'=>$param, 'params'=>array());
+			if(isset($this->moduleRoutes[$param])) {
+				$modules++;
+				$params[] = array('module' => $param, 'params' => array());
 			}
 			else {
-				if(!isset($params[$i]['module'])) {
-					$i++;
-				}
-				$params[$i]['params'][]=$param;
+				$params[$modules]['params'][] = $param;
 			}
 		}
-		$this->params=$params;
+		$this->params = $params;
 	}
 	
 	public function init() {
 		require_once '../config/routes.php';
 		
-		$languageScriptlet=Language_Scriptlet::get();
+		$languageScriptlet = Language_Scriptlet::get();
 		
-		$requestURI = explode('/', $_SERVER['REQUEST_URI']);
+		$requestURI = explode('/', ltrim($_SERVER['REQUEST_URI'] , '/'));
+		$this->requestParams = $requestURI;
 		
-		array_shift($requestURI);
-		$firstParam=array_shift($requestURI);
-		if($languageScriptlet->isLanguageParam($firstParam)) {
-			$this->route=array_shift($requestURI);
-			$languageScriptlet->setLanguage($firstParam);
+		$firstParam = array_shift($requestURI);
+		if($languageScriptlet->isLanguageIdentifier($firstParam)) {
+			$this->route = array_shift($requestURI);
+			$languageScriptlet->setCurrentLanguage($firstParam);
 		}
-		// TODO PWO if !object instanceof class -> !(object instanceof class) or it won't work ;P
-		elseif(isset($this->moduleRoutes[$firstParam]) && !$this->moduleRoutes[$firstParam] instanceof Core_Routes)
+		elseif(isset($this->moduleRoutes[$firstParam]) && !($this->moduleRoutes[$firstParam] instanceof CoreRoutes_Core))
 			$languageScriptlet->switchToDefaultLanguage();
 		else
-			$this->route=$firstParam;
+			$this->route = $firstParam;
 			
-		$this->requestParams=$requestURI;
 		$this->generateParams();
 		
-		if (!isset($this->moduleRoutes[$this->route]))
+		if(!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
 		
-		$module = $this->moduleRoutes[$this->route];
+		$module = $this->getCurrentModule();
 		$module->init();
 		$module->display();
 	}
 	
-	public function addModuleRoute($routeName, Module $module, $override=false) {
-		if(!in_array($routeName, $this->moduleRoutes)&&!$override) {
-			$this->moduleRoutes[$routeName]=$module;
-		}
+	public function addModuleRoute($routeName, Module $module) {
+		if(!in_array($routeName, $this->moduleRoutes))
+			$this->setModuleRoute($routeName, $module);
 		else
 			throw new Core_Exception('A module route with this name has already been added: '.$routeName);
 	}
 	
-	public function setMainPanel($panelName) {
-		$this->mainPanel=$panelName;
-		$this->addModuleRoute('', new $this->mainPanel('main'));
+	public function setModuleRoute($routeName, Module $module) {
+		$this->moduleRoutes[$routeName] = $module;
+	}
+	
+	/**
+	 * @return the currently active module
+	 */
+	public function getCurrentModule() {
+		return $this->moduleRoutes[$this->route];
 	}
 	
 	/**
@@ -105,12 +99,20 @@ class Router {
 		return $this->staticRoutes[$routeName];
 	}
 	
+	/**
+	 * Transforms a path to a file/folder on the disk (but below project/CORE-root!)
+	 * to a path that can be used in html (e.g. for images, inclusion of css/js files, ...)
+	 */
+	public function transformPathToHTMLPath($path) {
+		return './../../'.IO_Utils::getRelativePath($path);
+	}
+	
 	public function getParams() {
 		return $this->params;
 	}
 	
-	public static function get($mainPanel=null) {
-		return (self::$instance) ? self::$instance : self::$instance = new self($mainPanel);
+	public static function get() {
+		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}
 }
 

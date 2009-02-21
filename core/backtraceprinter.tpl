@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Error</title>
-  	<link rel="stylesheet" type="text/css" href="./CORE/core/www/css/backtraceprinter.css"/>
+  	<link rel="stylesheet" type="text/css" href="<?= Router::get()->transformPathToHTMLPath(dirname(__FILE__)) ?>/www/css/backtraceprinter.css"/>
   </head>
   <body>
     <div id="errorInfo">

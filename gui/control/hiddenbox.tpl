@@ -1,0 +1,1 @@
+<input type="hidden" name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?> />

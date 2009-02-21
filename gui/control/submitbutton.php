@@ -1,6 +1,6 @@
 <?php
 
-class GUI_Control_Submitbutton extends GUI_Control {
+class GUI_Control_SubmitButton extends GUI_Control {
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $caption = '', $title = '') {
 		parent::__construct($name, $caption, $title);

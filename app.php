@@ -18,7 +18,7 @@ class App {
 	 * Sets up everything neccessary, e.g. error/exception-handlers.
 	 * Needs to be called before anything else can be done.
 	 */
-	public static function boot($projectName) {
+	public static function boot() {
 		session_start();
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
@@ -30,24 +30,33 @@ class App {
 		if(self::$projectName != null)
 			throw new Core_Exception('Double boot');
 			
-		self::$projectName = $projectName;
+		$backtrace = debug_backtrace();
+		$projectPath = explode('/', str_replace('\\', '/', dirname($backtrace[0]['file'])));
+		self::$projectName = min($projectPath);
 		
 		// first boot
 		if(!$GLOBALS['memcache']->get('CORE_booted')) {
 			self::systemCheck();
 		}
 		
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
 			Core_MigrationsLoader::load();
+			require_once '../config/environments/config.development.php';	
+		}
+		else
+			require_once '../config/environments/config.live.php';
 		
 		// get project modules
 		require_once '../config/modules.php';	
 
-		// TODO: make configurable in project
+		// TODO: make use of language scriptlet configurable in project
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
 		// initialize router
 		Router::get()->init();
+		
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+			HTMLTidy::tidy();
 		
 		$GLOBALS['memcache']->set('CORE_booted', true);
 	}
@@ -63,7 +72,7 @@ class App {
 	 */
 	public function addModule(Module $module) {
 		if(!in_array($module->getName(), $this->modules)) {
-			$this->modules[$module->getName()]=$module;
+			$this->modules[$module->getName()] = $module;
 			Router::get()->addModuleRoute($module->getRouteName(), $module);
 		}
 		else
@@ -88,24 +97,27 @@ class App {
 	 */
 	public function __call($name, $params) {
 		if(preg_match('/^get(.*)Module$/', $name, $matches)) {
-			$module=$this->getModule(ucfirst($matches[1]));
+			$module = $this->getModule(ucfirst($matches[1]));
 			if(!$module)
-				$module=$this->getModule(strtolower($matches[1]));
+				$module = $this->getModule(strtolower($matches[1]));
 			return $module;
 		}
 		else
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
 	}
 	
-	public static function get($mainPanel=null) {
-		return (self::$instance) ? self::$instance : self::$instance = new self($mainPanel);
+	public static function get() {
+		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}
 	
 	/**
 	 * Checks that basic server configurations are set as needed
 	 */
 	private static function systemCheck() {
-		foreach(array('mbstring', 'gd', 'mysql') as $extension)
+		$extensions = array('mbstring', 'gd', 'mysql');
+		if(Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+			$extensions[] = 'tidy';
+		foreach($extensions as $extension)
 			if(!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
@@ -127,11 +139,12 @@ class App_Autoloader {
 		$path = null;
 		
 		// is path cached?
-		if(($path = $GLOBALS['memcache']->get($className))) {
-			require_once $path;
-		}
-		// path not cached, search for class
-		if(!$GLOBALS['memcache']->get($className) || !class_exists($className)) {
+		if(($path = $GLOBALS['memcache']->get($className)))
+			if(file_exists($path))
+				require_once $path;
+				
+		// path not cached or wrong cached, search for class
+		if(!$path || !class_exists($className, false)) {
 			$parts = explode('_', $className);
 			$isProjectClass = ($parts[0] == App::$projectName);
 			
