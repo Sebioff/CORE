@@ -12,6 +12,14 @@ abstract class GUI_Control extends GUI_Panel {
 		$this->value = $defaultValue;
 	}
 	
+	// CUSTOM METHODS ----------------------------------------------------------
+	public function hasValidator($validatorClassName) {
+		foreach($this->validators as $validator)
+			if($validator instanceof $validatorClassName)
+				return true;
+		return false;
+	}
+	
 	// OVERRIDES ---------------------------------------------------------------
 	public function display() {
 		require $this->template;

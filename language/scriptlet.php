@@ -46,7 +46,7 @@ class Language_Scriptlet {
 	}
 	
 	public function switchToDefaultLanguage() {
-		$protocol = ($_SERVER['HTTPS'])?'https':'http';
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
 		$serverName = $_SERVER['SERVER_NAME'];
 		$redirectUrl = $_SERVER['REDIRECT_URL'];
 		$url = sprintf('%s://%s/%s%s', $protocol, $serverName, $this->defaultLanguage, $redirectUrl);

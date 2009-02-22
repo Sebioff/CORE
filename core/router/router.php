@@ -6,7 +6,7 @@ class Router {
 	private $staticRoutes = array();
 	/** mapping of all top-level-routenames to their corresponding module objects **/
 	private $moduleRoutes = array();
-	/** routename of the currenctly active module */
+	/** routename of the topmost module */
 	private $route = null;
 	/** contains the information which route params are given for each module */
 	private $params = array();
@@ -25,13 +25,16 @@ class Router {
 	 * @return array
 	 */
 	private function generateParams() {
-		$modules = 0;
+		$modules = -1;
 		$params = array();
 		foreach($this->requestParams as $param)
 		{
 			if(isset($this->moduleRoutes[$param])) {
 				$modules++;
-				$params[] = array('module' => $param, 'params' => array());
+				$params[] = array('module' => $param, 'params' => array(), 'submodule' => array());
+			}
+			elseif($module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
+				$params[$modules]['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
 			}
 			else {
 				$params[$modules]['params'][] = $param;
@@ -50,6 +53,7 @@ class Router {
 		
 		$firstParam = array_shift($requestURI);
 		if($languageScriptlet->isLanguageIdentifier($firstParam)) {
+			$this->requestParams = $requestURI;
 			$this->route = array_shift($requestURI);
 			$languageScriptlet->setCurrentLanguage($firstParam);
 		}
@@ -83,7 +87,18 @@ class Router {
 	 * @return the currently active module
 	 */
 	public function getCurrentModule() {
-		return $this->moduleRoutes[$this->route];
+		$currentModule = $this->moduleRoutes[$this->route];
+		
+		$module = $this->params[0];
+		while(isset($module['submodule'][0]['module'])) {
+			$currentModule = $currentModule->getSubmodule($module['submodule'][0]['module']);
+			$module = $module['submodule'];
+		}
+		
+		if($currentModule)
+			return $currentModule;
+		else
+			throw new Core_Exception('Module doesn\'t exist.');
 	}
 	
 	/**

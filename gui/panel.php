@@ -1,11 +1,13 @@
 <?php
 
 class GUI_Panel {
+	public $params;
+	
 	protected $name;
-	protected $params;
 	protected $title;
 	protected $template;
-	/** contains all the errors (as strings) if the validation of this panel failed */
+	/** contains all the errors of this panel + subpanels (as strings) if the validation
+	 *  of one of these panel failed */
 	protected $errors = array();
 	
 	private $attributes = array();
@@ -29,6 +31,7 @@ class GUI_Panel {
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
+		// FIXME this needs to be done by the mainpanel right after Module::init() (as soon as it exists)
 		if($this->hasBeenSubmitted())
 			$this->validate();
 			
@@ -46,9 +49,18 @@ class GUI_Panel {
 		}
 	}
 	
-	public function displayLabelForPanel($panelName) {
-		$label = new GUI_Control_Label('label', $this->$panelName);
-		$label->display();
+	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
+		if($this->$panelName->hasErrors())
+			$additionalCSSClasses[] = 'core_common_error';
+		
+		echo sprintf('<label for="%s"', $this->$panelName->getID());
+		if($additionalCSSClasses)
+			echo sprintf(' class="%s"', implode(' ', $additionalCSSClasses));
+		echo '>';
+		echo $this->$panelName->getTitle();
+		if($this->$panelName instanceof GUI_Control && $this->$panelName->hasValidator('GUI_Validator_Mandatory'))
+			echo '<span class="core_common_mandatory_asterisk"> *</span>';
+		echo '</label>';
 	}
 	
 	public function addPanel(GUI_Panel $panel) {
@@ -85,9 +97,9 @@ class GUI_Panel {
 			$attributeString .= $attribute.'="'.$value.'" ';
 		}
 		if (count($this->classes))
-			$attributeString .= 'class="'.$this->getClassString().'"';
+			$attributeString .= 'class="'.$this->getClassString().'" ';
 		
-		return $attributeString;
+		return rtrim($attributeString);
 	}
 	
 	/**
@@ -98,9 +110,8 @@ class GUI_Panel {
 	}
 	
 	public function displayErrors() {
-		// TODO create sth like GUI_Panel_Error, we don't want html in our php
 		if($this->hasErrors())
-			echo '<span class="core_gui_error">'.implode('<br />', $this->errors).'</span>';
+			echo '<span class="core_common_error">'.implode('<br />', $this->errors).'</span>';
 	}
 	
 	protected function generateID() {
@@ -119,6 +130,9 @@ class GUI_Panel {
 			foreach($panel->validate() as $error)
 				$this->errors[] = $panel->getTitle().': '.$error;
 			
+		if($this->hasErrors())
+			$this->addClasses('core_common_error');
+		
 		return $this->errors;
 	}
 	
