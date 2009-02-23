@@ -40,8 +40,8 @@ class App {
 		}
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+			require_once '../config/environments/config.development.php';
 			Core_MigrationsLoader::load();
-			require_once '../config/environments/config.development.php';	
 		}
 		else
 			require_once '../config/environments/config.live.php';
