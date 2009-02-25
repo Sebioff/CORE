@@ -1,0 +1,1 @@
+<textarea name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>><?= $this->getValue() ?></textarea> />
