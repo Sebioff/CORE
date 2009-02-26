@@ -11,6 +11,9 @@ class Core_Dump {
 				echo '</pre></td></tr></table></div>';
 			}
 		}
+
+		ob_flush();
+		ob_start();
 	}
 	
 	public static function dump_flat() {
@@ -90,6 +93,9 @@ class Core_Dump {
 			printf("\n\n<span style=\"font-size:10px;\">%s:%s</span>", $first['file'], $first['line']);
 			echo '</pre></td></tr></table></div>';
 		}
+
+		ob_flush();
+		ob_start();
 	}
 }
 
