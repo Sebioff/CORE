@@ -5,10 +5,10 @@
  */
 abstract class IO_Utils {
 	/**
-	 * Returns the given path relative to document root.
+	 * Returns the given path relative to a given parent folder.
 	 */
-	public static function getRelativePath($path) {
-		$documentRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
+	public static function getRelativePath($path, $parentFolder) {
+		$documentRoot = str_replace('\\', '/', realpath($parentFolder));
 		$path = str_replace('\\', '/', realpath($path));
 		return trim(str_replace($documentRoot, '', $path), '/');
 	}

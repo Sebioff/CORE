@@ -26,6 +26,10 @@ class Language_Scriptlet {
 		$this->availableLanguages = $languages;
 	}
 	
+	public function getAvailableLanguages() {
+		return $this->availableLanguages;
+	}
+	
 	public function setDefaultLanguage($language) {
 		$this->defaultLanguage = $language;
 	}
@@ -45,11 +49,15 @@ class Language_Scriptlet {
 			throw new Core_Exception('The language you want to switch to doesn\'t exist: '.$language);
 	}
 	
+	/**
+	 * Reloads the current route with prepended language identifier
+	 */
 	public function switchToDefaultLanguage() {
 		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
 		$serverName = $_SERVER['SERVER_NAME'];
-		$redirectUrl = $_SERVER['REDIRECT_URL'];
-		$url = sprintf('%s://%s/%s%s', $protocol, $serverName, $this->defaultLanguage, $redirectUrl);
+		$redirectUrl = implode('/', Router::get()->getRequestParams());
+		$serverName .= str_replace($redirectUrl, '', $_SERVER['REQUEST_URI']);
+		$url = sprintf('%s://%s%s/%s', $protocol, $serverName, $this->defaultLanguage, $redirectUrl);
 		Scriptlet::redirect($url);
 	}
 	

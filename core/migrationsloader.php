@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Handles execution of migration files located under [PROJECT_ROOT]/migrations.
+ * Handles execution of migration files located under PROJECT_ROOT/migrations.
  */
 class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
@@ -20,8 +20,8 @@ class Core_MigrationsLoader {
 	 * Every migration is executed only once.
 	 */
 	public static function load() {
-		$migrationFolder = '../migrations';
-		$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolder));
+		$migrationFolder = PROJECT_PATH.'/migrations';
+		$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolder, PROJECT_PATH.'/..'));
 		$fileXPathParts = explode('/', $relativeMigrationFolder);
 		
 		// load migration logfile or create new one

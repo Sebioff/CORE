@@ -33,10 +33,10 @@ class Router {
 				$modules++;
 				$params[] = array('module' => $param, 'params' => array(), 'submodule' => array());
 			}
-			elseif($module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
+			elseif(isset($params[$modules]) && $module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
 				$params[$modules]['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
 			}
-			else {
+			elseif(isset($params[$modules])) {
 				$params[$modules]['params'][] = $param;
 			}
 		}
@@ -51,17 +51,25 @@ class Router {
 		$requestURI = explode('/', ltrim($_SERVER['REQUEST_URI'] , '/'));
 		$this->requestParams = $requestURI;
 		
-		$firstParam = array_shift($requestURI);
-		if($languageScriptlet->isLanguageIdentifier($firstParam)) {
-			$this->requestParams = $requestURI;
-			$this->route = array_shift($requestURI);
-			$languageScriptlet->setCurrentLanguage($firstParam);
+		$languageIdentifierSet = false;
+		while(!$this->route && $requestURI) {
+			$firstParam = array_shift($requestURI);
+			if($languageScriptlet->isLanguageIdentifier($firstParam)) {
+				$this->requestParams = $requestURI;
+				$languageScriptlet->setCurrentLanguage($firstParam);
+				$languageIdentifierSet = true;
+			}
+			elseif(isset($this->moduleRoutes[$firstParam])) {
+				$this->route = $firstParam;
+			}
+			else {
+				$this->requestParams = $requestURI;
+			}
 		}
-		elseif(isset($this->moduleRoutes[$firstParam]) && !($this->moduleRoutes[$firstParam] instanceof CoreRoutes_Core))
+		
+		if(!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
 			$languageScriptlet->switchToDefaultLanguage();
-		else
-			$this->route = $firstParam;
-			
+		
 		$this->generateParams();
 		
 		if(!isset($this->moduleRoutes[$this->route]))
@@ -115,15 +123,19 @@ class Router {
 	}
 	
 	/**
-	 * Transforms a path to a file/folder on the disk (but below project/CORE-root!)
-	 * to a path that can be used in html (e.g. for images, inclusion of css/js files, ...)
+	 * Transforms a path to a file/folder on the disk to a path relative to document
+	 * root that can be used in html (e.g. for images, inclusion of css/js files, ...)
 	 */
 	public function transformPathToHTMLPath($path) {
-		return './../../'.IO_Utils::getRelativePath($path);
+		return '/'.IO_Utils::getRelativePath($path, $_SERVER['DOCUMENT_ROOT']);
 	}
 	
 	public function getParams() {
 		return $this->params;
+	}
+	
+	public function getRequestParams() {
+		return $this->requestParams;
 	}
 	
 	public static function get() {

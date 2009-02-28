@@ -31,23 +31,24 @@ class App {
 			throw new Core_Exception('Double boot');
 			
 		$backtrace = debug_backtrace();
-		$projectPath = explode('/', str_replace('\\', '/', dirname($backtrace[0]['file'])));
-		self::$projectName = min($projectPath);
-		
+		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
+		$projectPathParts = explode('/', str_replace('\\', '/', PROJECT_PATH));
+		self::$projectName = array_pop($projectPathParts);
+
 		// first boot
 		if(!$GLOBALS['memcache']->get('CORE_booted')) {
 			self::systemCheck();
 		}
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
-			require_once '../config/environments/config.development.php';
+			require_once PROJECT_PATH.'/config/environments/config.development.php';
 			Core_MigrationsLoader::load();
 		}
 		else
-			require_once '../config/environments/config.live.php';
+			require_once PROJECT_PATH.'/config/environments/config.live.php';
 		
 		// get project modules
-		require_once '../config/modules.php';	
+		require_once PROJECT_PATH.'/config/modules.php';	
 
 		// TODO: make use of language scriptlet configurable in project
 		// initialize language scriptlet
@@ -150,10 +151,10 @@ class App_Autoloader {
 			
 			if($isProjectClass) {
 				array_shift($parts);
-				$basePath = '../../'.App::$projectName.'/source';
+				$basePath = PROJECT_PATH.'/source';
 			}
 			else
-				$basePath = '../../CORE';
+				$basePath = CORE_PATH;
 				
 			$parts = array_map('strtolower', $parts);
 			
