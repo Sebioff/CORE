@@ -8,7 +8,7 @@ class App {
 
 	// CONSTRUCTION ------------------------------------------------------------
 	private function __construct() {
-		// singleton
+		// Singleton
 	}
 
 	// CUSTOM METHODS ----------------------------------------------------------
