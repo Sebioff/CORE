@@ -44,7 +44,7 @@ class Router {
 	}
 	
 	public function init() {
-		require_once '../config/routes.php';
+		require_once PROJECT_PATH.'/config/routes.php';
 		
 		$languageScriptlet = Language_Scriptlet::get();
 		
@@ -67,11 +67,19 @@ class Router {
 			}
 		}
 		
-		if(!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
-			$languageScriptlet->switchToDefaultLanguage();
-		
 		$this->generateParams();
 		
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
+		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
+		$route = implode('/', $this->getRequestParams());
+		if($languageIdentifierSet)
+			$route = $languageScriptlet->getCurrentLanguage().'/'.$route;
+		$rootURI .= str_replace($route, '', $_SERVER['REQUEST_URI']);
+		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
+		
+		if(!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
+			$languageScriptlet->switchToDefaultLanguage();
+			
 		if(!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
 		

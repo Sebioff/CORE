@@ -3,9 +3,7 @@
 require_once 'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
 
 class App {
-	public static $projectName = null;
-	public static $instance = null;
-
+	private static $instance = null;
 	private $modules = array();
 
 	// CONSTRUCTION ------------------------------------------------------------
@@ -27,13 +25,8 @@ class App {
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 
-		if(self::$projectName != null)
-			throw new Core_Exception('Double boot');
-			
 		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
-		$projectPathParts = explode('/', str_replace('\\', '/', PROJECT_PATH));
-		self::$projectName = array_pop($projectPathParts);
 
 		// first boot
 		if(!$GLOBALS['memcache']->get('CORE_booted')) {
@@ -147,7 +140,7 @@ class App_Autoloader {
 		// path not cached or wrong cached, search for class
 		if(!$path || !class_exists($className, false)) {
 			$parts = explode('_', $className);
-			$isProjectClass = ($parts[0] == App::$projectName);
+			$isProjectClass = ($parts[0] == PROJECT_NAME);
 			
 			if($isProjectClass) {
 				array_shift($parts);

@@ -12,13 +12,11 @@ class IO_File {
 	const READ_WRITE_APPEND = 'a+';
 	
 	private $file;
-	private $exists;
 	private $resource;
 	private $mode;
 	
 	public function __construct($filePath) {
 		$this->file = $filePath;
-		$this->exists = file_exists($filePath);
 	}
 	
 	public function exists() {

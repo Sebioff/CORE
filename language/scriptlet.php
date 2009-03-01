@@ -53,11 +53,8 @@ class Language_Scriptlet {
 	 * Reloads the current route with prepended language identifier
 	 */
 	public function switchToDefaultLanguage() {
-		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
-		$serverName = $_SERVER['SERVER_NAME'];
 		$redirectUrl = implode('/', Router::get()->getRequestParams());
-		$serverName .= str_replace($redirectUrl, '', $_SERVER['REQUEST_URI']);
-		$url = sprintf('%s://%s%s/%s', $protocol, $serverName, $this->defaultLanguage, $redirectUrl);
+		$url = sprintf('%s/%s/%s', PROJECT_ROOTURI, $this->defaultLanguage, $redirectUrl);
 		Scriptlet::redirect($url);
 	}
 	

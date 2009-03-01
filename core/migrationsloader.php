@@ -6,14 +6,6 @@
 class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
 	
-	public static function reset() {
-		// TODO PWO: delete folder containing migrations-log and re-create
-		// TODO PWO: -> give core/reset its own class/module
-		$file=new IO_File(self::MIGRATION_LOG_FILE);
-		if($file->exists())
-			$file->delete();
-	}
-	
 	/**
 	 * Loads all migration files from the migration folder (in the order they where
 	 * created) and executes the contained mysql queries.
