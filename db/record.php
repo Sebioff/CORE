@@ -17,6 +17,10 @@ class DB_Record
 			return null;
 	}
 
+	public function __toString() {
+		return $this->id;
+	}
+	
 	/**
 	 * @return an associative array containing all set properties
 	 */

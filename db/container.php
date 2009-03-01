@@ -53,6 +53,32 @@ class DB_Container
 
 		return $records;
 	}
+	
+	/**
+	 * Magic methods
+	 *  - selectByAttribute($properties = '*', $attributeValue = '', $order = '', $limit = '')
+	 *  - selectByAttributeFirst($properties = '*', $attributeValue = '', $order = '')
+	 */
+	public function __call($name, $params) {
+		if(preg_match('/^selectBy(.*)First$/', $name, $matches)) {
+			$params = array_merge($params, array('', '', ''));
+			return $this->selectFirst($params[0], $this->camelCaseToUnderscores($matches[1]).' = '.$this->addQuotes($params[1]), $params[2]);
+		}
+		elseif(preg_match('/^selectBy(.*)$/', $name, $matches)) {
+			$params = array_merge($params, array('', '', '', ''));
+			return $this->select($params[0], $this->camelCaseToUnderscores($matches[1]).' = '.$this->addQuotes($params[1]), $params[2], $params[3]);
+		}
+		else
+			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
+	}
+	
+	private function camelCaseToUnderscores($string) {
+		return strtolower(preg_replace(array('/[^A-Z^a-z^0-9^\/]+/','/([a-z\d])([A-Z])/','/([A-Z]+)([A-Z][a-z])/'), array('_','\1_\2','\1_\2'), $string));
+	}
+	
+	private function addQuotes($string) {
+		return '\''.$string.'\'';
+	}
 }
 
 ?>
