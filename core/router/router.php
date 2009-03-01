@@ -27,15 +27,15 @@ class Router {
 	private function generateParams() {
 		$modules = -1;
 		$params = array();
-		foreach($this->requestParams as $param) {
-			if(isset($this->moduleRoutes[$param])) {
+		foreach ($this->requestParams as $param) {
+			if (isset($this->moduleRoutes[$param])) {
 				$modules++;
 				$params[] = array('module' => $param, 'params' => array(), 'submodule' => array());
 			}
-			elseif(isset($params[$modules]) && $module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
+			elseif (isset($params[$modules]) && $module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
 				$params[$modules]['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
 			}
-			elseif(isset($params[$modules])) {
+			elseif (isset($params[$modules])) {
 				$params[$modules]['params'][] = $param;
 			}
 		}
@@ -51,14 +51,14 @@ class Router {
 		$this->requestParams = $requestURI;
 		
 		$languageIdentifierSet = false;
-		while(!$this->route && $requestURI) {
+		while (!$this->route && $requestURI) {
 			$firstParam = array_shift($requestURI);
-			if($languageScriptlet->isLanguageIdentifier($firstParam)) {
+			if ($languageScriptlet->isLanguageIdentifier($firstParam)) {
 				$this->requestParams = $requestURI;
 				$languageScriptlet->setCurrentLanguage($firstParam);
 				$languageIdentifierSet = true;
 			}
-			elseif(isset($this->moduleRoutes[$firstParam])) {
+			elseif (isset($this->moduleRoutes[$firstParam])) {
 				$this->route = $firstParam;
 			}
 			else {
@@ -71,15 +71,15 @@ class Router {
 		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
 		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
 		$route = implode('/', $this->getRequestParams());
-		if($languageIdentifierSet)
+		if ($languageIdentifierSet)
 			$route = $languageScriptlet->getCurrentLanguage().'/'.$route;
 		$rootURI .= str_replace($route, '', $_SERVER['REQUEST_URI']);
 		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		
-		if(!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
+		if (!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
 			$languageScriptlet->switchToDefaultLanguage();
 			
-		if(!isset($this->moduleRoutes[$this->route]))
+		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
 		
 		$module = $this->getCurrentModule();
@@ -88,7 +88,7 @@ class Router {
 	}
 	
 	public function addModuleRoute($routeName, Module $module) {
-		if(!in_array($routeName, $this->moduleRoutes))
+		if (!in_array($routeName, $this->moduleRoutes))
 			$this->setModuleRoute($routeName, $module);
 		else
 			throw new Core_Exception('A module route with this name has already been added: '.$routeName);
@@ -105,7 +105,7 @@ class Router {
 		$currentModule = $this->moduleRoutes[$this->route];
 		
 		$module = $this->params[0];
-		while(isset($module['submodule'][0]['module'])) {
+		while (isset($module['submodule'][0]['module'])) {
 			$currentModule = $currentModule->getSubmodule($module['submodule'][0]['module']);
 			$module = $module['submodule'];
 		}

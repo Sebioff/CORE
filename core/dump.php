@@ -2,8 +2,8 @@
 
 class Core_Dump {
 	public static function dump() {
-		foreach(func_get_args() as $arg) {
-			if('cli'==PHP_SAPI)
+		foreach (func_get_args() as $arg) {
+			if ('cli'==PHP_SAPI)
 				var_dump($arg);
 			else {
 				echo '<div class="ob_dump" style="display:inline-block; position:relative;z-index:1000;"><table style="background-color:green;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
@@ -17,16 +17,16 @@ class Core_Dump {
 	}
 	
 	public static function dump_flat() {
-		foreach(func_get_args() as $arg) {
+		foreach (func_get_args() as $arg) {
 			ob_flush();
-			if(empty($GLOBALS['ob_flushed']))
+			if (empty($GLOBALS['ob_flushed']))
 				$GLOBALS['ob_flushed']=true;
 			echo '<div style="position:relative;z-index:1000;"><table style="background-color:gray;border:1px solid black;margin-top:5px;"><tr><td style="color:white;padding:5px;"><pre>';
-			if($arg===true)
+			if ($arg===true)
 				echo 'true (bool)';
-			elseif($arg===false)
+			elseif ($arg===false)
 				echo 'false (bool)';
-			elseif($arg===null)
+			elseif ($arg===null)
 				echo 'NULL';
 			elseif (is_scalar($arg))
 				printf('%s (%s)', $arg, gettype($arg));
@@ -34,11 +34,11 @@ class Core_Dump {
 				printf("Object(%s)\n{\n", get_class($arg));
 				echo " ::: PROPERTIES :::\n";
 
-				foreach((array)$arg as $k=>$v) {
-					if(preg_match(sprintf('#^%1$s.+%1$s(.+?)$#', preg_quote(chr(0))), $k, $match))
+				foreach ((array)$arg as $k=>$v) {
+					if (preg_match(sprintf('#^%1$s.+%1$s(.+?)$#', preg_quote(chr(0))), $k, $match))
 					$k=$match[1];
-					if(is_object($v)) {
-						if(in_array('__toString', get_class_methods($v)))
+					if (is_object($v)) {
+						if (in_array('__toString', get_class_methods($v)))
 							printf("  { %s: '%s' { %s } }\n", $k, (string)$v, get_class($v));
 						else
 							printf("  { %s: { %s } }\n", $k, get_class($v));
@@ -57,19 +57,19 @@ class Core_Dump {
 						printf("  { %s: %s (%s) }\n", $k, $v, gettype($v));
 				}
 				echo " ::: METHODS :::\n";
-				foreach(get_class_methods($arg) as $method)
+				foreach (get_class_methods($arg) as $method)
 					echo '  '.$method."\n";
 				echo '}';
 			}
-			elseif(is_array($arg)) {
+			elseif (is_array($arg)) {
 				printf("Array(%s)\n[\n", count($arg));
 
-				foreach($arg as $k=>$v) {
-					if(preg_match(sprintf('#^%1$s.+%1$s(.+?)$#', preg_quote(chr(0))), $k, $match))
+				foreach ($arg as $k=>$v) {
+					if (preg_match(sprintf('#^%1$s.+%1$s(.+?)$#', preg_quote(chr(0))), $k, $match))
 					$k=$match[1];
 
-					if(is_object($v)) {
-						if(in_array('__toString', get_class_methods($v)))
+					if (is_object($v)) {
+						if (in_array('__toString', get_class_methods($v)))
 							printf("  [ %s => '%s' { %s } ]\n", $k, (string)$v, get_class($v));
 						else
 							printf("  [ %s => { %s } ]\n", $k, get_class($v));

@@ -9,7 +9,7 @@ class DB_Record {
 	}
 	
 	public function __get($property) {
-		if(isset($this->properties[$property]))
+		if (isset($this->properties[$property]))
 			return $this->properties[$property];
 		else
 			return null;

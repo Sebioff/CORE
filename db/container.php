@@ -15,7 +15,7 @@ class DB_Container {
 	 */
 	public function selectFirst($properties = '*', $condition = '', $order = '', $limit = 1) {
 		$records = $this->select($properties, $condition, $order, $limit);
-		if(count($records))
+		if (count($records))
 			return $records[0];
 		else
 			return null;
@@ -33,18 +33,18 @@ class DB_Container {
 		$records = array();
 
 		$query = 'SELECT '.$properties.' FROM '.$this->table;
-		if($condition)
+		if ($condition)
 			$query .= ' WHERE '.$condition;
-		if($order)
+		if ($order)
 			$query .= ' ORDER BY '.$order;
-		if($limit)
+		if ($limit)
 			$query .= ' LIMIT '.$limit;
 
 		$result = DB_Connection::get()->query($query);
 
-		while($row = mysql_fetch_assoc($result)) {
+		while ($row = mysql_fetch_assoc($result)) {
 			$record = new $this->recordClass();
-			foreach($row as $property => $value) {
+			foreach ($row as $property => $value) {
 				$record->$property = $value;
 			}
 			$records[] = $record;
@@ -59,11 +59,11 @@ class DB_Container {
 	 *  - selectByAttributeFirst($properties = '*', $attributeValue = '', $order = '')
 	 */
 	public function __call($name, $params) {
-		if(preg_match('/^selectBy(.*)First$/', $name, $matches)) {
+		if (preg_match('/^selectBy(.*)First$/', $name, $matches)) {
 			$params = array_merge($params, array('', '', ''));
 			return $this->selectFirst($params[0], $this->camelCaseToUnderscores($matches[1]).' = '.$this->addQuotes($params[1]), $params[2]);
 		}
-		elseif(preg_match('/^selectBy(.*)$/', $name, $matches)) {
+		elseif (preg_match('/^selectBy(.*)$/', $name, $matches)) {
 			$params = array_merge($params, array('', '', '', ''));
 			return $this->select($params[0], $this->camelCaseToUnderscores($matches[1]).' = '.$this->addQuotes($params[1]), $params[2], $params[3]);
 		}

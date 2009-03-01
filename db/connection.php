@@ -27,24 +27,24 @@ class DB_Connection {
 	 * @return the queries result
 	 */
 	public function query($query) {
-		if(!$this->connection) {
+		if (!$this->connection) {
 			// connect to database server
 			$server = isset($this->connectionOptions['port'])?$this->connectionOptions['host'].':'.$this->connectionOptions['port']:$this->connectionOptions['host'];
-			if(isset($this->connectionOptions['pass']))
+			if (isset($this->connectionOptions['pass']))
 				$this->connection = mysql_connect($server, $this->connectionOptions['user'], $this->connectionOptions['pass']);
 			else
 				$this->connection = mysql_connect($server, $this->connectionOptions['user']);
 				
-			if(!$this->connection)
+			if (!$this->connection)
 				throw new Core_Exception('Can\'t connect to database server: '.mysql_error());
 			
 			// set active database
-			if(!mysql_select_db($this->connectionOptions['query'], $this->connection))
+			if (!mysql_select_db($this->connectionOptions['query'], $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 		}
 
 		$result = mysql_query($query, $this->connection);
-		if(!$result)
+		if (!$result)
 			throw new Core_Exception('MySQL Query failed: '.mysql_error());
 			
 		return $result;
@@ -59,8 +59,8 @@ class DB_Connection {
 	 */
 	public function deleteTables() {
 		$tables = $this->query('SHOW TABLES');
-		while($table = mysql_fetch_row($tables))
-			foreach($table as $tableName)
+		while ($table = mysql_fetch_row($tables))
+			foreach ($table as $tableName)
 				$this->query(sprintf('DROP TABLE %s', $tableName));
 	}
 }

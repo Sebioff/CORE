@@ -32,17 +32,17 @@ class GUI_Panel {
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
 		// FIXME this needs to be done by the mainpanel right after Module::init() (as soon as it exists)
-		if($this->hasBeenSubmitted())
+		if( $this->hasBeenSubmitted())
 			$this->validate();
 			
-		if($this->submittable) {
+		if ($this->submittable) {
 			echo sprintf('<form name="%s" action="%s" method="post">', $this->name, $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		
 		require $this->template;
 		
-		if($this->submittable) {
+		if ($this->submittable) {
 			$this->addPanel($hasBeenSubmittedBox = new GUI_Control_HiddenBox('hasbeensubmitted', 1));
 			$hasBeenSubmittedBox->display();
 			echo '</form>', "\n";
@@ -50,15 +50,15 @@ class GUI_Panel {
 	}
 	
 	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
-		if($this->$panelName->hasErrors())
+		if ($this->$panelName->hasErrors())
 			$additionalCSSClasses[] = 'core_common_error';
 		
 		echo sprintf('<label for="%s"', $this->$panelName->getID());
-		if($additionalCSSClasses)
+		if ($additionalCSSClasses)
 			echo sprintf(' class="%s"', implode(' ', $additionalCSSClasses));
 		echo '>';
 		echo $this->$panelName->getTitle();
-		if($this->$panelName instanceof GUI_Control && $this->$panelName->hasValidator('GUI_Validator_Mandatory'))
+		if ($this->$panelName instanceof GUI_Control && $this->$panelName->hasValidator('GUI_Validator_Mandatory'))
 			echo '<span class="core_common_mandatory_asterisk"> *</span>';
 		echo '</label>';
 	}
@@ -66,7 +66,7 @@ class GUI_Panel {
 	public function addPanel(GUI_Panel $panel) {
 		$panel->setParent($this);
 		$this->panels[$panel->getName()] = $panel;
-		if($panel instanceof GUI_Control_Submitbutton) {
+		if ($panel instanceof GUI_Control_Submitbutton) {
 			$this->submittable = true;
 		}
 	}
@@ -93,7 +93,7 @@ class GUI_Panel {
 	 */
 	public function getAttributeString() {
 		$attributeString = null;
-		foreach($this->attributes as $attribute => $value) {
+		foreach ($this->attributes as $attribute => $value) {
 			$attributeString .= $attribute.'="'.$value.'" ';
 		}
 		if (count($this->classes))
@@ -110,7 +110,7 @@ class GUI_Panel {
 	}
 	
 	public function displayErrors() {
-		if($this->hasErrors())
+		if ($this->hasErrors())
 			echo '<span class="core_common_error">'.implode('<br />', $this->errors).'</span>';
 	}
 	
@@ -126,11 +126,11 @@ class GUI_Panel {
 	 * Fills Panel::errors with all errors found
 	 */
 	protected function validate() {
-		foreach($this->panels as $panel)
+		foreach ($this->panels as $panel)
 			foreach($panel->validate() as $error)
 				$this->errors[] = $panel->getTitle().': '.$error;
 			
-		if($this->hasErrors())
+		if ($this->hasErrors())
 			$this->addClasses('core_common_error');
 		
 		return $this->errors;
@@ -138,7 +138,7 @@ class GUI_Panel {
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
-		if(array_key_exists($panelName, $this->panels))
+		if (array_key_exists($panelName, $this->panels))
 			return $this->panels[$panelName];
 		else
 			throw new CORE_Exception('Child panel does not exist: '.$panelName);

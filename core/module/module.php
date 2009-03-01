@@ -28,15 +28,15 @@ class Module {
 	}
 	
 	public function getSubmodule($moduleRouteName) {
-		if(isset($this->submodules[$moduleRouteName]))
+		if (isset($this->submodules[$moduleRouteName]))
 			return $this->submodules[$moduleRouteName];
 		else
 			return null;
 	}
 	
 	public function getSubmoduleByName($moduleName) {
-		foreach($this->submodules as $submodule)
-			if($submodule->getName() == $moduleName)
+		foreach ($this->submodules as $submodule)
+			if ($submodule->getName() == $moduleName)
 				return $submodule;
 		return null;
 	}
@@ -51,7 +51,7 @@ class Module {
 	}
 	
 	public function displayJsIncludes() {
-		foreach($this->jsRouteReferences as $jsRouteReference) {
+		foreach ($this->jsRouteReferences as $jsRouteReference) {
 			dump(Router::get()->getStaticRoute($jsRouteReference['routeName']));
 		}
 	}
@@ -60,11 +60,11 @@ class Module {
 		$route = $this->getRouteName();
 		$module = $this;
 		
-		while($module = $module->getParent()) {
+		while ($module = $module->getParent()) {
 			$route = $module->getRouteName().'/'.$route;
 		}
 		
-		if(count(Language_Scriptlet::get()->getAvailableLanguages()) > 0)
+		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 0)
 			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
 		
 		return PROJECT_ROOTURI.'/'.$route;

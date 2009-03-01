@@ -17,7 +17,7 @@ class HTMLTidy {
 		
 		// TODO ugh. JS can't be outputted using the Module's functions, since
 		// Module::display() has already been called when tidy is called...
-		if($tidy->errorBuffer) {
+		if ($tidy->errorBuffer) {
 			echo '<script type="text/javascript" src="./../../CORE/www/js/jquery/jquery.js"></script>';
 			echo '<script type="text/javascript" src="./../../CORE/www/js/jquery/jquery-ui.js"></script>';
 			echo '<script>$(document).ready(function(){$("#core_htmltidy_errors").draggable().mouseover(function(){$(this).css("opacity", "0.25");}).mouseout(function(){$(this).css("opacity", "1");});});</script>';

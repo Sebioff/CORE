@@ -14,8 +14,8 @@ abstract class GUI_Control extends GUI_Panel {
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function hasValidator($validatorClassName) {
-		foreach($this->validators as $validator)
-			if($validator instanceof $validatorClassName)
+		foreach ($this->validators as $validator)
+			if ($validator instanceof $validatorClassName)
 				return true;
 		return false;
 	}
@@ -26,8 +26,8 @@ abstract class GUI_Control extends GUI_Panel {
 	}
 	
 	protected function validate() {
-		foreach($this->validators as $validator) {
-			if(!$validator->isValid()) {
+		foreach ($this->validators as $validator) {
+			if (!$validator->isValid()) {
 				$this->errors[] = $validator->getError();
 			}
 		}
@@ -40,7 +40,7 @@ abstract class GUI_Control extends GUI_Panel {
 	protected function generateID() {
 		parent::generateID();
 		
-		if(isset($_POST[$this->getID()]))
+		if (isset($_POST[$this->getID()]))
 			$this->value = $_POST[$this->getID()];
 	}
 	

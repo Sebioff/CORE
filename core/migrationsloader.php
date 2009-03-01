@@ -17,7 +17,7 @@ class Core_MigrationsLoader {
 		$fileXPathParts = explode('/', $relativeMigrationFolder);
 		
 		// load migration logfile or create new one
-		if(file_exists(self::MIGRATION_LOG_FILE))
+		if (file_exists(self::MIGRATION_LOG_FILE))
 			$xml = simplexml_load_file(self::MIGRATION_LOG_FILE);
 		else {
 			$baseMigrationLog = '<?xml version=\'1.0\'?><content></content>';
@@ -25,14 +25,14 @@ class Core_MigrationsLoader {
 		}
 		
 		// create xpath to current migration folder if it doesn't exist
-		if(!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
+		if (!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
 			$currentXMLNode = $xml;
 			$fileXPathPartsSize=count($fileXPathParts);
-			for($i = 0; $i < $fileXPathPartsSize; $i++) {
+			for ($i = 0; $i < $fileXPathPartsSize; $i++) {
 				$fileXPath = array_slice($fileXPathParts, 0, $i+1);
 				$fileXPath = implode('/', $fileXPath);
 				$result = $xml->xpath('/content/'.$fileXPath);
-				if(!count($result))
+				if (!count($result))
 					$currentXMLNode = $currentXMLNode[0]->addChild($fileXPathParts[$i]);
 				else
 					$currentXMLNode = $result;
@@ -41,9 +41,9 @@ class Core_MigrationsLoader {
 		
 		// execute migration files if they haven't been before
 		$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolder, array('php'));
-		foreach($migrationFiles as $migrationFile) {
+		foreach ($migrationFiles as $migrationFile) {
 			$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
-			if(!count($result)) {
+			if (!count($result)) {
 				$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
 				$child = $result[0]->addChild('file');
 				$child->addAttribute('name', $migrationFile);
@@ -65,7 +65,7 @@ class Core_MigrationsLoader {
 	private static function executeMigration($migrationFile) {
 		$queries = array();
 		require_once $migrationFile;
-		foreach($queries as $query)
+		foreach ($queries as $query)
 			DB_Connection::get()->query($query);
 	}
 }

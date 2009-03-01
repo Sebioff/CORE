@@ -21,9 +21,9 @@ abstract class IO_Utils {
 	 */
 	public static function getFilesFromFolder($path, Array $extensions = null) {
 		$files = array();
-		if($handle = opendir($path)) {
-			while(false !== ($fileName = readdir($handle))) {
-				if($fileName != '.' && $fileName != '..') {
+		if ($handle = opendir($path)) {
+			while (false !== ($fileName = readdir($handle))) {
+				if ($fileName != '.' && $fileName != '..') {
 					if (!$extensions || in_array(self::getFileExtension($fileName), $extensions))
 						$files[] = $fileName;
 				}

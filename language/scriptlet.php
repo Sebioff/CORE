@@ -35,14 +35,14 @@ class Language_Scriptlet {
 	}
 	
 	public function getCurrentLanguage() {
-		if($this->currentLanguage)
+		if ($this->currentLanguage)
 			return $this->currentLanguage;
 		else
 			return $this->defaultLanguage;
 	}
 	
 	public function setCurrentLanguage($language) {
-		if(in_array($language, $this->availableLanguages)) {
+		if (in_array($language, $this->availableLanguages)) {
 			$this->currentLanguage = $language;
 		}
 		else
