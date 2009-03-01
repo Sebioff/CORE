@@ -27,8 +27,7 @@ class Router {
 	private function generateParams() {
 		$modules = -1;
 		$params = array();
-		foreach($this->requestParams as $param)
-		{
+		foreach($this->requestParams as $param) {
 			if(isset($this->moduleRoutes[$param])) {
 				$modules++;
 				$params[] = array('module' => $param, 'params' => array(), 'submodule' => array());
@@ -48,7 +47,7 @@ class Router {
 		
 		$languageScriptlet = Language_Scriptlet::get();
 		
-		$requestURI = explode('/', ltrim($_SERVER['REQUEST_URI'] , '/'));
+		$requestURI = explode('/', ltrim($_SERVER['REQUEST_URI'], '/'));
 		$this->requestParams = $requestURI;
 		
 		$languageIdentifierSet = false;

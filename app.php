@@ -33,7 +33,7 @@ class App {
 			self::systemCheck();
 		}
 		
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+		if(Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
 			require_once PROJECT_PATH.'/config/environments/config.development.php';
 			Core_MigrationsLoader::load();
 		}

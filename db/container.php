@@ -1,7 +1,6 @@
 <?php
 
-class DB_Container
-{
+class DB_Container {
 	private $recordClass;
 	private $table;
 
