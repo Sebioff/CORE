@@ -1,13 +1,25 @@
 <?php
 class IO_Log {
 	private $stamps;
+	public function __construct() {
+		date_default_timezone_set('Europe/Berlin');
+	}
 	private function getDiff($pfad) {
 		$cnt = count($this->stamps[$pfad]);
 		return ($cnt > 1) ? 
 			$this->stamps[$pfad][$cnt - 1]['time'] - $this->stamps[$pfad][$cnt - 2]['time'] :
 			-1;
 	}
-	public function setMark(Boolean $print2file = null, Float $difference = null) {
+	/**
+	 * Set stoppoints to benchmark the time between two stoppoints
+	 * @param $print2file write the result into logfile (true) or print on display (false = default)
+	 * @param $difference only recognize when difference between two stoppoints greater than this time in seconds 
+	 * @return depends on options
+	 */
+	public function setMark($print2file = false, Float $difference = null) {
+		//visit http://bugs.php.net/bug.php?id=40782 for more information
+		if (!is_bool($print2file))
+			throw new Core_Exception("First parameter has to be bool");
 		$debug = debug_backtrace();
 		$pfad = str_replace(
 			array('\\', $_SERVER['DOCUMENT_ROOT'].'/'), 
@@ -15,22 +27,25 @@ class IO_Log {
 		);
 		$this->stamps[$pfad][] = array(	'line' => $debug[0]['line'],
 										'time' => microtime(true));
-//		echo 'setMark ('.count($this->stamps[$pfad]).') '.$pfad.':<br />';
-//		echo 'basename: '.basename(PROJECT_PATH).' -- '.($debug[0]['file']).'<br />';
-//		echo '<pre>'.print_r($debug[0], true).'</pre>';
 		if (count($this->stamps[$pfad]) > 1) {
 			$diff = $this->getDiff($pfad);
-			$cnt = count($this->stamps[$pfad]);
-			if (!$print2file) {
-				echo 'Differenz ['.$pfad.':'.$this->stamps[$pfad][$cnt - 2]['line'].'] - ['.$pfad.':'.$this->stamps[$pfad][$cnt - 1]['line'].']: '.number_format($diff, 5).'<br />';
-			} else {
-				//Print to Logfile
+			if (($difference && $difference <= $diff) || (!$difference)) {
+				$cnt = count($this->stamps[$pfad]);
+				$retStr = '['.$pfad.'] Line '.$this->stamps[$pfad][$cnt - 2]['line'].' to '.$this->stamps[$pfad][$cnt - 1]['line'].': '.number_format(abs($diff), 6).' sec'; 
+				if (!$print2file) {
+					echo 'Differenz: '.$retStr."<br />";
+					return $retStr;
+				} else {
+					$printStr = date('H:i:s').' '.$retStr."\r\n";
+					$logFileName = PROJECT_PATH.'/config/log/benchmark_'.date('Y-m-d').'.log';
+					if (!file_put_contents($logFileName, $printStr, FILE_APPEND | LOCK_EX)) {
+						throw new Core_Exception('File \''.$logFileName.'\' could not be written!');
+					} else {
+						return true;
+					}
+				}
 			}
 		}
-	}
-	public function __destruct() {
-//		echo 'Destruct:<br />';
-//		echo '<pre>'.print_r($this->stamps, true).'</pre>';
 	}
 }
 ?>
