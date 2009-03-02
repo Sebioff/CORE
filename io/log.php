@@ -11,7 +11,7 @@ class IO_Log {
 			-1;
 	}
 	/**
-	 * Set stoppoints to benchmark the time between two stoppoints
+	 * Set stoppoints to benchmark the time between
 	 * @param $print2file write the result into logfile (true) or print on display (false = default)
 	 * @param $difference only recognize when difference between two stoppoints greater than this time in seconds 
 	 * @return depends on options
