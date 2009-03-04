@@ -77,10 +77,8 @@ class IO_Log {
 				if (isset($notice))
 					$retStr .= ' '.$notice; 
 				if ($printToFile) {
-					$printStr = date('H:i:s').' '.$retStr;
-					$this->writeToFile($printStr, self::BENCHFILE_PREFIX);
-				}
-				else {
+					$this->writeToFile(date('H:i:s').' '.$retStr, self::BENCHFILE_PREFIX);
+				} else {
 					return $retStr;
 				}
 			}
