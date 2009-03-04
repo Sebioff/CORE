@@ -20,6 +20,7 @@ class App {
 		session_start();
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
+		date_default_timezone_set('Europe/Berlin');
 		$GLOBALS['memcache'] = new Core_MemoryCache();
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
