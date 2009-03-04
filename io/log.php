@@ -58,7 +58,7 @@ class IO_Log {
 	 * Set stoppoints to benchmark the time between
 	 * @param $printToFile write the result into logfile (true) or print on display (false = default)
 	 * @param $lowerTimeLimit only recognize when difference between two stoppoints greater than this time in seconds
-	 * @param $notice Optional Notice 
+	 * @param $notice Optional Notice
 	 * @return depends on options
 	 */
 	public function setMark($printToFile = false, $lowerTimeLimit = 0.0, $notice = '') {
@@ -105,7 +105,7 @@ class IO_Log {
 	
 	private function writeToFile($msg, $fileNamePrefix = self::LOGFILE_PREFIX) {
 		$logFileName = PROJECT_PATH.'/config/log/'.$fileNamePrefix.'_'.date('Y-m-d').'.log';
-		if (file_put_contents($logFileName, $msg.NEW_LINE, FILE_APPEND | LOCK_EX) === false) {
+		if (file_put_contents($logFileName, $msg.System::getNewLine(), FILE_APPEND | LOCK_EX) === false) {
 			throw new Core_Exception('Log file \''.$logFileName.'\' could not be written!');
 		}
 	}
