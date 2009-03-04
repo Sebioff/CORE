@@ -68,7 +68,7 @@ class IO_Log {
 										'time' => microtime(true));
 		if (count($this->stamps[$pfad]) > 1) {
 			$diff = $this->getDiff($pfad);
-			if (($lowerTimeLimit && $lowerTimeLimit <= $diff) || (!$lowerTimeLimit)) {
+			if ($lowerTimeLimit <= $diff) {
 				$cnt = count($this->stamps[$pfad]);
 				$retStr = '['.$pfad.'] Line '.$this->stamps[$pfad][$cnt - 2]['line'].' to '.$this->stamps[$pfad][$cnt - 1]['line'].': '.number_format(abs($diff), 6).' sec'; 
 				if ($printToFile) {
@@ -76,7 +76,6 @@ class IO_Log {
 					$this->writeToFile($printStr, self::BENCHFILE_PREFIX);
 				}
 				else {
-					echo 'Differenz: '.$retStr.'<br />';
 					return $retStr;
 				}
 			}
