@@ -2,6 +2,10 @@
 
 require_once 'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
 
+/**
+ * Magic methods:
+ * @method Module getMODULENAMEModule()
+ */
 class App {
 	private static $instance = null;
 	private $modules = array();
@@ -25,7 +29,6 @@ class App {
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
-
 		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 
@@ -52,7 +55,7 @@ class App {
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			HTMLTidy::tidy();
-		
+			
 		$GLOBALS['memcache']->set('CORE_booted', true);
 	}
 
@@ -116,7 +119,6 @@ class App {
 			if (!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
-		// TODO: handle magic_quotes in db_connection so it can be turned on and off
 		foreach (array('register_globals'=>0, 'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
 			if ($value != ini_get($option))
 				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');

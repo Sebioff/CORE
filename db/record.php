@@ -2,8 +2,24 @@
 
 class DB_Record {
 	private $properties = array();
+	private $container = null;
 	
 	// SETTERS / GETTERS -------------------------------------------------------
+	public function setContainer(DB_Container $container) {
+		$this->container = $container;
+	}
+	
+	public function getContainer() {
+		return $this->container;
+	}
+	
+	public function getPK() {
+		if (!$this->container)
+			return null;
+		$databaseSchema = $this->container->getDatabaseSchema();
+		return $this->$databaseSchema['primaryKey'];
+	}
+	
 	public function __set($property, $value) {
 		$this->properties[$property] = $value;
 	}
@@ -14,7 +30,7 @@ class DB_Record {
 		else
 			return null;
 	}
-
+	
 	public function __toString() {
 		return $this->id;
 	}

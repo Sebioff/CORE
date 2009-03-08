@@ -62,6 +62,9 @@ class IO_Log {
 	 * @return depends on options
 	 */
 	public function setMark($printToFile = false, $lowerTimeLimit = 0.0, $notice = '') {
+		if (Environment::getCurrentEnvironment() != Environment::DEVELOPMENT && (!defined('ENABLE_LOGGING') || ENABLE_LOGGING == false))
+			return;
+		
 		$debug = debug_backtrace();
 		$pfad = str_replace(
 			array('\\', $_SERVER['DOCUMENT_ROOT'].'/'), 

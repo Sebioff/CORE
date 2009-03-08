@@ -58,10 +58,25 @@ class DB_Connection {
 	 * Deletes all tables in the database
 	 */
 	public function deleteTables() {
+		$this->query('SET FOREIGN_KEY_CHECKS=0');
 		$tables = $this->query('SHOW TABLES');
 		while ($table = mysql_fetch_row($tables))
 			foreach ($table as $tableName)
 				$this->query(sprintf('DROP TABLE %s', $tableName));
+		$this->query('SET FOREIGN_KEY_CHECKS=1');
+	}
+	
+	public function beginTransaction() {
+		$this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+		$this->query('START TRANSACTION');
+	}
+	
+	public function commit() {
+		$this->query('COMMIT');
+	}
+	
+	public function rollback() {
+		$this->query('ROLLBACK');
 	}
 }
 
