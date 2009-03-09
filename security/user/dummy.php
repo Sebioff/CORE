@@ -1,4 +1,5 @@
 <?php
+//Blubb
 abstract class SECURITY_User_Dummy {
 	public $test;
 	public $right_delete_alliance = false;
