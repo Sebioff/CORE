@@ -1,7 +1,7 @@
 <?php
-class SECURITY_User extends SECURITY_User_Dummy {
+class Security_User extends Security_User_Dummy {
 	private $options = array();
-	public function addOptionClass(SECURITY_User_Dummy $class) {
+	public function addOptionClass(Security_User_Dummy $class) {
 		$this->options[(String)$class] = $class;
 		$this->updateRights();
 	}

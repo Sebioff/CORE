@@ -1,6 +1,6 @@
 <?php
 //Blubb
-abstract class SECURITY_User_Dummy {
+abstract class Security_User_Dummy {
 	public $test;
 	public $right_delete_alliance = false;
 	public function __toString() {
