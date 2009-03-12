@@ -1,7 +1,4 @@
 <?php
-/***
- * Created on 25.02.2009
- **/
 
 class GUI_Control_TextArea extends GUI_Control {
 	// CONSTRUCTORS ------------------------------------------------------------

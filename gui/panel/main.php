@@ -8,6 +8,7 @@ class GUI_Panel_Main extends GUI_Panel {
 		parent::__construct($name);
 		
 		$this->module = $module;
+		$this->setTemplate(dirname(__FILE__).'/main.tpl');
 	}
 	
 	public function displayPage() {
@@ -15,7 +16,7 @@ class GUI_Panel_Main extends GUI_Panel {
 	}
 	
 	public function render() {
-		require dirname(__FILE__).'/main.tpl';
+		require dirname(__FILE__).'/page.tpl';
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

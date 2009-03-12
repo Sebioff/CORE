@@ -1,1 +1,1 @@
-<textarea name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>><?= $this->getValue() ?></textarea> />
+<textarea name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>><?= Text::escapeHTML($this->getValue()) ?></textarea> />

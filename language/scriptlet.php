@@ -15,11 +15,11 @@ class Language_Scriptlet {
 	 * sets default params of the language module
 	 * @return boolean
 	 */
-	// TODO PWO: is init() needed or could this be done in the constructor as well?
-	// TODO PWO: make available languages/default language customizable
 	public function init() {
-		$this->setAvailableLanguages(array('de', 'en'));
-		$this->setDefaultLanguage('de');
+		if (count($this->getAvailableLanguages()) == 0)
+			$this->setAvailableLanguages(array('de'));
+		if (!$this->defaultLanguage)
+			$this->setDefaultLanguage($this->availableLanguages[0]);
 	}
 	
 	public function setAvailableLanguages(array $languages) {

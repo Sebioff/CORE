@@ -11,7 +11,7 @@ class HTMLTidy {
 			'drop-proprietary-attributes' => true,
 			'drop-empty-paras' => true
 		);
-		$tidy->parseString(ob_get_clean(), $config);
+		$tidy->parseString(ob_get_clean(), $config, 'utf8');
 		ob_start();
 		echo $tidy;
 		

@@ -1,3 +1,6 @@
+Encoding für HTML Files umstellen wär vll auch kein Fehler:
+Web -> HTML (bzw auch für CSS richtig einstellen) -> Unter "Encoding" ISO 10646/Unicode(UTF-8) wählen
+-----------------
 Wichtig: Projekte / Core auf UTF-8 umstellen (bevor wir später noch mehr damit kaputtmachen ;))!
 Rechtsklick auf Projekt -> Properties -> Unter "Text file encoding" UTF-8 wählen
 -----------------

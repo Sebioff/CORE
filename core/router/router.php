@@ -81,7 +81,8 @@ class Router {
 			
 		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
-			
+		
+		header('Content-type: text/html; charset=utf-8');
 		$module = $this->getCurrentModule();
 		$module->init();
 		$module->display();

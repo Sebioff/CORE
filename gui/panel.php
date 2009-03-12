@@ -27,6 +27,7 @@ class GUI_Panel {
 		
 		$this->setTemplate(dirname(__FILE__).'/panel.tpl');
 		$this->params = new GUI_Params();
+		$this->init();
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -47,6 +48,11 @@ class GUI_Panel {
 			$hasBeenSubmittedBox->display();
 			echo '</form>', "\n";
 		}
+	}
+	
+	public function displayPanel($panelName) {
+		if (array_key_exists($panelName, $this->panels))
+			$this->$panelName->display();
 	}
 	
 	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
@@ -134,6 +140,14 @@ class GUI_Panel {
 			$this->addClasses('core_common_error');
 		
 		return $this->errors;
+	}
+	
+	/**
+	 * You probably don't want to override the constructor if it's not neccessary,
+	 * right? Well, then override this function instead, please.
+	 */
+	protected function init() {
+		// callback
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
