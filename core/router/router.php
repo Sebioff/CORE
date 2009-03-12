@@ -81,7 +81,7 @@ class Router {
 			
 		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
-		
+			
 		$module = $this->getCurrentModule();
 		$module->init();
 		$module->display();
@@ -110,7 +110,7 @@ class Router {
 			$module = $module['submodule'];
 		}
 		
-		if($currentModule)
+		if ($currentModule)
 			return $currentModule;
 		else
 			throw new Core_Exception('Module doesn\'t exist.');

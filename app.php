@@ -39,20 +39,21 @@ class App {
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
 			require_once PROJECT_PATH.'/config/environments/config.development.php';
+			// FIXME don't load migrations if /core/reset is called!
 			Core_MigrationsLoader::load();
 		}
 		else
 			require_once PROJECT_PATH.'/config/environments/config.live.php';
 		
 		// get project modules
-		require_once PROJECT_PATH.'/config/modules.php';	
-
+		require_once PROJECT_PATH.'/config/modules.php';
+		
 		// TODO: make use of language scriptlet configurable in project
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
 		// initialize router
 		Router::get()->init();
-		
+
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			HTMLTidy::tidy();
 			

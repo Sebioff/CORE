@@ -40,6 +40,8 @@ class IO_File {
 	}
 	
 	public function delete() {
+		if (!$this->exists())
+			return true;
 		return unlink($this->file);
 	}
 	
