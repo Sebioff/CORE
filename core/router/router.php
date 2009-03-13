@@ -82,7 +82,6 @@ class Router {
 		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
 		
-		header('Content-type: text/html; charset=utf-8');
 		$module = $this->getCurrentModule();
 		$module->init();
 		$module->display();
@@ -123,11 +122,12 @@ class Router {
 	 * @param $path the path to where this route links to
 	 */
 	public function addStaticRoute($routeName, $path) {
-		$this->staticRoutes[$routeName] = '/'.$path;
+		$this->staticRoutes[$routeName] = $path;
 	}
 	
-	public function getStaticRoute($routeName) {
-		return $this->staticRoutes[$routeName];
+	public function getStaticRoute($routeName, $path) {
+		if (isset($this->staticRoutes[$routeName]))
+			return $this->transformPathToHTMLPath($this->staticRoutes[$routeName].'/'.$path);
 	}
 	
 	/**

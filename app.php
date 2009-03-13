@@ -24,6 +24,7 @@ class App {
 		session_start();
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
+		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		$GLOBALS['memcache'] = new Core_MemoryCache();
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
@@ -35,6 +36,11 @@ class App {
 		// first boot
 		if (!$GLOBALS['memcache']->get('CORE_booted')) {
 			self::systemCheck();
+		}
+		
+		if (defined('MAINTENANCE_MODE_CALLBACK')) {
+			call_user_func(MAINTENANCE_MODE_CALLBACK);
+			exit;
 		}
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {

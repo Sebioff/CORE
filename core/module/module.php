@@ -8,6 +8,7 @@ class Module {
 	private $name = '';
 	private $routeName = '';
 	private $jsRouteReferences = array();
+	private $cssRouteReferences = array();
 	private $submodules = array();
 	private $parent = null;
 	
@@ -46,14 +47,19 @@ class Module {
 	}
 	
 	public function addJsRouteReference($routeName, $path) {
-		$this->jsRouteReferences[] = array('routeName' => $routeName, 'path' => $path);
-		dump($this->jsRouteReferences);
+		$this->jsRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
 	}
 	
-	public function displayJsIncludes() {
-		foreach ($this->jsRouteReferences as $jsRouteReference) {
-			dump(Router::get()->getStaticRoute($jsRouteReference['routeName']));
-		}
+	public function getJsRouteReferences() {
+		return $this->jsRouteReferences;
+	}
+	
+	public function addCssRouteReference($routeName, $path) {
+		$this->cssRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
+	}
+	
+	public function getCssRouteReferences() {
+		return $this->cssRouteReferences;
 	}
 	
 	public function getRoute() {

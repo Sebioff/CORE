@@ -16,8 +16,8 @@ class CoreRoutes_Core extends Module {
 	public function init() {
 		parent::init();
 
-		Router::get()->addStaticRoute('core_css', './../../CORE/www/css');
-		Router::get()->addStaticRoute('core_js', './../../CORE/www/js');
+		Router::get()->addStaticRoute('core_css', dirname(__FILE__).'/../../CORE/www/css');
+		Router::get()->addStaticRoute('core_js', dirname(__FILE__).'/../../CORE/www/js');
 	}
 }
 

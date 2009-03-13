@@ -27,6 +27,14 @@ class GUI_Panel_Main extends GUI_Panel {
 	public function getPageTitle() {
 		return $this->pageTitle;
 	}
+	
+	public function getJsRouteReferences() {
+		return $this->module->getJsRouteReferences();
+	}
+	
+	public function getCssRouteReferences() {
+		return $this->module->getCssRouteReferences();
+	}
 }
 
 ?>
