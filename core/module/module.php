@@ -9,11 +9,17 @@ class Module {
 	private $routeName = '';
 	private $jsRouteReferences = array();
 	private $cssRouteReferences = array();
+	private $metaTags = array();
 	private $submodules = array();
 	private $parent = null;
 	
 	public function __construct($name) {
+		if ($name != Text::toLowerCase($name))
+			throw new Core_Exception('Use lowercase module names.');
+			
 		$this->name = $name;
+		$this->routeName = $name;
+		$this->onConstruct();
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -46,6 +52,11 @@ class Module {
 		$this->mainPanel->render();
 	}
 	
+	/**
+	 * Adds a reference to a .js file
+	 * @param $routeName the name of a static route, as e.g. defined in routes.php
+	 * @param $path the name of your .js file
+	 */
 	public function addJsRouteReference($routeName, $path) {
 		$this->jsRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
 	}
@@ -54,6 +65,11 @@ class Module {
 		return $this->jsRouteReferences;
 	}
 	
+	/**
+	 * Adds a reference to a .css file
+	 * @param $routeName the name of a static route, as e.g. defined in routes.php
+	 * @param $path the name of your .css file
+	 */
 	public function addCssRouteReference($routeName, $path) {
 		$this->cssRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
 	}
@@ -62,6 +78,9 @@ class Module {
 		return $this->cssRouteReferences;
 	}
 	
+	/**
+	 * @return the route to this module.
+	 */
 	public function getRoute() {
 		$route = $this->getRouteName();
 		$module = $this;
@@ -70,15 +89,25 @@ class Module {
 			$route = $module->getRouteName().'/'.$route;
 		}
 		
-		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 0)
+		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 1)
 			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
 		
 		return PROJECT_ROOTURI.'/'.$route;
 	}
 	
+	/**
+	 * Called as soon as the module is constructed.
+	 * Override this callback if you want to add additional functionality to the
+	 * constructor, without having to override it (-> you don't need to copy all
+	 * the parameters).
+	 */
+	public function onConstruct() {
+		// callback
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getRouteName() {
-		return ($this->routeName) ? $this->routeName : $this->name;
+		return $this->routeName;
 	}
 	
 	public function setRouteName($routeName) {
@@ -95,6 +124,14 @@ class Module {
 	
 	public function setParent(Module $parentModule) {
 		$this->parent = $parentModule;
+	}
+	
+	public function getMetaTags() {
+		return $this->metaTags;
+	}
+	
+	public function setMetaTag($key, $value) {
+		$this->metaTags[$key] = $value;
 	}
 }
 

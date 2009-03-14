@@ -17,6 +17,7 @@ abstract class System {
 				return "\r\n";
 			default:
 				return "\n";
+				break;
 		}
 	}
 }

@@ -43,8 +43,8 @@ class DB_Container {
 		$query = 'SELECT '.(isset($options['properties'])?$options['properties']:'*').' FROM '.$this->table;
 		if (isset($options['conditions'])) {
 			$conditions = array();
-			foreach($options['conditions'] as $condition) {
-				if(is_object($condition[1])) {
+			foreach ($options['conditions'] as $condition) {
+				if (is_object($condition[1])) {
 					$conditionValue = $condition[1]->getPK();
 				}
 				else {

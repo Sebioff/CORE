@@ -1,10 +1,12 @@
 <?php
 
+/**
+ * Provides functions for common text manipulation tasks.
+ */
 abstract class Text {
-	public static function underscoreToCamelCase($string)
-    {
-      $camelCase=ucwords(strtr(trim($string), '_', ' '));
-      $camelCase[0]=strtolower($camelCase[0]);
+	public static function underscoreToCamelCase($string) {
+      $camelCase = ucwords(strtr(trim($string), '_', ' '));
+      $camelCase[0] = Text::toLowerCase($camelCase[0]);
       return str_replace(' ', '', $camelCase);
     }
     
@@ -14,6 +16,10 @@ abstract class Text {
 	
 	public static function escapeHTML($string) {
 		return htmlspecialchars($string, ENT_COMPAT, 'UTF-8');
+	}
+	
+	public static function toLowerCase($string) {
+		return mb_strtolower($string, 'UTF-8');
 	}
 }
 

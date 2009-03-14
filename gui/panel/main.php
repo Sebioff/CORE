@@ -35,6 +35,10 @@ class GUI_Panel_Main extends GUI_Panel {
 	public function getCssRouteReferences() {
 		return $this->module->getCssRouteReferences();
 	}
+	
+	public function getMetaTags() {
+		return $this->module->getMetaTags();
+	}
 }
 
 ?>

@@ -20,9 +20,15 @@ abstract class GUI_Control extends GUI_Panel {
 		return false;
 	}
 	
+	public function render() {
+		ob_start();
+		require $this->template;
+		return ob_get_clean();
+	}
+	
 	// OVERRIDES ---------------------------------------------------------------
 	public function display() {
-		require $this->template;
+		echo $this->render();
 	}
 	
 	protected function validate() {

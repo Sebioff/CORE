@@ -102,9 +102,7 @@ class App {
 	 */
 	public function __call($name, $params) {
 		if (preg_match('/^get(.*)Module$/', $name, $matches)) {
-			$module = $this->getModule(ucfirst($matches[1]));
-			if (!$module)
-				$module = $this->getModule(strtolower($matches[1]));
+			$module = $this->getModule(Text::camelCaseToUnderscore($matches[1]));
 			return $module;
 		}
 		else
@@ -122,6 +120,7 @@ class App {
 		$extensions = array('mbstring', 'gd', 'mysql');
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			$extensions[] = 'tidy';
+
 		foreach( $extensions as $extension)
 			if (!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
