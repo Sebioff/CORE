@@ -21,6 +21,10 @@ abstract class Text {
 	public static function toLowerCase($string) {
 		return mb_strtolower($string, 'UTF-8');
 	}
+	
+	public static function length($string) {
+		return mb_strlen($string, 'UTF-8');
+	}
 }
 
 ?>

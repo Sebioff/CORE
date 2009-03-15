@@ -16,6 +16,8 @@ class Router {
 	private function __construct() {
 		// Singleton
 		$this->addModuleRoute('core', new CoreRoutes_Core('coreroutes'));
+		$this->addStaticRoute('core_css', dirname(__FILE__).'/../../www/css');
+		$this->addStaticRoute('core_js', dirname(__FILE__).'/../../www/js');
 	}
 	
 	/**

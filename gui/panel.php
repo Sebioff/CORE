@@ -55,9 +55,14 @@ class GUI_Panel {
 			$this->$panelName->display();
 	}
 	
+	public function displayErrorsForPanel($panelName) {
+		if (array_key_exists($panelName, $this->panels))
+			$this->$panelName->displayErrors();
+	}
+	
 	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
 		if ($this->$panelName->hasErrors())
-			$additionalCSSClasses[] = 'core_common_error';
+			$additionalCSSClasses[] = 'core_common_error_label';
 		
 		echo sprintf('<label for="%s"', $this->$panelName->getID());
 		if ($additionalCSSClasses)
@@ -117,7 +122,7 @@ class GUI_Panel {
 	
 	public function displayErrors() {
 		if ($this->hasErrors())
-			echo '<span class="core_common_error">'.implode('<br />', $this->errors).'</span>';
+			echo '<div class="core_common_error_list">'.implode('<br />', $this->errors).'</div>';
 	}
 	
 	protected function generateID() {
@@ -133,8 +138,10 @@ class GUI_Panel {
 	 */
 	protected function validate() {
 		foreach ($this->panels as $panel)
-			foreach($panel->validate() as $error)
-				$this->errors[] = $panel->getTitle().': '.$error;
+			foreach($panel->validate() as $error) {
+				$errorLabel = new GUI_Control_Label('error', $panel);
+				$this->errors[] = $errorLabel->render().': '.$error;
+			}
 			
 		if ($this->hasErrors())
 			$this->addClasses('core_common_error');

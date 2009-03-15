@@ -9,7 +9,11 @@ abstract class GUI_Validator {
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function setControl(GUI_Control $control) {
 		$this->control = $control;
+		$this->onSetControl();
 	}
+	
+	// CALLBACKS ---------------------------------------------------------------
+	protected function onSetControl() {}
 }
 
 ?>

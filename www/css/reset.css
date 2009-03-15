@@ -1,5 +1,5 @@
 /*
- *  Updated:  17.07.2008 (d.m.Y)
+ *  Updated:  15.03.2009
  */
 
 body 
@@ -25,6 +25,11 @@ a
   color:inherit;
 }
 
+h1, h2, h3, h4, h5, h6
+{
+  font-weight:normal;
+}
+
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6,
 p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn,
 em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt,
@@ -34,11 +39,10 @@ tbody, tfoot, thead, tr, th, td
   margin:0;
   padding:0;
   border:0;
-  outline:0;
   font-weight:inherit;
   font-style:inherit;
-  font-size:100%;
-  line-height:100%;
+  font-size:inherit;
+  line-height:inherit;
   font-family:inherit;
   vertical-align:baseline;
 }
@@ -78,7 +82,7 @@ a img
 }
 
 .clear
-{ /* break floating elements (MUST used after a floating element) <br class="clear" /> */
+{ /* break floating elements (MUST be used after a floating element) <br class="clear" /> */
   clear:both;
   font-size:0px;
   height:0px;

@@ -12,13 +12,6 @@ class CoreRoutes_Core extends Module {
 			$this->addSubmodule(new CoreRoutes_Reset('reset'));
 		}
 	}
-
-	public function init() {
-		parent::init();
-
-		Router::get()->addStaticRoute('core_css', dirname(__FILE__).'/../../CORE/www/css');
-		Router::get()->addStaticRoute('core_js', dirname(__FILE__).'/../../CORE/www/js');
-	}
 }
 
 ?>
