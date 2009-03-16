@@ -101,7 +101,7 @@ class Router {
 	}
 	
 	/**
-	 * @return the currently active module
+	 * @return Module the currently active module
 	 */
 	public function getCurrentModule() {
 		$currentModule = $this->moduleRoutes[$this->route];

@@ -27,14 +27,18 @@ class GUI_Panel {
 		
 		$this->setTemplate(dirname(__FILE__).'/panel.tpl');
 		$this->params = new GUI_Params();
+		// TODO rename to onConstruct()? init only for when the object is actually "constructed to be used"
 		$this->init();
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
-		// FIXME this needs to be done by the mainpanel right after Module::init() (as soon as it exists)
-		if( $this->hasBeenSubmitted())
+		if ($this->hasBeenSubmitted()) {
+			// FIXME validation needs to be done by the mainpanel right after Module::init() (as soon as it exists)
 			$this->validate();
+			$this->onSubmit();
+			$this->executeCallbacks();
+		}
 			
 		if ($this->submittable) {
 			echo sprintf('<form name="%s" action="%s" method="post">', $this->name, $_SERVER['REQUEST_URI']);
@@ -149,6 +153,13 @@ class GUI_Panel {
 		return $this->errors;
 	}
 	
+	protected function executeCallbacks() {
+		foreach ($this->panels as $panel) {
+			$panel->executeCallbacks();
+		}
+	}
+	
+	// CALLBACKS ---------------------------------------------------------------
 	/**
 	 * You probably don't want to override the constructor if it's not neccessary,
 	 * right? Well, then override this function instead, please.
@@ -156,6 +167,12 @@ class GUI_Panel {
 	protected function init() {
 		// callback
 	}
+	
+	/**
+	 * Called as soon as the form has been submitted.
+	 * NOTE: you need to check for yourself if the form has errors or not.
+	 */
+	protected function onSubmit() {	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
@@ -169,7 +186,7 @@ class GUI_Panel {
 		return $this->name;
 	}
 	
-	public function setName($name) {
+	private function setName($name) {
 		$this->name = $name;
 		$this->generateID();
 	}
@@ -186,6 +203,9 @@ class GUI_Panel {
 		return $this->ID;
 	}
 	
+	/**
+	 * @return GUI_Panel
+	 */
 	public function getParent() {
 		return $this->parent;
 	}

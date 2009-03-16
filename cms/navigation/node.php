@@ -22,11 +22,14 @@ class CMS_Navigation_Node {
 		$this->title = $title;
 	}
 	
+	/**
+	 * @return Module
+	 */
 	public function getModule() {
 		return $this->module;
 	}
 	
-	public function setModule($module) {
+	public function setModule(Module $module) {
 		$this->module = $module;
 	}
 }

@@ -87,7 +87,7 @@ class App {
 	/**
 	 * Returns a registered module
 	 * @param $name_ the name of the module
-	 * @return the module or null if it doesn't exist
+	 * @return Module the module or null if it doesn't exist
 	 */
 	public function getModule($name) {
 		if (!isset($this->modules[$name]))

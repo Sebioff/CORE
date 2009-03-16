@@ -18,7 +18,7 @@ class DB_Container {
 
 	// CUSTOM METHODS ----------------------------------------------------------
 	/**
-	 * @return returns only the first fitting record (or null if there is none)
+	 * @return DB_Record returns only the first fitting record (or null if there is none)
 	 */
 	public function selectFirst(array $options) {
 		$options['limit'] = 1;

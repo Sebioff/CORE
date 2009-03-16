@@ -34,6 +34,9 @@ class Module {
 		$submodule->setParent($this);
 	}
 	
+	/**
+	 * @return Module
+	 */
 	public function getSubmodule($moduleRouteName) {
 		if (isset($this->submodules[$moduleRouteName]))
 			return $this->submodules[$moduleRouteName];
@@ -41,6 +44,9 @@ class Module {
 			return null;
 	}
 	
+	/**
+	 * @return Module
+	 */
 	public function getSubmoduleByName($moduleName) {
 		foreach ($this->submodules as $submodule)
 			if ($submodule->getName() == $moduleName)
@@ -118,6 +124,9 @@ class Module {
 		return $this->name;
 	}
 	
+	/**
+	 * @return Module
+	 */
 	public function getParent() {
 		return $this->parent;
 	}

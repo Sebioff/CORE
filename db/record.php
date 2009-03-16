@@ -9,6 +9,9 @@ class DB_Record {
 		$this->container = $container;
 	}
 	
+	/**
+	 * @return DB_Container
+	 */
 	public function getContainer() {
 		return $this->container;
 	}
