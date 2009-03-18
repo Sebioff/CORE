@@ -16,6 +16,12 @@ class Language_Scriptlet {
 	 * @return boolean
 	 */
 	public function init() {
+		if(defined('LANGUAGES')) {
+			$languages=array();
+			foreach(explode(',', constant('LANGUAGES')) as $language)
+			  $languages[]=trim($language);
+		  $this->setAvailableLanguages($languages);
+		}
 		if (count($this->getAvailableLanguages()) == 0)
 			$this->setAvailableLanguages(array('de'));
 		if (!$this->defaultLanguage)

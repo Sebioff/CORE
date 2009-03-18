@@ -1,0 +1,17 @@
+#
+#  Test Tranlations
+#
+
+---
+
+submit:
+    de: Absenden
+    en: Submit
+
+reset:
+    de: Zurücksetzen
+    en: Reset
+
+back:
+    de: Zurück
+    en: Back

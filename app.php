@@ -57,6 +57,11 @@ class App {
 		// TODO: make use of language scriptlet configurable in project
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
+		// load framework translations
+    I18N::get()->loadFilesFromFolder(dirname(__FILE__).'/translations', 'core');
+    // load project translations
+    I18N::get()->loadFilesFromFolder(PROJECT_PATH.'/translations', PROJECT_NAME);
+		
 		// initialize router
 		Router::get()->init();
 

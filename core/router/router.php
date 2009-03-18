@@ -106,7 +106,7 @@ class Router {
 	public function getCurrentModule() {
 		$currentModule = $this->moduleRoutes[$this->route];
 		
-		$module = $this->params[0];
+		$module = isset($this->params[0])?$this->params[0]:null;
 		while (isset($module['submodule'][0]['module'])) {
 			$currentModule = $currentModule->getSubmodule($module['submodule'][0]['module']);
 			$module = $module['submodule'];
