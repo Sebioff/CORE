@@ -7,6 +7,7 @@ class GUI_Control_PasswordBox extends GUI_Control {
 
 		$this->setTemplate(dirname(__FILE__).'/passwordbox.tpl');
 		$this->addClasses('core_gui_passwordbox');
+		$this->addValidator(new GUI_Validator_MinLength(4));
 	}
 }
 
