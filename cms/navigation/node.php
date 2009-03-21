@@ -10,7 +10,11 @@ class CMS_Navigation_Node {
 	}
 	
 	public function getLink() {
-		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getRoute());
+		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getUrl());
+	}
+	
+	public function isActive() {
+		return (Router::get()->getCurrentModule() == $this->getModule());
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

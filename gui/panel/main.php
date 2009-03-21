@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Delegates unknown methods to the currently active module.
+ */
 class GUI_Panel_Main extends GUI_Panel {
 	private $module = null;
 	private $pageTitle = '';
@@ -28,16 +31,11 @@ class GUI_Panel_Main extends GUI_Panel {
 		return $this->pageTitle;
 	}
 	
-	public function getJsRouteReferences() {
-		return $this->module->getJsRouteReferences();
-	}
-	
-	public function getCssRouteReferences() {
-		return $this->module->getCssRouteReferences();
-	}
-	
-	public function getMetaTags() {
-		return $this->module->getMetaTags();
+	/**
+	 * Delegate unknown functions to the currently active module.
+	 */
+	public function __call($name, $params) {
+		return call_user_func_array(array($this->module, $name), $params);
 	}
 }
 

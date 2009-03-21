@@ -50,7 +50,7 @@ class I18N {
 			$translationFound=false;
 
 		if(!$translationFound)
-			throw new Core_Exception('Missing translation key for: \''.$key.'\' language: '.$language);
+			throw new Core_Exception('Missing translation key for: \''.$key.'\'; language: '.$language);
 	}
 
 	/**

@@ -4,17 +4,22 @@
 		<title><?= $this->getPageTitle() ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="imagetoolbar" content="no" />
-		<? foreach($this->getMetaTags() as $key => $value): ?>
+		<? foreach ($this->getMetaTags() as $key => $value): ?>
 			<meta http-equiv="<?= $key ?>" content="<?= $value ?>" />
 		<? endforeach ?>
-		<? foreach($this->getCssRouteReferences() as $cssRoute): ?>
+		<? foreach ($this->getCssRouteReferences() as $cssRoute): ?>
 			<link rel="stylesheet" type="text/css" href="<?= $cssRoute ?>" /> 
 		<? endforeach ?>
-		<? foreach($this->getJsRouteReferences() as $jsRoute): ?>
+		<? foreach ($this->getJsRouteReferences() as $jsRoute): ?>
 			<script type="text/javascript" src="<?= $jsRoute ?>"></script>
 		<? endforeach ?>
 	</head>
 	<body>
 		<? $this->display() ?>
+		<? if ($jsAfterContent = $this->getJsAfterContent()): ?>
+			<script type="text/javascript">
+				<?= $jsAfterContent ?>
+			</script>
+		<? endif ?>
 	</body>
 </html>

@@ -31,10 +31,15 @@ abstract class GUI_Control extends GUI_Panel {
 		echo $this->render();
 	}
 	
+	public function __toString() {
+		return $this->getValue();
+	}
+	
 	protected function validate() {
 		foreach ($this->validators as $validator) {
 			if (!$validator->isValid()) {
 				$this->errors[] = $validator->getError();
+				break;
 			}
 		}
 		

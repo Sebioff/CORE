@@ -38,6 +38,9 @@ class GUI_Panel {
 			$this->validate();
 			$this->onSubmit();
 			$this->executeCallbacks();
+			
+			if ($this->hasErrors())
+				$this->addClasses('core_common_error');
 		}
 			
 		if ($this->submittable) {
@@ -55,16 +58,23 @@ class GUI_Panel {
 	}
 	
 	public function displayPanel($panelName) {
-		if (array_key_exists($panelName, $this->panels))
+		if ($this->hasPanel($panelName))
 			$this->$panelName->display();
+		else
+			IO_Log::get()->warning('Tried to display non-existant panel: '.$panelName);
 	}
 	
 	public function displayErrorsForPanel($panelName) {
-		if (array_key_exists($panelName, $this->panels))
+		if ($this->hasPanel($panelName))
 			$this->$panelName->displayErrors();
 	}
 	
 	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
+		if (!$this->hasPanel($panelName)) {
+			IO_Log::get()->warning('Tried to display label for non-existant panel: '.$panelName);
+			return;
+		}
+
 		if ($this->$panelName->hasErrors())
 			$additionalCSSClasses[] = 'core_common_error_label';
 		
@@ -142,15 +152,25 @@ class GUI_Panel {
 	 */
 	protected function validate() {
 		foreach ($this->panels as $panel)
-			foreach($panel->validate() as $error) {
-				$errorLabel = new GUI_Control_Label('error', $panel);
-				$this->errors[] = $errorLabel->render().': '.$error;
-			}
+			foreach($panel->validate() as $error)
+				$this->addError($error, $panel);
 			
-		if ($this->hasErrors())
-			$this->addClasses('core_common_error');
-		
 		return $this->errors;
+	}
+	
+	/**
+	 * Adds a custom error.
+	 * @param $message the error message to display
+	 * @param $panel the panel this error belongs to
+	 */
+	public function addError($message, GUI_Panel $panel = null) {
+		if ($panel) {
+			$errorLabel = new GUI_Control_Label('error', $panel);
+			$this->errors[] = $errorLabel->render().': '.$message;
+			$panel->addClasses('core_common_error');
+		}
+		else
+			$this->errors[] = $message;
 	}
 	
 	protected function executeCallbacks() {
@@ -230,6 +250,10 @@ class GUI_Panel {
 	
 	public function hasErrors() {
 		return (count($this->errors) > 0);
+	}
+	
+	protected function hasPanel($panelName) {
+		return array_key_exists($panelName, $this->panels);
 	}
 }
 

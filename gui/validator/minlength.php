@@ -8,10 +8,6 @@ class GUI_Validator_MinLength extends GUI_Validator {
 	}
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
-	public function onSetControl() {
-		$this->control->setAttribute('minlength', $this->minLength);
-	}
-	
 	public function isValid() {
 		return (Text::length($this->control->getValue()) >= $this->minLength);
 	}

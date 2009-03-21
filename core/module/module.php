@@ -12,6 +12,7 @@ class Module {
 	private $metaTags = array();
 	private $submodules = array();
 	private $parent = null;
+	private $jsAfterContent = '';
 	
 	public function __construct($name) {
 		if ($name != Text::toLowerCase($name))
@@ -72,6 +73,17 @@ class Module {
 	}
 	
 	/**
+	 * Adds JavaScript to the end of the page.
+	 */
+	public function addJsAfterContent($js) {
+		$this->jsAfterContent .= $js;
+	}
+	
+	public function getJsAfterContent() {
+		return $this->jsAfterContent;
+	}
+	
+	/**
 	 * Adds a reference to a .css file
 	 * @param $routeName the name of a static route, as e.g. defined in routes.php
 	 * @param $path the name of your .css file
@@ -85,9 +97,9 @@ class Module {
 	}
 	
 	/**
-	 * @return the route to this module.
+	 * @return the url to this module.
 	 */
-	public function getRoute() {
+	public function getUrl() {
 		$route = $this->getRouteName();
 		$module = $this;
 		
@@ -99,6 +111,10 @@ class Module {
 			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
 		
 		return PROJECT_ROOTURI.'/'.$route;
+	}
+	
+	public function jsRedirect($url, $timeOffset = 0) {
+		$this->addJsAfterContent(sprintf('setTimeout(function() {window.location=\'%s\';}, %d);', $url, $timeOffset));
 	}
 	
 	/**

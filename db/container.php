@@ -44,13 +44,13 @@ class DB_Container {
 		if (isset($options['conditions'])) {
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {
-				if (is_object($condition[1])) {
+				if (is_object($condition[1]) && $condition[1] instanceof DB_Record) {
 					$conditionValue = $condition[1]->getPK();
 				}
 				else {
 					$conditionValue = $condition[1];
 				}
-				$conditions[] = str_replace('?', mysql_real_escape_string($conditionValue), $condition[0]);
+				$conditions[] = str_replace('?', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0]);
 			}
 			$conditionSQL = implode(') AND (', $conditions);
 			$query .= ' WHERE ('.$conditionSQL.')';
@@ -93,15 +93,15 @@ class DB_Container {
 		$values = array();
 		foreach ($record->getAllProperties() as $property => $value) {
 			$properties[] = Text::camelCaseToUnderscore($property);
-			if (is_object($value))
+			if (is_object($value) && $value instanceof DB_Record)
 				$value = $value->getPK();
 			$values[] = $value;
 		}
 		if (!$record->getPK()) {
 			// insert
 			$query = 'INSERT INTO '.$this->table;
-			$query .= ' ('.implode(',', $properties).') VALUES';
-			$query .= ' (\''.implode('\',\'', $values).'\')';
+			$query .= ' ('.implode(', ', $properties).') VALUES';
+			$query .= ' (\''.implode('\', \'', $values).'\')';
 			DB_Connection::get()->query($query);
 			$record->setContainer($this);
 			$databaseSchema = $this->getDatabaseSchema();

@@ -21,6 +21,9 @@ class CMS_Navigation {
 				$classes[] = 'core_navigation_node_first';
 			if ($i == $nodeCount - 1)
 				$classes[] = 'core_navigation_node_last';
+			if ($node->isActive()) {
+				$classes[] = 'core_navigation_node_active';
+			}
 			$result .= '<li class="'.implode(' ', $classes).'">';
 			$result .= $node->getLink()->render();
 			$result .= '</li>';

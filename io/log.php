@@ -17,7 +17,7 @@ class IO_Log {
 	
 	/**
 	 * Returns singleton instance of this class
-	 * @return reference IO_Log
+	 * @return IO_Log
 	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
@@ -28,7 +28,6 @@ class IO_Log {
 	 * Write a line to Errorlog
 	 * @param $msg Errormessage
 	 * @param $line Optional errorline
-	 * @return null
 	 */
 	public function error($msg, $line = -1) {
 		$this->log($msg, 'ERROR', $line);
@@ -38,7 +37,6 @@ class IO_Log {
 	 * Write a line to Informationlog
 	 * @param $msg Informationmessage
 	 * @param $line Optional Informationline
-	 * @return null
 	 */
 	public function info($msg, $line = -1) {
 		$this->log($msg, 'INFO', $line);
@@ -48,7 +46,6 @@ class IO_Log {
 	 * Write a Line to Warninglog
 	 * @param $msg Warningmessage
 	 * @param $line Optional Warningline
-	 * @return null
 	 */
 	public function warning($msg, $line = -1) {
 		$this->log($msg, 'WARNING', $line);
