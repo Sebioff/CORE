@@ -21,7 +21,6 @@ class App {
 	 * Needs to be called before anything else can be done.
 	 */
 	public static function boot() {
-		session_start();
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
 		header('Content-type: text/html; charset=utf-8');
@@ -30,6 +29,7 @@ class App {
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
+		session_start();
 		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 
