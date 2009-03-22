@@ -132,14 +132,18 @@ class DB_Container {
 	private function loadDatabaseSchema() {
 		if($this->databaseSchema = $GLOBALS['memcache']->get('SCHEMA_'.$this->table))
 			return;
-			
-		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME FROM information_schema.key_column_usage WHERE TABLE_NAME = \''.$this->table.'\'');
+		
+		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
 		while ($keyColumn = mysql_fetch_assoc($result)) {
 			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY')
 				$this->databaseSchema['primaryKey'] = $keyColumn['COLUMN_NAME'];
-			else
-				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']] = 'foreignKey';
+			else {
+				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['type'] = 'foreignKey';
+				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedTable'] = $keyColumn['REFERENCED_TABLE_NAME'];
+				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedColumn'] = $keyColumn['REFERENCED_COLUMN_NAME'];
+			}
 		}
+
 		$GLOBALS['memcache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
 	}
 	

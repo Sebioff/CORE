@@ -39,7 +39,7 @@ class DB_Connection {
 				throw new Core_Exception('Can\'t connect to database server: '.mysql_error());
 			
 			// set active database
-			if (!mysql_select_db($this->connectionOptions['query'], $this->connection))
+			if (!mysql_select_db($this->getDatabaseName(), $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 		}
 
@@ -48,6 +48,10 @@ class DB_Connection {
 			throw new Core_Exception('MySQL Query failed: '.mysql_error());
 			
 		return $result;
+	}
+	
+	public function getDatabaseName() {
+		return $this->connectionOptions['query'];
 	}
 	
 	public static function get() {

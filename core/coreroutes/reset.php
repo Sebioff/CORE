@@ -11,6 +11,8 @@ class CoreRoutes_Reset extends Module {
 		$file=new IO_File(Core_MigrationsLoader::MIGRATION_LOG_FILE);
 		$file->delete();
 		
+		$GLOBALS['memcache']->clear();
+		
 		unset($_SESSION);
 		
 		Scriptlet::redirect(PROJECT_ROOTURI);

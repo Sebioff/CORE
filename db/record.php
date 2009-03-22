@@ -24,12 +24,24 @@ class DB_Record {
 	}
 	
 	public function __set($property, $value) {
+		if ($value == 'NULL')
+				$value = null;
 		$this->properties[$property] = $value;
 	}
 	
 	public function __get($property) {
-		if (isset($this->properties[$property]))
+		if (isset($this->properties[$property])) {
+			// handle foreign keys
+			if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
+				$databaseSchema = $this->container->getDatabaseSchema();
+				$reference = $databaseSchema['constraints'][$property];
+
+				$container = new DB_Container($reference['referencedTable']);
+				$this->properties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
+			}
+			
 			return $this->properties[$property];
+		}
 		else
 			return null;
 	}
@@ -43,6 +55,15 @@ class DB_Record {
 	 */
 	public function getAllProperties() {
 		return $this->properties;
+	}
+	
+	private function hasForeignKey($property) {
+		$databaseSchema = $this->container->getDatabaseSchema();
+
+		if (isset($databaseSchema['constraints'][$property]) && $databaseSchema['constraints'][$property]['type'] == 'foreignKey')
+			return true;
+		else
+			return false;
 	}
 }
 
