@@ -36,7 +36,6 @@ class GUI_Panel {
 		if ($this->hasBeenSubmitted()) {
 			// FIXME validation needs to be done by the mainpanel right after Module::init() (as soon as it exists)
 			$this->validate();
-			$this->onSubmit();
 			$this->executeCallbacks();
 			
 			if ($this->hasErrors())
@@ -194,12 +193,6 @@ class GUI_Panel {
 	protected function init() {
 		// callback
 	}
-	
-	/**
-	 * Called as soon as the form has been submitted.
-	 * NOTE: you need to check for yourself if the form has errors or not.
-	 */
-	protected function onSubmit() {	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
