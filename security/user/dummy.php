@@ -1,7 +1,6 @@
 <?php
 
 abstract class Security_User_Dummy {
-	public $test;
 	public $rights = array();
 	
 	public function __toString() {
