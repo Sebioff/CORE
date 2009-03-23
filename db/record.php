@@ -32,14 +32,16 @@ class DB_Record {
 	public function __get($property) {
 		if (isset($this->properties[$property])) {
 			// handle foreign keys
-			if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
+			/* Following throws an error when I register a new account:
+			 * Fatal error: Call to a member function getDatabaseSchema() on a non-object in \CORE\db\record.php on line 64
+			 */ 
+			  if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
 				$databaseSchema = $this->container->getDatabaseSchema();
 				$reference = $databaseSchema['constraints'][$property];
 
 				$container = new DB_Container($reference['referencedTable']);
 				$this->properties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
-			}
-			
+			}			
 			return $this->properties[$property];
 		}
 		else
@@ -47,7 +49,8 @@ class DB_Record {
 	}
 	
 	public function __toString() {
-		return $this->id;
+		//Return value of __toString has to be a string ;)
+		return (string)$this->id;
 	}
 	
 	/**
