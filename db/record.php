@@ -32,10 +32,7 @@ class DB_Record {
 	public function __get($property) {
 		if (isset($this->properties[$property])) {
 			// handle foreign keys
-			/* Following throws an error when I register a new account:
-			 * Fatal error: Call to a member function getDatabaseSchema() on a non-object in \CORE\db\record.php on line 64
-			 */ 
-			  if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
+			if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
 				$databaseSchema = $this->container->getDatabaseSchema();
 				$reference = $databaseSchema['constraints'][$property];
 
@@ -49,8 +46,7 @@ class DB_Record {
 	}
 	
 	public function __toString() {
-		//Return value of __toString has to be a string ;)
-		return (string)$this->id;
+		return (string)$this->getPK();
 	}
 	
 	/**
@@ -61,6 +57,8 @@ class DB_Record {
 	}
 	
 	private function hasForeignKey($property) {
+		if (!$this->container)
+			return null;
 		$databaseSchema = $this->container->getDatabaseSchema();
 
 		if (isset($databaseSchema['constraints'][$property]) && $databaseSchema['constraints'][$property]['type'] == 'foreignKey')
