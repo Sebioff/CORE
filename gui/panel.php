@@ -3,7 +3,7 @@
 class GUI_Panel {
 	public $params;
 	
-	protected $name;
+	protected $_name;
 	protected $title;
 	protected $template;
 	/** contains all the errors of this panel + subpanels (as strings) if the validation
@@ -44,7 +44,7 @@ class GUI_Panel {
 		}
 			
 		if ($this->submittable) {
-			echo sprintf('<form name="%s" action="%s" method="post">', $this->name, $_SERVER['REQUEST_URI']);
+			echo sprintf('<form name="%s" action="%s" method="post">', $this->getName(), $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		
@@ -74,7 +74,7 @@ class GUI_Panel {
 			IO_Log::get()->warning('Tried to display label for non-existant panel: '.$panelName);
 			return;
 		}
-
+		
 		if ($this->$panelName->hasErrors())
 			$additionalCSSClasses[] = 'core_common_error_label';
 		
@@ -89,7 +89,14 @@ class GUI_Panel {
 	}
 	
 	public function addPanel(GUI_Panel $panel) {
+		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
+		// quite unlikely that a panels name is equal to the name of an attribute.
+		// -> the following check could be removed then.
+		if (!$this->hasPanel($panel->getName()) && isset($this->{$panel->getName()}))
+			throw new Exception('Panel name is not allowed (already used internally): '.$panel->getName());
+		
 		$panel->setParent($this);
+		
 		$this->panels[$panel->getName()] = $panel;
 		if ($panel instanceof GUI_Control_Submitbutton) {
 			$this->submittable = true;
@@ -203,11 +210,11 @@ class GUI_Panel {
 	}
 	
 	public function getName() {
-		return $this->name;
+		return $this->_name;
 	}
 	
 	private function setName($name) {
-		$this->name = $name;
+		$this->_name = $name;
 		$this->generateID();
 	}
 	
