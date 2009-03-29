@@ -9,6 +9,10 @@ class GUI_Validator_Mail extends GUI_Validator {
 	public function getError() {
 		return 'Keine gültige EMail-Adresse';
 	}
+	
+	public function getJs() {
+		return array('email', 'true');
+	}
 }
 
 ?>

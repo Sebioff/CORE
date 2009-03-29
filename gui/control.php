@@ -48,6 +48,27 @@ abstract class GUI_Control extends GUI_Panel {
 		return $this->errors;
 	}
 	
+	protected function getJsValidators() {
+		$validators = array();
+		$messages = array();
+		foreach ($this->validators as $validator) {
+			if ($jsCode = $validator->getJs()) {
+				$validators[] = $jsCode[0].': '.$jsCode[1];
+				$messages[] = $jsCode[0].': "'.$validator->getError().'"';
+			}
+		}
+		
+		$validatorsString = '';
+		if (count($validators)) {
+			$validators[] = sprintf("messages: {%s}", implode(', ', $messages));
+			$validatorsString = sprintf('$("#%s").rules("add", {%s});', $this->getID(), implode(', ', $validators));
+		}
+		
+		$validatorsString .= parent::getJsValidators();
+		
+		return $validatorsString;
+	}
+	
 	protected function generateID() {
 		parent::generateID();
 		

@@ -4,6 +4,7 @@
  * Magic methods:
  * @method array selectByPROPERTY()
  * @method array selectByPROPERTYFirst()
+ * @method array deleteByPROPERTY()
  */
 class DB_Container {
 	private $recordClass = '';
@@ -41,27 +42,7 @@ class DB_Container {
 		$records = array();
 
 		$query = 'SELECT '.(isset($options['properties'])?$options['properties']:'*').' FROM '.$this->table;
-		if (isset($options['conditions'])) {
-			$conditions = array();
-			foreach ($options['conditions'] as $condition) {
-				if (is_object($condition[1]) && $condition[1] instanceof DB_Record) {
-					$conditionValue = $condition[1]->getPK();
-				}
-				else {
-					$conditionValue = $condition[1];
-				}
-				$conditions[] = str_replace('?', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0]);
-			}
-			$conditionSQL = implode(') AND (', $conditions);
-			$query .= ' WHERE ('.$conditionSQL.')';
-		}
-		if (isset($options['order']))
-			$query .= ' ORDER BY '.$options['order'];
-		if (isset($options['limit']))
-			$query .= ' LIMIT '.$options['limit'];
-		if (isset($options['offset']))
-			$query .= ' OFFSET '.$options['offset'];
-
+		$query .= $this->buildQueryString($options);
 		$result = DB_Connection::get()->query($query);
 
 		while ($row = mysql_fetch_assoc($result)) {
@@ -122,11 +103,53 @@ class DB_Container {
 		}
 	}
 	
-	public function delete(DB_Record $record) {
+	/**
+	 * @param $args either an options-array or a record
+	 */
+	public function delete($args) {
+		if (is_array($args))
+			$this->deleteByOptions($args);
+		else
+			$this->deleteByRecord($args);
+	}
+	
+	protected function deleteByOptions(array $options) {
+		$query = 'DELETE FROM '.$this->table;
+		$query .= $this->buildQueryString($options);
+		DB_Connection::get()->query($query);
+	}
+	
+	protected function deleteByRecord(DB_Record $record) {
 		$query = 'DELETE FROM '.$this->table.' WHERE ';
 		$databaseSchema = $this->getDatabaseSchema();
 		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 		DB_Connection::get()->query($query);
+	}
+	
+	protected function buildQueryString(array $options) {
+		$query = '';
+		if (isset($options['conditions'])) {
+			$conditions = array();
+			foreach ($options['conditions'] as $condition) {
+				if (is_object($condition[1]) && $condition[1] instanceof DB_Record) {
+					$conditionValue = $condition[1]->getPK();
+				}
+				else {
+					$conditionValue = $condition[1];
+				}
+				$conditions[] = str_replace('?', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0]);
+			}
+			$conditionSQL = implode(') AND (', $conditions);
+			$query .= ' WHERE ('.$conditionSQL.')';
+		}
+		if (isset($options['order']))
+			$query .= ' ORDER BY '.$options['order'];
+		if (isset($options['limit']))
+			$query .= ' LIMIT '.$options['limit'];
+		if (isset($options['offset']))
+			$query .= ' OFFSET '.$options['offset'];
+			
+		return $query;
 	}
 	
 	private function loadDatabaseSchema() {
@@ -157,6 +180,11 @@ class DB_Container {
 			$options = isset($params[1]) ? $params[1] : array();
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
 			return $this->select($options);
+		}
+		elseif (preg_match('/^deleteBy(.*)$/', $name, $matches)) {
+			$options = isset($params[1]) ? $params[1] : array();
+			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			return $this->delete($options);
 		}
 		else
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);

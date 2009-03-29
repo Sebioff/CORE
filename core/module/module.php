@@ -55,6 +55,10 @@ class Module {
 		return null;
 	}
 	
+	public function beforeDisplay() {
+		$this->mainPanel->beforeDisplay();
+	}
+	
 	public function display() {
 		$this->mainPanel->render();
 	}

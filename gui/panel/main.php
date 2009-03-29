@@ -14,6 +14,10 @@ class GUI_Panel_Main extends GUI_Panel {
 		$this->setTemplate(dirname(__FILE__).'/main.tpl');
 	}
 	
+	public function beforeDisplay() {
+		$this->module->contentPanel->beforeDisplay();
+	}	
+	
 	public function displayPage() {
 		$this->module->contentPanel->display();
 	}

@@ -43,7 +43,7 @@ class GUI_Panel {
 		}
 			
 		if ($this->submittable) {
-			echo sprintf('<form name="%s" action="%s" method="post">', $this->getName(), $_SERVER['REQUEST_URI']);
+			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getName(), $this->getName(), $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		
@@ -164,6 +164,15 @@ class GUI_Panel {
 		return $this->errors;
 	}
 	
+	protected function getJsValidators() {
+		$validators = '';
+		
+		foreach ($this->panels as $panel)
+			$validators .= $panel->getJsValidators();
+			
+		return $validators;
+	}
+	
 	/**
 	 * Adds a custom error.
 	 * @param $message the error message to display
@@ -194,6 +203,17 @@ class GUI_Panel {
 		// callback
 	}
 	
+	public function beforeDisplay() {
+		if ($this->submittable) {
+			if ($validators = $this->getJsValidators()) {
+				$module = Router::get()->getCurrentModule();
+				$module->addJsRouteReference('core_js', 'jquery/jquery.js');
+				$module->addJsRouteReference('core_js', 'jquery/jquery.validate.js');
+				$module->addJsAfterContent(sprintf('$().ready(function() {$("#%s").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\""}); %s});', $this->getID(), $validators));
+			}
+		}
+	}
+
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
 		if (array_key_exists($panelName, $this->panels))

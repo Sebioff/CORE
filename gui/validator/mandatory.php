@@ -9,6 +9,10 @@ class GUI_Validator_Mandatory extends GUI_Validator {
 	public function getError() {
 		return 'Darf nicht leer sein';
 	}
+	
+	public function getJs() {
+		return array('required', 'true');
+	}
 }
 
 ?>

@@ -19,6 +19,10 @@ class GUI_Validator_MaxLength extends GUI_Validator {
 	public function getError() {
 		return 'Darf nicht länger als '.$this->maxLength.' Zeichen sein';
 	}
+	
+	public function getJs() {
+		return array('maxlength', $this->maxLength);
+	}
 }
 
 ?>

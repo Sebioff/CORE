@@ -15,6 +15,10 @@ class GUI_Validator_MinLength extends GUI_Validator {
 	public function getError() {
 		return 'Muss mindestens '.$this->minLength.' Zeichen lang sein';
 	}
+	
+	public function getJs() {
+		return array('minlength', $this->minLength);
+	}
 }
 
 ?>

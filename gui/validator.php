@@ -6,6 +6,8 @@ abstract class GUI_Validator {
 	public abstract function isValid();
 	public abstract function getError();
 	
+	public function getJs() {}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function setControl(GUI_Control $control) {
 		$this->control = $control;
