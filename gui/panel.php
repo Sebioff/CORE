@@ -7,7 +7,7 @@ class GUI_Panel {
 	protected $title;
 	protected $template;
 	/** contains all the errors of this panel + subpanels (as strings) if the validation
-	 *  of one of these panel failed */
+	  * of one of these panel failed */
 	protected $errors = array();
 	
 	private $attributes = array();
@@ -43,7 +43,7 @@ class GUI_Panel {
 		}
 			
 		if ($this->submittable) {
-			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getName(), $this->getName(), $_SERVER['REQUEST_URI']);
+			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
 			echo "\n";
 		}
 		
@@ -204,6 +204,9 @@ class GUI_Panel {
 	}
 	
 	public function beforeDisplay() {
+		foreach ($this->panels as $panel)
+			$panel->beforeDisplay();
+
 		if ($this->submittable) {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();

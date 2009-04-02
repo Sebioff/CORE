@@ -76,6 +76,13 @@ abstract class GUI_Control extends GUI_Panel {
 			$this->value = $_POST[$this->getID()];
 	}
 	
+	/**
+	 * Sets the focus on this control.
+	 */
+	public function setFocus() {
+		Router::get()->getCurrentModule()->addJsAfterContent(sprintf('$("#%s").focus();', $this->getID()));
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getValue() {
 		return $this->value;

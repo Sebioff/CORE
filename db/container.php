@@ -94,7 +94,10 @@ class DB_Container {
 			$propertiesCount = count($properties);
 			$updates = array();
 			for ($i = 0; $i < $propertiesCount; $i++) {
-				$updates[] = $properties[$i].' = \''.$values[$i].'\'';
+				if ($values[$i] === null)
+					$updates[] = $properties[$i].' = NULL';
+				else
+					$updates[] = $properties[$i].' = \''.$values[$i].'\'';
 			}
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
