@@ -69,7 +69,7 @@ class Module {
 	 * @param $path the name of your .js file
 	 */
 	public function addJsRouteReference($routeName, $path) {
-		$this->jsRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
+		$this->jsRouteReferences[$routeName.$path] = Router::get()->getStaticRoute($routeName, $path);
 	}
 	
 	public function getJsRouteReferences() {
@@ -93,7 +93,7 @@ class Module {
 	 * @param $path the name of your .css file
 	 */
 	public function addCssRouteReference($routeName, $path) {
-		$this->cssRouteReferences[] = Router::get()->getStaticRoute($routeName, $path);
+		$this->cssRouteReferences[$routeName.$path] = Router::get()->getStaticRoute($routeName, $path);
 	}
 	
 	public function getCssRouteReferences() {

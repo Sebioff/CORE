@@ -83,7 +83,9 @@ class Router {
 			
 		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
-		
+	}
+	
+	public function runCurrentModule() {
 		$module = $this->getCurrentModule();
 		$module->init();
 		$module->beforeDisplay();

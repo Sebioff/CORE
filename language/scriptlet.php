@@ -11,6 +11,8 @@ class Language_Scriptlet {
 		// Singleton
 	}
 	
+	// CUSTOM METHODS ----------------------------------------------------------
+	
 	/**
 	 * sets default params of the language module
 	 * @return boolean
@@ -30,6 +32,31 @@ class Language_Scriptlet {
 		return $this->availableLanguages;
 	}
 	
+	/**
+	 * Reloads the current route with prepended default language identifier
+	 */
+	public function switchToDefaultLanguage() {
+		$this->switchLanguage($this->defaultLanguage);
+	}
+	
+	/**
+	 * Reloads the current route for a given language
+	 */
+	public function switchLanguage($language) {
+		$this->setCurrentLanguage($language);
+		$redirectUrl = implode('/', Router::get()->getRequestParams());
+		$url = sprintf('%s/%s/%s', PROJECT_ROOTURI, $this->defaultLanguage, $redirectUrl);
+		Scriptlet::redirect($url);
+	}
+	
+	/**
+	 * @return true if the given string is a valid language identifier, false otherwhise
+	 */
+	public function isLanguageIdentifier($string) {
+		return in_array($string, $this->availableLanguages);
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
 	public function setDefaultLanguage($language) {
 		$this->defaultLanguage = $language;
 	}
@@ -47,22 +74,6 @@ class Language_Scriptlet {
 		}
 		else
 			throw new Core_Exception('The language you want to switch to doesn\'t exist: '.$language);
-	}
-	
-	/**
-	 * Reloads the current route with prepended language identifier
-	 */
-	public function switchToDefaultLanguage() {
-		$redirectUrl = implode('/', Router::get()->getRequestParams());
-		$url = sprintf('%s/%s/%s', PROJECT_ROOTURI, $this->defaultLanguage, $redirectUrl);
-		Scriptlet::redirect($url);
-	}
-	
-	/**
-	 * @return true if the given string is a valid language identifier, false otherwhise
-	 */
-	public function isLanguageIdentifier($string) {
-		return in_array($string, $this->availableLanguages);
 	}
 	
 	public static function get() {

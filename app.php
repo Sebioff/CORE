@@ -1,6 +1,7 @@
 <?php
 
-require_once 'core/memorycache.php'; // can't be autoloaded since the autoloader uses this class
+require_once 'core/cache/cache.php'; // can't be autoloaded since the cache (see below) uses this class
+require_once 'core/cache/global/session.php'; // can't be autoloaded since the autoloader uses this class
 
 /**
  * Magic methods:
@@ -25,7 +26,7 @@ class App {
 		error_reporting(E_ALL|E_STRICT);
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
-		$GLOBALS['memcache'] = new Core_MemoryCache();
+		$GLOBALS['cache'] = new Cache_Global_Session();
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
@@ -34,7 +35,7 @@ class App {
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 
 		// first boot
-		if (!$GLOBALS['memcache']->get('CORE_booted')) {
+		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			self::systemCheck();
 		}
 		
@@ -43,11 +44,9 @@ class App {
 			exit;
 		}
 		
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+		// load configuration files
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			require_once PROJECT_PATH.'/config/environments/config.development.php';
-			// FIXME don't load migrations if /core/reset is called!
-			Core_MigrationsLoader::load();
-		}
 		else
 			require_once PROJECT_PATH.'/config/environments/config.live.php';
 		
@@ -56,6 +55,7 @@ class App {
 		
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
+		// TODO this is wrong. translations should only be loaded if needed; for example like the autoloader does it
 		// load framework translations
 		I18N::get()->loadFilesFromFolder(dirname(__FILE__).'/translations', 'core');
 		// load project translations
@@ -63,11 +63,19 @@ class App {
 		
 		// initialize router
 		Router::get()->init();
+		
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+			// always check for changed migrations on development (except when resetting)
+			if (!(Router::get()->getCurrentModule() instanceof CoreRoutes_Reset))
+				Core_MigrationsLoader::load();
+		}
+		
+		Router::get()->runCurrentModule();
 
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			HTMLTidy::tidy();
 			
-		$GLOBALS['memcache']->set('CORE_booted', true);
+		$GLOBALS['cache']->set('CORE_booted', true);
 	}
 
 	public static function getPathFromUnderscore($filename_) {
@@ -146,7 +154,7 @@ class App_Autoloader {
 		$path = null;
 		
 		// is path cached?
-		if (($path = $GLOBALS['memcache']->get($className)))
+		if (($path = $GLOBALS['cache']->get($className)))
 			if (file_exists($path))
 				require_once $path;
 				
@@ -222,7 +230,7 @@ class App_Autoloader {
 		if (file_exists($path)) {
 			require_once $path;
 			if (class_exists($className, false)) {
-				$GLOBALS['memcache']->set($className, $path);
+				$GLOBALS['cache']->set($className, $path);
 				return true;
 			}
 		}

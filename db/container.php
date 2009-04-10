@@ -156,7 +156,7 @@ class DB_Container {
 	}
 	
 	private function loadDatabaseSchema() {
-		if($this->databaseSchema = $GLOBALS['memcache']->get('SCHEMA_'.$this->table))
+		if($this->databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table))
 			return;
 		
 		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
@@ -170,7 +170,7 @@ class DB_Container {
 			}
 		}
 
-		$GLOBALS['memcache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
+		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
 	}
 	
 	public function __call($name, $params) {
