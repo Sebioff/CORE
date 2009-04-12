@@ -4,14 +4,16 @@ class GUI_Control_SubmitButton extends GUI_Control {
 	private $callbacks = array();
 	
 	// CONSTRUCTORS ------------------------------------------------------------
-	public function __construct($name, $caption = '', $title = '') {
-		parent::__construct($name, $caption, $title);
+	public function __construct($name, $caption = '') {
+		parent::__construct($name, $caption, $caption);
 		
 		$this->setTemplate(dirname(__FILE__).'/submitbutton.tpl');
 		$this->addClasses('core_gui_submitbutton');
 		
 		$trace = debug_backtrace();
-		$callingObject = $trace[1]['object'];
+		$i = 1;
+		while (($callingObject = $trace[$i]['object']) == $this)
+			$i++;
 		$callbackName = 'on'.ucfirst(Text::underscoreToCamelCase($this->getName()));
 		if (method_exists($callingObject, $callbackName))
 			$this->addCallback($callingObject, $callbackName);
