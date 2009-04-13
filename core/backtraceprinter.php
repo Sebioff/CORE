@@ -8,7 +8,9 @@ class Core_BacktracePrinter {
 	 * @param $errorType a custom error type, useful to categorize errors.
 	 */
 	public static function printBacktrace(Array $backtrace, $customMessage = '', $errorType = '') {
-		ob_end_clean();
+		if (ob_get_level() > 0)
+			ob_end_clean();
+			
 		require_once('backtraceprinter.tpl');
 		exit;
 	}

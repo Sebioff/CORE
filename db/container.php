@@ -5,6 +5,7 @@
  * @method array selectByPROPERTY()
  * @method array selectByPROPERTYFirst()
  * @method array deleteByPROPERTY()
+ * @method array countByPROPERTY()
  */
 class DB_Container {
 	private $recordClass = '';
@@ -134,13 +135,16 @@ class DB_Container {
 		if (isset($options['conditions'])) {
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {
-				if (is_object($condition[1]) && $condition[1] instanceof DB_Record) {
-					$conditionValue = $condition[1]->getPK();
+				$valueCount = count($condition);
+				for ($i = 1; $i < $valueCount; $i++) {
+					if (is_object($condition[$i]) && $condition[$i] instanceof DB_Record) {
+						$conditionValue = $condition[$i]->getPK();
+					}
+					else {
+						$conditionValue = $condition[$i];
+					}
+					$conditions[] = preg_replace('/\?/', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0], 1);
 				}
-				else {
-					$conditionValue = $condition[1];
-				}
-				$conditions[] = str_replace('?', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0]);
 			}
 			$conditionSQL = implode(') AND (', $conditions);
 			$query .= ' WHERE ('.$conditionSQL.')';
@@ -189,6 +193,11 @@ class DB_Container {
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
 			return $this->delete($options);
 		}
+		elseif (preg_match('/^countBy(.*)$/', $name, $matches)) {
+			$options = isset($params[1]) ? $params[1] : array();
+			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			return $this->count($options);
+		}
 		else
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
 	}
@@ -196,6 +205,10 @@ class DB_Container {
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getDatabaseSchema() {
 		return $this->databaseSchema;
+	}
+	
+	public function getTable() {
+		return $this->table;
 	}
 }
 

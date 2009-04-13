@@ -45,6 +45,13 @@ class DB_Record {
 			return null;
 	}
 	
+	/**
+	 * Saves the record in the container it was created from.
+	 */
+	public function save() {
+		$this->getContainer()->save($this);
+	}
+	
 	public function __toString() {
 		return (string)$this->getPK();
 	}
