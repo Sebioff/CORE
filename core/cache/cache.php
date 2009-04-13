@@ -8,7 +8,7 @@ interface Cache {
 	 * Updates the given key with the given value or inserts it into the cache
 	 * if it doesn't exist yet.
 	 */
-	public function set($key, $value);
+	public function set($key, $value, $ttl = 604800);
 	
 	/**
 	 * Returns the value associated with the given key.

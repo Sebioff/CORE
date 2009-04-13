@@ -27,12 +27,12 @@ class App {
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		$GLOBALS['cache'] = new Cache_Global_Session();
+		$backtrace = debug_backtrace();
+		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 		session_start();
-		$backtrace = debug_backtrace();
-		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 
 		// first boot
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
@@ -74,8 +74,10 @@ class App {
 
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			HTMLTidy::tidy();
-			
-		$GLOBALS['cache']->set('CORE_booted', true);
+		
+		if (!$GLOBALS['cache']->get('CORE_booted')) {
+			$GLOBALS['cache']->set('CORE_booted', true);
+		}
 	}
 
 	public static function getPathFromUnderscore($filename_) {
