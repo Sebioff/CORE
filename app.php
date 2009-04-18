@@ -155,6 +155,10 @@ class App_Autoloader {
 	public static function autoload($className) {
 		$path = null;
 		
+		// TODO as some crazy-ass optimization, we could also keep a single list
+		// of all files that have been required for each url in cache. would cut
+		// another few nanoseconds from load time.
+		
 		// is path cached?
 		if (($path = $GLOBALS['cache']->get($className)))
 			if (file_exists($path))

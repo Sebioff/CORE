@@ -33,15 +33,6 @@ class GUI_Panel {
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
-		if ($this->hasBeenSubmitted()) {
-			// FIXME validation needs to be done by the mainpanel right after Module::init() (as soon as it exists)
-			$this->validate();
-			$this->executeCallbacks();
-			
-			if ($this->hasErrors())
-				$this->addClasses('core_common_error');
-		}
-			
 		if ($this->submittable) {
 			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
 			echo "\n";
@@ -210,9 +201,16 @@ class GUI_Panel {
 		if ($this->submittable) {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();
-				$module->addJsRouteReference('core_js', 'jquery/jquery.js');
 				$module->addJsRouteReference('core_js', 'jquery/jquery.validate.js');
-				$module->addJsAfterContent(sprintf('$().ready(function() {$("#%s").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\""}); %s});', $this->getID(), $validators));
+				$module->addJsAfterContent(sprintf('$().ready(function() {$("#%s").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\"", invalidHandler: function(form, validator) {$(this).find(":input[type=\'submit\']").removeAttr("disabled");}}); %s});', $this->getID(), $validators));
+			}
+			
+			if ($this->hasBeenSubmitted()) {
+				$this->validate();
+				$this->executeCallbacks();
+				
+				if ($this->hasErrors())
+					$this->addClasses('core_common_error');
 			}
 		}
 	}
