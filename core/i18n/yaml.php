@@ -20,10 +20,10 @@ class I18N_Yaml {
 	 */
 	public function loadFilesFromFolder($folder) {
 		$translations=array();
-		foreach(IO_Utils::getFilesFromFolder($folder, $this->allowedFileExtensions) as $file) {
+		foreach (IO_Utils::getFilesFromFolder($folder, $this->allowedFileExtensions) as $file) {
 			$filename='';
-			foreach($this->allowedFileExtensions as $extension) {
-				if(!$filename || Text::length(basename($file, '.'.$extension)) < Text::length($filename))
+			foreach ($this->allowedFileExtensions as $extension) {
+				if (!$filename || Text::length(basename($file, '.'.$extension)) < Text::length($filename))
 					$filename=basename($file, '.'.$extension);
 			}
 			$translations[$filename]=I18N_Spyc::YAMLLoad($folder.'/'.$file);

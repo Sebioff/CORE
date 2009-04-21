@@ -11,6 +11,7 @@ class DB_Container {
 	private $recordClass = '';
 	private $table = '';
 	private $databaseSchema = array();
+	private $containerCache = array();
 
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
@@ -44,6 +45,9 @@ class DB_Container {
 
 		$query = 'SELECT '.(isset($options['properties'])?$options['properties']:'*').' FROM '.$this->table;
 		$query .= $this->buildQueryString($options);
+		$databaseSchema = $this->getDatabaseSchema();
+		if (isset($this->containerCache[$query]))
+			return $this->containerCache[$query];
 		$result = DB_Connection::get()->query($query);
 
 		while ($row = mysql_fetch_assoc($result)) {
@@ -55,6 +59,8 @@ class DB_Container {
 			}
 			$records[] = $record;
 		}
+		
+		$this->containerCache[$query] = $records;
 
 		return $records;
 	}
@@ -181,15 +187,17 @@ class DB_Container {
 		if ($value === null)
 			return null;
 
-		return strtr($value, array(
-			"\x00" => '\x00',
-			"\n" => '\n', 
-			"\r" => '\r', 
-			'\\' => '\\\\',
-			"'" => "\'", 
-			'"' => '\"', 
-			"\x1a" => '\x1a'
-		));
+		return strtr(
+			$value, array(
+				"\x00" => '\x00',
+				"\n" => '\n', 
+				"\r" => '\r', 
+				'\\' => '\\\\',
+				"'" => "\'", 
+				'"' => '\"', 
+				"\x1a" => '\x1a'
+			)
+		);
 	}
 	
 	public function __call($name, $params) {

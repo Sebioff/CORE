@@ -60,7 +60,7 @@ abstract class GUI_Control extends GUI_Panel {
 		
 		$validatorsString = '';
 		if (count($validators)) {
-			$validators[] = sprintf("messages: {%s}", implode(', ', $messages));
+			$validators[] = sprintf('messages: {%s}', implode(', ', $messages));
 			$validatorsString = sprintf('$("#%s").rules("add", {%s});', $this->getID(), implode(', ', $validators));
 		}
 		

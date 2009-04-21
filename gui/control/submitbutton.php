@@ -24,7 +24,7 @@ class GUI_Control_SubmitButton extends GUI_Control {
 	}
 	
 	protected function executeCallbacks() {
-		foreach($this->callbacks as $callback) {
+		foreach ($this->callbacks as $callback) {
 			$callback[0]->$callback[1]();
 		}
 	}

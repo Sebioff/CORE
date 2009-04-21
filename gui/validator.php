@@ -6,7 +6,9 @@ abstract class GUI_Validator {
 	public abstract function isValid();
 	public abstract function getError();
 	
-	public function getJs() {}
+	public function getJs() {
+		// callback
+	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function setControl(GUI_Control $control) {
@@ -15,7 +17,9 @@ abstract class GUI_Validator {
 	}
 	
 	// CALLBACKS ---------------------------------------------------------------
-	protected function onSetControl() {}
+	protected function onSetControl() {
+		// callback
+	}
 }
 
 ?>
