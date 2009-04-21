@@ -77,7 +77,7 @@ class DB_Container {
 			$properties[] = Text::camelCaseToUnderscore($property);
 			if (is_object($value) && $value instanceof DB_Record)
 				$value = $value->getPK();
-			$values[] = $value;
+			$values[] = $this->escape($value);
 		}
 		if (!$record->getPK()) {
 			// insert
@@ -143,7 +143,7 @@ class DB_Container {
 					else {
 						$conditionValue = $condition[$i];
 					}
-					$conditions[] = preg_replace('/\?/', '\''.$conditionValue.'\'', $condition[0], 1);
+					$conditions[] = preg_replace('/\?/', '\''.$this->escape($conditionValue).'\'', $condition[0], 1);
 				}
 			}
 			$conditionSQL = implode(') AND (', $conditions);
@@ -178,6 +178,9 @@ class DB_Container {
 	}
 	
 	public function escape($value) {
+		if ($value === null)
+			return null;
+
 		return strtr($value, array(
 			"\x00" => '\x00',
 			"\n" => '\n', 
