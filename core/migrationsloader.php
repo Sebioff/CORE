@@ -41,6 +41,7 @@ class Core_MigrationsLoader {
 		
 		// execute migration files if they haven't been before
 		$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolder, array('php'));
+		natsort($migrationFiles);
 		foreach ($migrationFiles as $migrationFile) {
 			$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
 			if (!count($result)) {

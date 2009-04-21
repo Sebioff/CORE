@@ -3,6 +3,7 @@
 <html>
 	<head>
 		<title>Error</title>
+		<link rel="stylesheet" type="text/css" href="<?= Router::get()->getStaticRoute('core_css', 'reset.css') ?>"/>
 		<link rel="stylesheet" type="text/css" href="<?= Router::get()->transformPathToHTMLPath(dirname(__FILE__)) ?>/www/css/backtraceprinter.css"/>
 	</head>
 	<body>

@@ -143,7 +143,7 @@ class DB_Container {
 					else {
 						$conditionValue = $condition[$i];
 					}
-					$conditions[] = preg_replace('/\?/', '\''.mysql_real_escape_string($conditionValue).'\'', $condition[0], 1);
+					$conditions[] = preg_replace('/\?/', '\''.$conditionValue.'\'', $condition[0], 1);
 				}
 			}
 			$conditionSQL = implode(') AND (', $conditions);
@@ -175,6 +175,18 @@ class DB_Container {
 		}
 
 		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
+	}
+	
+	public function escape($value) {
+		return strtr($value, array(
+			"\x00" => '\x00',
+			"\n" => '\n', 
+			"\r" => '\r', 
+			'\\' => '\\\\',
+			"'" => "\'", 
+			'"' => '\"', 
+			"\x1a" => '\x1a'
+		));
 	}
 	
 	public function __call($name, $params) {
