@@ -134,7 +134,7 @@ class DB_Container {
 		$databaseSchema = $this->getDatabaseSchema();
 		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 		DB_Connection::get()->query($query);
-	}
+	}	
 	
 	protected function buildQueryString(array $options) {
 		$query = '';
@@ -142,6 +142,7 @@ class DB_Container {
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {
 				$valueCount = count($condition);
+				$lastQM = 0;
 				for ($i = 1; $i < $valueCount; $i++) {
 					if (is_object($condition[$i]) && $condition[$i] instanceof DB_Record) {
 						$conditionValue = $condition[$i]->getPK();
@@ -149,8 +150,10 @@ class DB_Container {
 					else {
 						$conditionValue = $condition[$i];
 					}
-					$conditions[] = preg_replace('/\?/', '\''.$this->escape($conditionValue).'\'', $condition[0], 1);
+					$lastQM = strpos($condition[0], '?', $lastQM + strlen($condition[$i - 1]));
+					$condition[0] = substr_replace($condition[0], '\''.$this->escape($conditionValue).'\'', strpos($condition[0], '?', $lastQM), 1);
 				}
+				$conditions[] = $condition[0];
 			}
 			$conditionSQL = implode(') AND (', $conditions);
 			$query .= ' WHERE ('.$conditionSQL.')';
