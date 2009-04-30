@@ -19,10 +19,10 @@ class I18N {
 	public static function translate($key, $language = null) {
 		$instance = self::get();
 		$language = ($language) ? $language : Language_Scriptlet::get()->getCurrentLanguage();
-		 
+
 		if (!Language_Scriptlet::get()->isLanguageIdentifier($language))
 			throw new Core_Exception('Language to be translated to is not a valid one.');
-		 
+		
 		$parts=explode('/', $key);
 		// TODO PWO: $projectName not needed? -> then remove it
 		$projectName=Text::toLowerCase(PROJECT_NAME);

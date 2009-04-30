@@ -34,16 +34,18 @@ class DB_Container {
 
 	/**
 	 * Abstraction for MySQL's SELECT.
-	 * @param $properties
-	 * @param $condition the search condition
-	 * @param $order sorting order
-	 * @param $limit
+	 * @param $options an options-array which might contain the following elements:
+	 * $options['properties'] = the properties that should be selected
+	 * $options['conditions'] = array of conditions
+	 * $options['order'] = order
+	 * $options['limit'] = limit
+	 * $options['offset'] = offset
 	 * @return an array of records fitting to the specified search parameters
 	 */
 	public function select(array $options) {
 		$records = array();
 
-		$query = 'SELECT '.(isset($options['properties'])?$options['properties']:'*').' FROM '.$this->table;
+		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '*').' FROM '.$this->table;
 		$query .= $this->buildQueryString($options);
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($this->containerCache[$query]))
@@ -142,7 +144,7 @@ class DB_Container {
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {
 				$valueCount = count($condition);
-				$lastQM = 0;
+				$nextQuestionMark = strpos($condition[0], '?');
 				for ($i = 1; $i < $valueCount; $i++) {
 					if (is_object($condition[$i]) && $condition[$i] instanceof DB_Record) {
 						$conditionValue = $condition[$i]->getPK();
@@ -150,8 +152,8 @@ class DB_Container {
 					else {
 						$conditionValue = $condition[$i];
 					}
-					$lastQM = strpos($condition[0], '?', $lastQM + strlen($condition[$i - 1]));
-					$condition[0] = substr_replace($condition[0], '\''.$this->escape($conditionValue).'\'', strpos($condition[0], '?', $lastQM), 1);
+					$condition[0] = substr_replace($condition[0], '\''.$this->escape($conditionValue).'\'', $nextQuestionMark, 1);
+					$nextQuestionMark = strpos($condition[0], '?', $nextQuestionMark + Text::length($conditionValue));
 				}
 				$conditions[] = $condition[0];
 			}
@@ -186,6 +188,11 @@ class DB_Container {
 		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
 	}
 	
+	/**
+	 * Does just the same as mysql_real_escape_string(), but without need for an
+	 * open database connection.
+	 * @param $value the String which is to be escaped
+	 */
 	public function escape($value) {
 		if ($value === null)
 			return null;
@@ -203,22 +210,29 @@ class DB_Container {
 		);
 	}
 	
+	/**
+	 * Magic functions
+	 */
 	public function __call($name, $params) {
+		// selectByPROPERTYFirst($propertyValue, $options)
 		if (preg_match('/^selectBy(.*)First$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
 			return $this->selectFirst($options);
 		}
+		// selectByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^selectBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
 			return $this->select($options);
 		}
+		// deleteByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^deleteBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
 			return $this->delete($options);
 		}
+		// countByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^countBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
 			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
