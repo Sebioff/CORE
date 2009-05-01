@@ -153,7 +153,7 @@ class DB_Container {
 						$conditionValue = $condition[$i];
 					}
 					$condition[0] = substr_replace($condition[0], '\''.$this->escape($conditionValue).'\'', $nextQuestionMark, 1);
-					$nextQuestionMark = strpos($condition[0], '?', $nextQuestionMark + Text::length($conditionValue));
+					$nextQuestionMark = strpos($condition[0], '?', $nextQuestionMark + Text::length($conditionValue) + 1);
 				}
 				$conditions[] = $condition[0];
 			}

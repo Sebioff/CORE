@@ -45,7 +45,7 @@ class DB_Connection {
 
 		$result = mysql_query($query, $this->connection);
 		if (!$result)
-			throw new Core_Exception('MySQL Query failed: '.mysql_error());
+			throw new Core_QueryException('MySQL Query failed: '.mysql_error());
 			
 		return $result;
 	}
@@ -82,6 +82,12 @@ class DB_Connection {
 	public function rollback() {
 		$this->query('ROLLBACK');
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+class Core_QueryException extends Core_Exception {
+	
 }
 
 ?>
