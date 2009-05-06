@@ -7,8 +7,7 @@ class CMS_Navigation {
 	private $nodes = array();
 	
 	public function addModuleNode($nodeTitle, Module $module) {
-		$node = new CMS_Navigation_Node($nodeTitle, $module);
-		$this->nodes[] = $node;
+		$this->nodes[] = new CMS_Navigation_Node($nodeTitle, $module);
 	}
 	
 	public function display() {

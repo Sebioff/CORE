@@ -252,6 +252,11 @@ class GUI_Panel {
 			throw new CORE_Exception('Child panel does not exist: '.$panelName);
 	}
 	
+	public function getLinkByName($submodulename) {
+		$submodule = Router::get()->getCurrentModule()->getSubmodule($submodulename);
+		return $submodule ? $submodule->getUrl() : null;
+	}
+	
 	public function getName() {
 		return $this->_name;
 	}
