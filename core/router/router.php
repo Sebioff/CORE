@@ -87,6 +87,7 @@ class Router {
 	
 	public function runCurrentModule() {
 		$module = $this->getCurrentModule();
+		$module->beforeInit();
 		$module->init();
 		$module->beforeDisplay();
 		$module->display();

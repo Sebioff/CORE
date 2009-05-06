@@ -78,7 +78,7 @@ class GUI_Panel {
 		echo '</label>';
 	}
 	
-	public function addPanel(GUI_Panel $panel) {
+	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
 		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
 		// quite unlikely that a panels name is equal to the name of an attribute.
 		// -> the following check could be removed then.
@@ -87,7 +87,10 @@ class GUI_Panel {
 		
 		$panel->setParent($this);
 		
-		$this->panels[$panel->getName()] = $panel;
+		if (!$toBeginning)
+			$this->panels[$panel->getName()] = $panel;
+		else
+			$this->panels = array($panel->getName() => $panel) + $this->panels;
 		if ($panel instanceof GUI_Control_Submitbutton) {
 			$this->submittable = true;
 		}
@@ -100,6 +103,15 @@ class GUI_Panel {
 	public function addClasses(/* strings */) {
 		$additionalClasses = func_get_args();
 		$this->classes = array_merge($this->classes, $additionalClasses);
+	}
+	
+	/**
+	 * Removes all given css classes from this panel
+	 * @param a variable amount of classes (strings)
+	 */
+	public function removeClasses(/* strings */) {
+		$removeClasses = func_get_args();
+		$this->classes = array_diff($this->classes, $removeClasses);
 	}
 	
 	/**
@@ -186,6 +198,11 @@ class GUI_Panel {
 	}
 	
 	// CALLBACKS ---------------------------------------------------------------
+	public function beforeInit() {
+		foreach ($this->panels as $panel)
+			$panel->beforeInit();
+	}
+	
 	/**
 	 * You probably don't want to override the constructor if it's not neccessary,
 	 * right? Well, then override this function instead, please.
@@ -194,6 +211,18 @@ class GUI_Panel {
 		// callback
 	}
 	
+	/**
+	 * Executed after init and before display.
+	 * Executes validators and callbacks.
+	 * NOTE: this method operates on all added panels. If you overwrite it and
+	 * add panels in your method, you need to call parent::beforeDisplay() AFTER
+	 * adding your panels.
+	 * => Sequence of:
+	 *  - init (adding panels)
+	 *  - beforeDisplay (executing callbacks and validators)
+	 *  - display (actually displaying the panel)
+	 * needs to be kept for everything to work right!
+	 */
 	public function beforeDisplay() {
 		foreach ($this->panels as $panel)
 			$panel->beforeDisplay();

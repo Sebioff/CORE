@@ -24,8 +24,8 @@ class DB_Record {
 	}
 	
 	public function __set($property, $value) {
-		if ($value == 'NULL')
-				$value = null;
+		if ($value === 'NULL')
+			$value = null;
 		$this->properties[$property] = $value;
 	}
 	

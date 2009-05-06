@@ -24,12 +24,17 @@ class Module {
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
-	public function init() {
+	public function beforeInit() {
 		$this->addJsRouteReference('core_js', 'jquery/jquery.js');
 		$this->addJsRouteReference('core_js', 'core.js');
 		$this->contentPanel = new $this->contentPanel($this->name.'_content');
 		$this->mainPanel = new $this->mainPanel('main', $this);
 		$this->mainPanel->addClasses($this->name.'_main');
+		$this->mainPanel->beforeInit();
+	}
+	
+	public function init() {
+		
 	}
 	
 	public function addSubmodule(Module $submodule) {
