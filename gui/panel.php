@@ -33,6 +33,8 @@ class GUI_Panel {
 	
 	// CUSTOM METHODS ----------------------------------------------------------
 	public function display() {
+		$this->beforeDisplay();
+		
 		if ($this->submittable) {
 			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
 			echo "\n";
@@ -215,17 +217,17 @@ class GUI_Panel {
 	 * Executed after init and before display.
 	 * Executes validators and callbacks.
 	 * NOTE: this method operates on all added panels. If you overwrite it and
-	 * add panels in your method, you need to call parent::beforeDisplay() AFTER
+	 * add panels in your method, you need to call parent::afterInit() AFTER
 	 * adding your panels.
 	 * => Sequence of:
 	 *  - init (adding panels)
-	 *  - beforeDisplay (executing callbacks and validators)
+	 *  - afterInit (executing callbacks and validators)
 	 *  - display (actually displaying the panel)
 	 * needs to be kept for everything to work right!
 	 */
-	public function beforeDisplay() {
+	public function afterInit() {
 		foreach ($this->panels as $panel)
-			$panel->beforeDisplay();
+			$panel->afterInit();
 
 		if ($this->submittable) {
 			if ($validators = $this->getJsValidators()) {
@@ -244,17 +246,16 @@ class GUI_Panel {
 		}
 	}
 
+	protected function beforeDisplay() {
+		// overwrite
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
 		if (array_key_exists($panelName, $this->panels))
 			return $this->panels[$panelName];
 		else
 			throw new CORE_Exception('Child panel does not exist: '.$panelName);
-	}
-	
-	public function getLinkByName($submodulename) {
-		$submodule = Router::get()->getCurrentModule()->getSubmodule($submodulename);
-		return $submodule ? $submodule->getUrl() : null;
 	}
 	
 	public function getName() {

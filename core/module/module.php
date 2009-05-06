@@ -30,6 +30,7 @@ class Module {
 		$this->contentPanel = new $this->contentPanel($this->name.'_content');
 		$this->mainPanel = new $this->mainPanel('main', $this);
 		$this->mainPanel->addClasses($this->name.'_main');
+		$this->mainPanel->addPanel($this->contentPanel);
 		$this->mainPanel->beforeInit();
 	}
 	
@@ -62,8 +63,12 @@ class Module {
 		return null;
 	}
 	
-	public function beforeDisplay() {
-		$this->mainPanel->beforeDisplay();
+	public function getAllSubmodules() {
+		return $this->submodules;
+	}
+	
+	public function afterInit() {
+		$this->mainPanel->afterInit();
 	}
 	
 	public function display() {

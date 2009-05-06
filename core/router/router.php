@@ -29,16 +29,22 @@ class Router {
 	private function generateParams() {
 		$modules = -1;
 		$params = array();
+		$lastModule = null;
+		$currentModule = null;
 		foreach ($this->requestParams as $param) {
 			if (isset($this->moduleRoutes[$param])) {
 				$modules++;
-				$params[] = array('module' => $param, 'params' => array(), 'submodule' => array());
+				$lastModule = array('module' => $param, 'params' => array(), 'submodule' => array());
+				$currentModule = $this->moduleRoutes[$param];
+				$params[] = &$lastModule;
 			}
-			elseif (isset($params[$modules]) && $module = $this->moduleRoutes[$params[$modules]['module']]->getSubmodule($param)) {
-				$params[$modules]['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
+			elseif (isset($currentModule) && $module = $currentModule->getSubmodule($param)) {
+				$currentModule = $module;
+				$lastModule['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
+				$lastModule = &$lastModule['submodule'][count($lastModule['submodule']) - 1];
 			}
 			elseif (isset($params[$modules])) {
-				$params[$modules]['params'][] = $param;
+				$lastModule['params'][] = $param;
 			}
 		}
 		$this->params = $params;
@@ -89,7 +95,7 @@ class Router {
 		$module = $this->getCurrentModule();
 		$module->beforeInit();
 		$module->init();
-		$module->beforeDisplay();
+		$module->afterInit();
 		$module->display();
 	}
 	
@@ -113,7 +119,7 @@ class Router {
 		$module = isset($this->params[0])?$this->params[0]:null;
 		while (isset($module['submodule'][0]['module'])) {
 			$currentModule = $currentModule->getSubmodule($module['submodule'][0]['module']);
-			$module = $module['submodule'];
+			$module = $module['submodule'][0];
 		}
 		
 		if ($currentModule)
