@@ -72,7 +72,7 @@ class Module {
 	}
 	
 	public function display() {
-		$this->mainPanel->render();
+		$this->mainPanel->displayContent();
 	}
 	
 	/**

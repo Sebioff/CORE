@@ -32,6 +32,12 @@ class GUI_Panel {
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
+	public function render() {
+		ob_start();
+		require $this->template;
+		return ob_get_clean();
+	}
+	
 	public function display() {
 		$this->beforeDisplay();
 		
@@ -40,7 +46,7 @@ class GUI_Panel {
 			echo "\n";
 		}
 		
-		require $this->template;
+		echo $this->render();
 		
 		if ($this->submittable) {
 			$this->addPanel($hasBeenSubmittedBox = new GUI_Control_HiddenBox('hasbeensubmitted', 1));
@@ -155,6 +161,9 @@ class GUI_Panel {
 			$this->ID = $this->parent->getID().'-'.$this->getName();
 		else
 			$this->ID = $this->getName();
+			
+		foreach ($this->panels as $panel)
+			$panel->generateID();
 	}
 	
 	/**

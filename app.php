@@ -254,6 +254,7 @@ class App_Autoloader {
 function dump() {
 	Core_Dump::dump(func_get_args());
 }
+
 /**
  * For dumping objects in readable format
  */

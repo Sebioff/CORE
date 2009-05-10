@@ -13,8 +13,8 @@ class GUI_Control_SecureSubmitButton extends GUI_Control_SubmitButton {
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
-	public function beforeDisplay() {
-		parent::beforeDisplay();
+	public function init() {
+		parent::init();
 		
 		if (!isset($_SESSION[get_class($this)][$this->getName()]))
 			$_SESSION[get_class($this)][$this->getName()] = md5(time().$this->getName().$this->getValue());
@@ -23,7 +23,7 @@ class GUI_Control_SecureSubmitButton extends GUI_Control_SubmitButton {
 	
 	protected function validate() {
 		$errors = parent::validate();
-		
+
 		if (!isset($_SESSION[get_class($this)][$this->getName()]) || $_SESSION[get_class($this)][$this->getName()] != $this->token->getValue())
 			$errors[] = 'Eventuell nicht richtig per Browser versendet';
 		

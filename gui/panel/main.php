@@ -22,7 +22,7 @@ class GUI_Panel_Main extends GUI_Panel {
 		$this->module->contentPanel->display();
 	}
 	
-	public function render() {
+	public function displayContent() {
 		require dirname(__FILE__).'/page.tpl';
 	}
 	

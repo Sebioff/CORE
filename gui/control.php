@@ -20,17 +20,7 @@ abstract class GUI_Control extends GUI_Panel {
 		return false;
 	}
 	
-	public function render() {
-		ob_start();
-		require $this->template;
-		return ob_get_clean();
-	}
-	
 	// OVERRIDES ---------------------------------------------------------------
-	public function display() {
-		echo $this->render();
-	}
-	
 	public function __toString() {
 		return $this->getValue();
 	}

@@ -113,6 +113,9 @@ class DB_Container {
 			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 			DB_Connection::get()->query($query);
 		}
+		
+		// clear cache
+		$this->containerCache = array();
 	}
 	
 	/**
