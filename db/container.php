@@ -126,6 +126,9 @@ class DB_Container {
 			$this->deleteByOptions($args);
 		else
 			$this->deleteByRecord($args);
+			
+		// clear cache
+		$this->containerCache = array();
 	}
 	
 	protected function deleteByOptions(array $options) {

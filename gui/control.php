@@ -2,6 +2,7 @@
 
 abstract class GUI_Control extends GUI_Panel {
 	protected $value;
+	private $focused = false;
 	
 	/** contains all validators of this control */
 	private $validators = array();
@@ -21,6 +22,13 @@ abstract class GUI_Control extends GUI_Panel {
 	}
 	
 	// OVERRIDES ---------------------------------------------------------------
+	public function display() {
+		parent::display();
+		
+		if ($this->focused)
+			Router::get()->getCurrentModule()->addJsAfterContent(sprintf('$("#%s").focus();', $this->getID()));
+	}
+	
 	public function __toString() {
 		return $this->getValue();
 	}
@@ -70,7 +78,7 @@ abstract class GUI_Control extends GUI_Panel {
 	 * Sets the focus on this control.
 	 */
 	public function setFocus() {
-		Router::get()->getCurrentModule()->addJsAfterContent(sprintf('$("#%s").focus();', $this->getID()));
+		$this->focused = true;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
