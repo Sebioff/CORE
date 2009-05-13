@@ -76,11 +76,11 @@ class DB_Connection {
 	}
 	
 	public function commit() {
-		$this->query('COMMIT');
+		return $this->query('COMMIT');
 	}
 	
 	public function rollback() {
-		$this->query('ROLLBACK');
+		return $this->query('ROLLBACK');
 	}
 }
 

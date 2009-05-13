@@ -13,6 +13,19 @@ class Core_BacktracePrinter {
 	public static function printBacktrace(Array $backtrace, $customMessage = '', $errorType = '') {
 		if (ob_get_level() > 0)
 			ob_end_clean();
+			
+		foreach ($backtrace as &$backtraceItem) {
+			if (isset($backtraceItem['args'])) {
+				foreach ($backtraceItem['args'] as &$argument) {
+					if (is_object($argument))
+						$argument = get_class($argument);
+					elseif ($argument === null)
+						$argument = 'null';
+					else
+						$argument = '\''.$argument.'\'';
+				}
+			}
+		}
 		
 		if (Environment::getCurrentEnvironment() == Environment::LIVE && defined('ERROR_CALLBACK'))
 			call_user_func(ERROR_CALLBACK, $backtrace, $customMessage, $errorType);
