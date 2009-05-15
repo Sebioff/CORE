@@ -179,7 +179,6 @@ class App_Autoloader {
 			$parts = array_map('strtolower', $parts);
 			
 			$path = self::loadClass($className, $parts, $basePath);
-			// TODO some paths are searched twice, try for example Security_User_CoreAdmin
 			if (!$isProjectClass) {
 				if (!$path)
 					$path = self::loadClass($className, $parts, $basePath.'/'.$parts[0]);

@@ -1,0 +1,1 @@
+<input type="checkbox" name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?><?= $this->getValue() ? ' checked="checked"' : '' ?>  />

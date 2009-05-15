@@ -8,7 +8,7 @@ abstract class System {
 	const OS_LINUX = 1;
 	
 	public static function getOS() {
-		return (strpos($_ENV['OS'], 'Win') === 0) ? self::OS_WINDOWS : self::OS_LINUX;
+		return (strpos(PHP_OS, 'Win') === 0) ? self::OS_WINDOWS : self::OS_LINUX;
 	}
 	
 	public static function getNewLine() {

@@ -6,7 +6,7 @@ class GUI_Control_HiddenBox extends GUI_Control {
 		parent::__construct($name, $defaultValue);
 		
 		$this->setTemplate(dirname(__FILE__).'/hiddenbox.tpl');
-		$this->addClasses('core_gui_hiddenfield');
+		$this->addClasses('core_gui_hiddenbox');
 	}
 }
 
