@@ -115,7 +115,7 @@ class Module {
 	/**
 	 * @return the url to this module.
 	 */
-	public function getUrl() {
+	public function getUrl($params = array()) {
 		$route = $this->getRouteName();
 		$module = $this;
 		
@@ -126,7 +126,21 @@ class Module {
 		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 1)
 			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
 		
-		return PROJECT_ROOTURI.'/'.$route;
+		$completeRoute = PROJECT_ROOTURI.'/'.$route;
+		
+		foreach ($params as $param => $value) {
+			$completeRoute .= '/'.$param.'_'.$value;
+		}
+			
+		return $completeRoute;
+	}
+	
+	public function getParam($name) {
+		$params = Router::get()->getParamsForModule($this);
+		if (isset($params[$name]))
+			return $params[$name];
+		else
+			return null;
 	}
 	
 	public function jsRedirect($url, $timeOffset = 0) {

@@ -44,7 +44,8 @@ class Router {
 				$lastModule = &$lastModule['submodule'][count($lastModule['submodule']) - 1];
 			}
 			elseif (isset($params[$modules])) {
-				$lastModule['params'][] = $param;
+				$paramArray = explode('_', $param, 2);
+				$lastModule['params'][$paramArray[0]] = isset($paramArray[1]) ? $paramArray[1] : null;
 			}
 		}
 		$this->params = $params;
@@ -126,6 +127,28 @@ class Router {
 			return $currentModule;
 		else
 			throw new Core_Exception('Module doesn\'t exist.');
+	}
+	
+	public function getParamsForModule(Module $searchedModule) {
+		$module = $searchedModule;
+		$path = array($module->getRouteName());
+		while ($module = $module->getParent()) {
+			$path[] = $module->getRouteName();
+		}
+		
+		$pathItems = count($path) - 1;
+		$module = isset($this->params[0])?$this->params[0]:null;
+		while(isset($module['module'])) {
+			if ($module['module'] == $searchedModule->getRouteName()) {
+				break;
+			}
+			if (!isset($module['submodule'][0]))
+				break;
+			$module = $module['submodule'][0];
+			$pathItems--;
+		}
+		
+		return $module['params'];
 	}
 	
 	/**
