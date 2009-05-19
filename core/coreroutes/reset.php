@@ -20,6 +20,11 @@ class CoreRoutes_Reset extends Module {
 		// clear session
 		unset($_SESSION);
 		
+		Core_MigrationsLoader::load();
+		
+		if (defined('CALLBACK_AFTERRESET'))
+			call_user_func(CALLBACK_AFTERRESET);
+		
 		Scriptlet::redirect(PROJECT_ROOTURI);
 	}
 }

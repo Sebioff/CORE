@@ -27,8 +27,8 @@ class Core_BacktracePrinter {
 			}
 		}
 		
-		if (Environment::getCurrentEnvironment() == Environment::LIVE && defined('ERROR_CALLBACK'))
-			call_user_func(ERROR_CALLBACK, $backtrace, $customMessage, $errorType);
+		if (Environment::getCurrentEnvironment() == Environment::LIVE && defined('CALLBACK_ERROR'))
+			call_user_func(CALLBACK_ERROR, $backtrace, $customMessage, $errorType);
 		else
 			require_once('backtraceprinter.tpl');
 		exit;

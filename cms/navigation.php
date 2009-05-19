@@ -12,8 +12,8 @@ class CMS_Navigation {
 	 * @param $module
 	 * @return CMS_Navigation_Node the newly added navigation node
 	 */
-	public function addModuleNode($nodeTitle, Module $module) {
-		$node = new CMS_Navigation_Node($nodeTitle, $module);
+	public function addModuleNode(Module $module, $nodeTitle = '') {
+		$node = new CMS_Navigation_Node($module, $nodeTitle);
 		$this->nodes[] = $node;
 		return $node;
 	}
