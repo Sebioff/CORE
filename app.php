@@ -202,6 +202,7 @@ class App_Autoloader {
 	 */
 	private static function loadClass($className, Array $parts, $basePath) {
 		for ($i = count($parts)-1; $i >= 0; $i--) {
+			// Just_Some_Class -> just/some/class.php, just/someclass.php, ...
 			$path = $basePath;
 			for ($j = 0; $j < $i; $j++)
 				$path .= '/'.$parts[$j];
@@ -213,6 +214,7 @@ class App_Autoloader {
 				return $path;
 
 			if ($i != count($parts)-1) {
+				// Just_Some_Class -> just/class.php, some.php, ...
 				$path = $basePath;
 				for ($j = 0; $j < $i; $j++)
 					$path .= '/'.$parts[$j];
@@ -221,6 +223,19 @@ class App_Autoloader {
 					return $path;
 			}
 		}
+		
+		if (count($parts)) {
+			// Just_Some_Class -> just/some/class/class.php
+			$path = $basePath.'/'.implode('/', $parts).'/'.$parts[count($parts) - 1].'.php';
+			if (self::correctClassPath($className, $path))
+					return $path;
+			
+			// Maybe it's defined in the file of the parent class?
+			// Try searching Just_Some, Just, ... as well
+			array_pop($parts);
+			self::loadClass($className, $parts, $basePath);
+		}
+		
 		return null;
 	}
 	

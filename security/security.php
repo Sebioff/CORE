@@ -15,11 +15,23 @@ abstract class Security {
 		$this->containerUsers = $this->defineContainerUsers();
 	}
 	
-	public function addPrivilege($privilegeIdentifier, DB_Record $userGroup) {
-		$privilege = new DB_Record();
-		$privilege->privilege = $privilegeIdentifier;
-		$privilege->userGroup = $userGroup;
-		$this->getContainerPrivileges()->save($privilege);
+	public function setPrivilege($privilegeIdentifier, DB_Record $userGroup, $value = true) {
+		$options = array();
+		$options['conditions'][] = array('user_group = ?', $userGroup);
+		$options['conditions'][] = array('privilege = ?', $privilegeIdentifier);
+		if ($privilege = $this->getContainerPrivileges()->selectFirst($options)) {
+			if ($privilege->value != $value) {
+				$privilege->value = $value;
+				$privilege->save();
+			}
+		}
+		else {
+			$privilege = new DB_Record();
+			$privilege->privilege = $privilegeIdentifier;
+			$privilege->userGroup = $userGroup;
+			$privilege->value = $value;
+			$this->getContainerPrivileges()->save($privilege);
+		}
 	}
 	
 	public function addToGroup(DB_Record $user, DB_Record $userGroup) {
@@ -34,13 +46,29 @@ abstract class Security {
 	}
 	
 	public function hasPrivilege(DB_Record $user, $privilegeIdentifier) {
+		$privilegeDefined = false;
+		
 		foreach ($this->getContainerUserGroupsUsersAssoc()->selectByUser($user->getPK()) as $userGroupAssoc) {
 			foreach ($this->getContainerPrivileges()->selectByUserGroup($userGroupAssoc->userGroup) as $privilege) {
-				if ($privilege->privilege == $privilegeIdentifier)
-					return true;
+				if ($privilege->privilege == $privilegeIdentifier) {
+					if ($privilege->value == false)
+						return false;
+					$privilegeDefined = true;
+				}
 			}
 		}
 		
+		if ($privilegeDefined)
+			return true;
+		else
+			return $this->getDefaultValue($privilegeIdentifier);
+	}
+	
+	/**
+	 * Override this method if you want to have custom default values for your
+	 * privileges.
+	 */
+	protected function getDefaultValue($privilegeIdentifier) {
 		return false;
 	}
 	

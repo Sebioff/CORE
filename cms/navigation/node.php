@@ -5,7 +5,7 @@ class CMS_Navigation_Node {
 	private $module = null;
 	private $nodes = array();
 	
-	public function __construct(Module $module, $title = '') {
+	public function __construct(Module $module, $title) {
 		$this->title = $title;
 		$this->module = $module;
 	}
@@ -41,7 +41,7 @@ class CMS_Navigation_Node {
 	}
 	
 	public function getLink() {
-		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle() != '' ? $this->getTitle() : $this->module->contentPanel->getTitle(), $this->module->getUrl());
+		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getUrl());
 	}
 	
 	public function isInPath() {
