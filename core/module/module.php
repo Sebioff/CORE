@@ -65,6 +65,10 @@ class Module {
 	
 	public function getAllSubmodules() {
 		return $this->submodules;
+	}	
+
+	public function hasSubmodules() {
+		return count($this->getAllSubmodules()) > 0;
 	}
 	
 	public function afterInit() {

@@ -136,7 +136,6 @@ class Router {
 			$path[] = $module->getRouteName();
 		}
 		
-		$pathItems = count($path) - 1;
 		$module = isset($this->params[0])?$this->params[0]:null;
 		while(isset($module['module'])) {
 			if ($module['module'] == $searchedModule->getRouteName()) {
@@ -145,7 +144,6 @@ class Router {
 			if (!isset($module['submodule'][0]))
 				break;
 			$module = $module['submodule'][0];
-			$pathItems--;
 		}
 		
 		return $module['params'];
