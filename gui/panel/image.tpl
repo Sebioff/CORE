@@ -1,0 +1,1 @@
+<img src="<?= $this->getURL() ?>" <?= $this->getAttributeString() ?><?= $this->getTitle() ? ' title="'.$this->getTitle().'"' : '' ?><?= $this->getDescription() ? ' alt="'.$this->getDescription().'"' : '' ?>  />

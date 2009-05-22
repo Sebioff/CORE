@@ -1,0 +1,1 @@
+<div class="core_gui_captcha_image"><? $this->displayPanel('image') ?></div>

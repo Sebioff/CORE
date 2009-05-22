@@ -1,25 +1,18 @@
 <?php
 
-class Module {
+class Module extends Scriptlet {
 	public $contentPanel = 'GUI_Panel';
 	
 	protected $mainPanel = 'GUI_Panel_Main';
 	
-	private $name = '';
-	private $routeName = '';
 	private $jsRouteReferences = array();
 	private $cssRouteReferences = array();
 	private $metaTags = array();
 	private $submodules = array();
-	private $parent = null;
 	private $jsAfterContent = '';
 	
 	public function __construct($name) {
-		if ($name != Text::toLowerCase($name))
-			throw new Core_Exception('Use lowercase module names.');
-			
-		$this->name = $name;
-		$this->routeName = $name;
+		parent::__construct($name);
 		$this->onConstruct();
 	}
 	
@@ -27,9 +20,9 @@ class Module {
 	public function beforeInit() {
 		$this->addJsRouteReference('core_js', 'jquery/jquery.js');
 		$this->addJsRouteReference('core_js', 'core.js');
-		$this->contentPanel = new $this->contentPanel($this->name.'_content');
+		$this->contentPanel = new $this->contentPanel($this->getName().'_content');
 		$this->mainPanel = new $this->mainPanel('main', $this);
-		$this->mainPanel->addClasses($this->name.'_main');
+		$this->mainPanel->addClasses($this->getName().'_main');
 		$this->mainPanel->addPanel($this->contentPanel);
 		$this->mainPanel->beforeInit();
 	}
@@ -38,7 +31,7 @@ class Module {
 		
 	}
 	
-	public function addSubmodule(Module $submodule) {
+	public function addSubmodule(Scriptlet $submodule) {
 		$this->submodules[$submodule->getRouteName()] = $submodule;
 		$submodule->setParent($this);
 	}
@@ -116,37 +109,6 @@ class Module {
 		return $this->cssRouteReferences;
 	}
 	
-	/**
-	 * @return the url to this module.
-	 */
-	public function getUrl($params = array()) {
-		$route = $this->getRouteName();
-		$module = $this;
-		
-		while ($module = $module->getParent()) {
-			$route = $module->getRouteName().'/'.$route;
-		}
-		
-		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 1)
-			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
-		
-		$completeRoute = PROJECT_ROOTURI.'/'.$route;
-		
-		foreach ($params as $param => $value) {
-			$completeRoute .= '/'.$param.'_'.$value;
-		}
-			
-		return $completeRoute;
-	}
-	
-	public function getParam($name) {
-		$params = Router::get()->getParamsForModule($this);
-		if (isset($params[$name]))
-			return $params[$name];
-		else
-			return null;
-	}
-	
 	public function jsRedirect($url, $timeOffset = 0) {
 		$this->addJsAfterContent(sprintf('setTimeout(function() {window.location=\'%s\';}, %d);', $url, $timeOffset));
 	}
@@ -162,29 +124,6 @@ class Module {
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
-	public function getRouteName() {
-		return $this->routeName;
-	}
-	
-	public function setRouteName($routeName) {
-		$this->routeName = $routeName;
-	}
-	
-	public function getName() {
-		return $this->name;
-	}
-	
-	/**
-	 * @return Module
-	 */
-	public function getParent() {
-		return $this->parent;
-	}
-	
-	public function setParent(Module $parentModule) {
-		$this->parent = $parentModule;
-	}
-	
 	public function getMetaTags() {
 		return $this->metaTags;
 	}

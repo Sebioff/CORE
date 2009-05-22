@@ -73,7 +73,8 @@ class App {
 		Router::get()->runCurrentModule();
 
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
-			HTMLTidy::tidy();
+			if (Router::get()->getCurrentModule() instanceof Module)
+				HTMLTidy::tidy();
 		
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			$GLOBALS['cache']->set('CORE_booted', true);
@@ -92,7 +93,7 @@ class App {
 	public function addModule(Module $module) {
 		if (!in_array($module->getName(), $this->modules)) {
 			$this->modules[$module->getName()] = $module;
-			Router::get()->addModuleRoute($module->getRouteName(), $module);
+			Router::get()->addScriptletRoute($module->getRouteName(), $module);
 		}
 		else
 			throw new Core_Exception('A module with this name has already been added: '.$name);

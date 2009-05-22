@@ -15,7 +15,7 @@ class Router {
 	
 	private function __construct() {
 		// Singleton
-		$this->addModuleRoute('core', new CoreRoutes_Core('coreroutes'));
+		$this->addScriptletRoute('core', new CoreRoutes_Core('core'));
 		$this->addStaticRoute('core_css', dirname(__FILE__).'/../../www/css');
 		$this->addStaticRoute('core_js', dirname(__FILE__).'/../../www/js');
 	}
@@ -100,15 +100,21 @@ class Router {
 		$module->display();
 	}
 	
-	public function addModuleRoute($routeName, Module $module) {
+	public function addScriptletRoute($routeName, Scriptlet $scriptlet) {
 		if (!in_array($routeName, $this->moduleRoutes))
-			$this->setModuleRoute($routeName, $module);
+			$this->moduleRoutes[$routeName] = $scriptlet;
 		else
-			throw new Core_Exception('A module route with this name has already been added: '.$routeName);
+			throw new Core_Exception('A scriptlet route with this name has already been added: '.$routeName);
 	}
 	
-	public function setModuleRoute($routeName, Module $module) {
-		$this->moduleRoutes[$routeName] = $module;
+	/**
+	 * @return Module
+	 */
+	public function getModuleForRouteName($routeName) {
+		if (isset($this->moduleRoutes[$routeName]))
+			return $this->moduleRoutes[$routeName];
+		else
+			return null;
 	}
 	
 	/**
@@ -129,8 +135,8 @@ class Router {
 			throw new Core_Exception('Module doesn\'t exist.');
 	}
 	
-	public function getParamsForModule(Module $searchedModule) {
-		$module = $searchedModule;
+	public function getParamsForScriptlet(Scriptlet $searchedScriptlet) {
+		$module = $searchedScriptlet;
 		$path = array($module->getRouteName());
 		while ($module = $module->getParent()) {
 			$path[] = $module->getRouteName();
@@ -138,7 +144,7 @@ class Router {
 		
 		$module = isset($this->params[0])?$this->params[0]:null;
 		while (isset($module['module'])) {
-			if ($module['module'] == $searchedModule->getRouteName()) {
+			if ($module['module'] == $searchedScriptlet->getRouteName()) {
 				break;
 			}
 			if (!isset($module['submodule'][0]))
