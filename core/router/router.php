@@ -137,7 +137,7 @@ class Router {
 		}
 		
 		$module = isset($this->params[0])?$this->params[0]:null;
-		while(isset($module['module'])) {
+		while (isset($module['module'])) {
 			if ($module['module'] == $searchedModule->getRouteName()) {
 				break;
 			}

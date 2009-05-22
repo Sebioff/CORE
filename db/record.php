@@ -26,6 +26,10 @@ class DB_Record {
 	public function __set($property, $value) {
 		if ($value === 'NULL')
 			$value = null;
+		// we don't want to allow having other objects than records set
+		// (records get transformed automatically, normal objects don't always)
+		if (is_object($value) && !($value instanceof DB_Record))
+			$value = $value->__toString();
 		$this->properties[$property] = $value;
 	}
 	

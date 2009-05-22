@@ -33,7 +33,7 @@ class App {
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 		session_start();
-
+		
 		// first boot
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			self::systemCheck();
