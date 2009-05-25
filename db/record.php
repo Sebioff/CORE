@@ -40,7 +40,10 @@ class DB_Record {
 				$databaseSchema = $this->container->getDatabaseSchema();
 				$reference = $databaseSchema['constraints'][$property];
 
-				$container = new DB_Container($reference['referencedTable']);
+				if (isset($reference['referencedContainer']))
+					$container = $reference['referencedContainer'];
+				else
+					$container = new DB_Container($reference['referencedTable']);
 				$this->properties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
 			}			
 			return $this->properties[$property];

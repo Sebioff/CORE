@@ -248,6 +248,20 @@ class DB_Container {
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
 	}
 	
+	/**
+	 * If any column of this container references the table of the given container,
+	 * references will be resolved using the given container.
+	 * It is NOT neccessary to add referenced containers like this (but if you don't,
+	 * a standard DB_Container will be used to resolve the reference)
+	 */
+	public function addReferencedContainer(DB_Container $container) {
+		foreach ($this->databaseSchema['constraints'] as &$referencedColumn) {
+			if ($referencedColumn['referencedTable'] == $container->getTable()) {
+				$referencedColumn['referencedContainer'] = $container;
+			}
+		}
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getDatabaseSchema() {
 		return $this->databaseSchema;
