@@ -17,11 +17,7 @@ class Core_ErrorHandler {
 				$errorType='Notice';
 				break;
 		}
-		$message=$errstr.' in:<br>'.$errfile.'('.$errline.')';
-		$backtrace=debug_backtrace();
-		unset($backtrace[0]);
-		Core_BacktracePrinter::printBacktrace($backtrace, $message, $errorType);
-		return true;
+		throw new Core_Exception($errorType);
 	}
 }
 

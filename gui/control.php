@@ -57,7 +57,7 @@ abstract class GUI_Control extends GUI_Panel {
 		}
 		
 		$validatorsString = '';
-		if (count($validators)) {
+		if (!empty($validators)) {
 			$validators[] = sprintf('messages: {%s}', implode(', ', $messages));
 			$validatorsString = sprintf('$("#%s").rules("add", {%s});', $this->getID(), implode(', ', $validators));
 		}

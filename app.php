@@ -225,7 +225,7 @@ class App_Autoloader {
 			}
 		}
 		
-		if (count($parts)) {
+		if (!empty($parts)) {
 			// Just_Some_Class -> just/some/class/class.php
 			$path = $basePath.'/'.implode('/', $parts).'/'.$parts[count($parts) - 1].'.php';
 			if (self::correctClassPath($className, $path))

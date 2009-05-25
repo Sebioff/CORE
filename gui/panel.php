@@ -138,7 +138,7 @@ class GUI_Panel {
 		foreach ($this->attributes as $attribute => $value) {
 			$attributeString .= $attribute.'="'.$value.'" ';
 		}
-		if (count($this->classes))
+		if (!empty($this->classes))
 			$attributeString .= 'class="'.$this->getClassString().'" ';
 		
 		return rtrim($attributeString);
@@ -314,7 +314,7 @@ class GUI_Panel {
 	}
 	
 	public function hasErrors() {
-		return (count($this->errors) > 0);
+		return (!empty($this->errors));
 	}
 	
 	protected function hasPanel($panelName) {

@@ -26,7 +26,7 @@ class DB_Container {
 	public function selectFirst(array $options) {
 		$options['limit'] = 1;
 		$records = $this->select($options);
-		if (count($records))
+		if (!empty($records))
 			return $records[0];
 		else
 			return null;
@@ -254,6 +254,9 @@ class DB_Container {
 	 * It is NOT neccessary to add referenced containers like this (but if you don't,
 	 * a standard DB_Container will be used to resolve the reference)
 	 */
+	// TODO implement "lazy instantiation": except giving a container, give a
+	// callback to a method that creates/returns the container. That way the container
+	// is only instantiated if really needed
 	public function addReferencedContainer(DB_Container $container) {
 		foreach ($this->databaseSchema['constraints'] as &$referencedColumn) {
 			if ($referencedColumn['referencedTable'] == $container->getTable()) {
