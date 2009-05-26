@@ -4,6 +4,8 @@
  * Resets the project.
  */
 class CoreRoutes_Reset extends Module {
+	private static $callbacksOnAfterReset = array();
+	
 	public function init() {
 		parent::init();
 		
@@ -22,10 +24,16 @@ class CoreRoutes_Reset extends Module {
 		
 		Core_MigrationsLoader::load();
 		
-		if (defined('CALLBACK_AFTERRESET'))
-			call_user_func(CALLBACK_AFTERRESET);
+		if (defined('CALLBACK_ONAFTERRESET'))
+			self::addCallbackOnAfterReset(CALLBACK_ONAFTERRESET);
+		foreach (self::$callbacksOnAfterReset as $callback)
+			call_user_func($callback);
 		
 		Scriptlet::redirect(PROJECT_ROOTURI);
+	}
+	
+	public static function addCallbackOnAfterReset($callback) {
+		self::$callbacksOnAfterReset[] = $callback;
 	}
 }
 

@@ -17,7 +17,7 @@ class Core_ErrorHandler {
 				$errorType='Notice';
 				break;
 		}
-		throw new Core_Exception($errorType);
+		throw new Core_Exception($errorType.': '.$errstr);
 	}
 }
 
