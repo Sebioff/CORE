@@ -55,6 +55,11 @@ class GUI_Panel {
 		}
 	}
 	
+	/**
+	 * Displays a specific panel
+	 * Creates a warning in the error log if the panel doesn't exist
+	 * @param $panelName
+	 */
 	public function displayPanel($panelName) {
 		if ($this->hasPanel($panelName))
 			$this->$panelName->display();
@@ -62,6 +67,10 @@ class GUI_Panel {
 			IO_Log::get()->warning('Tried to display non-existant panel: '.$panelName);
 	}
 	
+	/**
+	 * Displays all errors of a specific panel
+	 * @param $panelName the name of the panel
+	 */
 	public function displayErrorsForPanel($panelName) {
 		if ($this->hasPanel($panelName))
 			$this->$panelName->displayErrors();
@@ -151,11 +160,18 @@ class GUI_Panel {
 		return isset($_POST[$this->getID().'-hasbeensubmitted']);
 	}
 	
+	/**
+	 * Displays a list of errors associated with this panel
+	 * TODO use html lists instead of divs
+	 */
 	public function displayErrors() {
 		if ($this->hasErrors())
 			echo '<div class="core_common_error_list">'.implode('<br />', $this->errors).'</div>';
 	}
 	
+	/**
+	 * @return string a unique id used to identify this panel
+	 */
 	protected function generateID() {
 		if ($this->parent)
 			$this->ID = $this->parent->getID().'-'.$this->getName();

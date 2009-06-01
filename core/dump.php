@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * Dumps information about whatever input it gets
+ */
 class Core_Dump {
+	/**
+	 * Dumps detailed information about its input
+	 */
 	public static function dump() {
 		foreach (func_get_args() as $arg) {
 			if ('cli'==PHP_SAPI)
@@ -16,6 +22,9 @@ class Core_Dump {
 		ob_start();
 	}
 	
+	/**
+	 * Doesn't dive into objects -> prevents problems caused by recursion
+	 */
 	public static function dump_flat() {
 		foreach (func_get_args() as $arg) {
 			ob_flush();

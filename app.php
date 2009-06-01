@@ -81,10 +81,6 @@ class App {
 		}
 	}
 
-	public static function getPathFromUnderscore($filename_) {
-		return implode('/', explode('_', $filename_));
-	}
-
 	/**
 	 * Registers a module.
 	 * @param $name_ the name of the new module
@@ -264,7 +260,7 @@ class App_Autoloader {
 /* GLOBALLY AVAILABLE FUNCTIONS */
 
 /**
- * Dumps values in readable format
+ * Dumps detailed information about its input
  */
 function dump() {
 	Core_Dump::dump(func_get_args());

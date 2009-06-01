@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Called whenever an exception occurs
+ */
 class Core_ExceptionHandler {
 	public static function handleException(Exception $exception) {
 		$message=$exception->getMessage().' in:<br>'.$exception->getFile().'('.$exception->getLine().')';

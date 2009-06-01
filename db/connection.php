@@ -70,15 +70,24 @@ class DB_Connection {
 		$this->query('SET FOREIGN_KEY_CHECKS=1');
 	}
 	
+	/**
+	 * Starts a transaction (set of atomar database operations)
+	 */
 	public function beginTransaction() {
 		$this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
 		$this->query('START TRANSACTION');
 	}
 	
+	/**
+	 * Commits all database operations started since the last beginTransaction()
+	 */
 	public function commit() {
 		return $this->query('COMMIT');
 	}
 	
+	/**
+	 * Drops all database operations started since the last beginTransaction()
+	 */
 	public function rollback() {
 		return $this->query('ROLLBACK');
 	}
@@ -86,6 +95,9 @@ class DB_Connection {
 
 // -----------------------------------------------------------------------------
 
+/**
+ * Thrown if a database operation went wrong
+ */
 class Core_QueryException extends Core_Exception {
 	
 }

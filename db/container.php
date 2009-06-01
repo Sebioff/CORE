@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * DB_Container is an abstraction of a database table
  * Magic methods:
  * @method array selectByPROPERTY()
  * @method array selectByPROPERTYFirst()
@@ -67,6 +68,9 @@ class DB_Container {
 		return $records;
 	}
 	
+	/**
+	 * @return DB_Record the record belonging to the given primary key
+	 */
 	public function selectByPK($value, array $options = array()) {
 		$options['conditions'][] = array($this->databaseSchema['primaryKey'].' = ?', $value);
 		return $this->selectFirst($options);
@@ -78,6 +82,10 @@ class DB_Container {
 		return (int)array_shift($result);
 	}
 	
+	/**
+	 * Saves an record into the database
+	 * If the record hasn't been saved before it is inserted, otherwise it is updated
+	 */
 	public function save(DB_Record $record) {
 		$properties = array();
 		$values = array();
@@ -131,12 +139,18 @@ class DB_Container {
 		$this->containerCache = array();
 	}
 	
+	/**
+	 * Removes the entries specified by the $options array from the database
+	 */
 	protected function deleteByOptions(array $options) {
 		$query = 'DELETE FROM '.$this->table;
 		$query .= $this->buildQueryString($options);
 		DB_Connection::get()->query($query);
 	}
 	
+	/**
+	 * Removes a given record from the database
+	 */
 	protected function deleteByRecord(DB_Record $record) {
 		$query = 'DELETE FROM '.$this->table.' WHERE ';
 		$databaseSchema = $this->getDatabaseSchema();
@@ -144,6 +158,9 @@ class DB_Container {
 		DB_Connection::get()->query($query);
 	}	
 	
+	/**
+	 * @return MySQL query string, build from the given array of options
+	 */
 	protected function buildQueryString(array $options) {
 		$query = '';
 		if (isset($options['conditions'])) {

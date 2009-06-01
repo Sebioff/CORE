@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Handles execution of migration files located under PROJECT_ROOT/migrations.
+ * Handles execution of migration files located under PROJECT_ROOT/migrations
+ * A migration is a file containing a set of database instructions (usually database structure
+ * + content)
  */
 class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';

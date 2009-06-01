@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Control that displays a captcha and an input field; validates that input
+ * is equal to displayed captcha.
+ */
 class GUI_Control_Captcha extends GUI_Control {
 	public function __construct($name, $title) {
 		parent::__construct($name, null, $title);

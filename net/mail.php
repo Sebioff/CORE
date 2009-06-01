@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Allows easy, OOP-style sending of mails
  * Definable constants:
  * - CORE_MAILSENDER (standard sender if none is set)
  */

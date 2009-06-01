@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * A single line text input field
+ */
 class GUI_Control_TextBox extends GUI_Control {
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $defaultValue = null, $title = '') {

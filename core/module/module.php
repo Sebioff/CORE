@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Module is an abstraction for a page
+ */
 class Module extends Scriptlet {
 	public $contentPanel = 'GUI_Panel';
 	

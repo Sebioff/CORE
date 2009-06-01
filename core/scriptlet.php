@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Scriptlets are simple php scripts that are reachable under a specific route
+ */
 class Scriptlet {
 	private $name = '';
 	private $routeName = '';
@@ -36,6 +39,10 @@ class Scriptlet {
 		return $completeRoute;
 	}
 	
+	/**
+	 * @param $name
+	 * @return string the value of the scriptlet parameter identified by $name
+	 */
 	public function getParam($name) {
 		$params = Router::get()->getParamsForScriptlet($this);
 		if (isset($params[$name]))

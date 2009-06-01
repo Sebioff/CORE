@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * This scriptlet generates an image containing some characters (Captcha)
+ */
 class Media_Captcha extends Scriptlet {
 	protected function generateValue() {
 		$value = array();

@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Provides functions for handling different language versions
+ */
 // TODO PWO: rename?
 class Language_Scriptlet {
 	private static $instance = null;

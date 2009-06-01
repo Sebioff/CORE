@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Multiline text control, corresponds to &lt;textarea&gt;
+ */
 class GUI_Control_TextArea extends GUI_Control {
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $defaultValue = null, $title = '') {

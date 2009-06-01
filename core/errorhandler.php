@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Called whenever a php error occurs
+ */
 class Core_ErrorHandler {
 	public static function handleError($errno, $errstr, $errfile, $errline, array $errcontext) {
 		$errorType='';

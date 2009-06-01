@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * DB_Record is an abstraction for a row in the database
+ */
 class DB_Record {
 	private $properties = array();
 	private $container = null;
@@ -16,6 +19,9 @@ class DB_Record {
 		return $this->container;
 	}
 	
+	/**
+	 * @return int the primary key of this record
+	 */
 	public function getPK() {
 		if (!$this->container)
 			return null;

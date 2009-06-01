@@ -4,6 +4,11 @@
  * Provides functions for common text manipulation tasks.
  */
 abstract class Text {
+	/**
+	 * Example: some_string -> someString
+	 * @param $string
+	 * @param $ucfirst true if the first character should be uppercase
+	 */
 	public static function underscoreToCamelCase($string, $ucfirst = false) {
 		$camelCase = ucwords(strtr(trim($string), '_', ' '));
 		if (!$ucfirst)
@@ -11,6 +16,10 @@ abstract class Text {
 		return str_replace(' ', '', $camelCase);
 	}
     
+	/**
+	 * Example: SomeString -> some_string
+	 * @param $string
+	 */
 	public static function camelCaseToUnderscore($string) {
 		return strtolower(preg_replace(array('/[^A-Z^a-z^0-9^\/]+/','/([a-z\d])([A-Z])/','/([A-Z]+)([A-Z][a-z])/'), array('_','\1_\2','\1_\2'), $string));
 	}

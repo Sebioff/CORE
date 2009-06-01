@@ -15,7 +15,7 @@ abstract class IO_Utils {
 	
 	/**
 	 * Loads all files from the given folder.
-	 * @param $extensions if set, only files with extensions defined in this array
+	 * @param $extensions array if set, only files with extensions defined in this array
 	 * are returned
 	 * @return an array containing the names of all files in the given folder
 	 */

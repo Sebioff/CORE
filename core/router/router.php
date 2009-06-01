@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * A route is an URL that is mapped to a scriptlet
+ * This class is responsible for executing the correct scriptlets for called routes
+ * TODO needs cleanup, a bit of a mixup between module/scriptlet
+ */
 class Router {
 	private static $instance = null;
 	/** contains static routes = routes to files/folders */
@@ -51,6 +56,10 @@ class Router {
 		$this->params = $params;
 	}
 	
+	/**
+	 * Analyzes the current URL
+	 * Defines PROJECT_ROOTURI, the root URL under which the project is available
+	 */
 	public function init() {
 		require_once PROJECT_PATH.'/config/routes.php';
 		
@@ -77,6 +86,7 @@ class Router {
 		
 		$this->generateParams();
 		
+		// provide PROJECT_ROOTURI
 		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
 		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
 		$route = implode('/', $this->getRequestParams());
@@ -85,6 +95,7 @@ class Router {
 		$rootURI .= str_replace($route, '', $_SERVER['REQUEST_URI']);
 		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		
+		// redirect to correct language version if there is more than one available
 		if (!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))
 			$languageScriptlet->switchToDefaultLanguage();
 			
@@ -92,6 +103,9 @@ class Router {
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
 	}
 	
+	/**
+	 * Executes the scriptlet belonging the the current route
+	 */
 	public function runCurrentModule() {
 		$module = $this->getCurrentModule();
 		$module->beforeInit();
@@ -100,6 +114,9 @@ class Router {
 		$module->display();
 	}
 	
+	/**
+	 * Registers a scriptlet under a given route
+	 */
 	public function addScriptletRoute($routeName, Scriptlet $scriptlet) {
 		if (!in_array($routeName, $this->moduleRoutes))
 			$this->moduleRoutes[$routeName] = $scriptlet;
@@ -135,6 +152,10 @@ class Router {
 			throw new Core_Exception('Module doesn\'t exist.');
 	}
 	
+	/**
+	 * @return array containing all the parameters specified in the current route
+	 * for the given scriptlet
+	 */
 	public function getParamsForScriptlet(Scriptlet $searchedScriptlet) {
 		$module = $searchedScriptlet;
 		$path = array($module->getRouteName());

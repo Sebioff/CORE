@@ -2,6 +2,9 @@
 
 // TODO use late static binding for singleton instance in PHP 5.3
 /**
+ * Provides functions for security protection.
+ * Users are associated with groups.
+ * Privileges can be assigned to groups.
  * In order to use automatic database table creation you need to register your
  * security object using Security::register() in your modules.php
  */

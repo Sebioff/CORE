@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Base class for all controls (elements that interact with the user)
+ */
 abstract class GUI_Control extends GUI_Panel {
 	protected $value;
 	private $focused = false;
