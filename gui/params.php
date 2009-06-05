@@ -13,6 +13,14 @@ class GUI_Params {
 	public function __set($key, $value) {
 		return $this->params[$key] = $value;
 	}
+	
+	public function __isset($value) {
+		return isset($this->params[$value]);
+	}
+	
+	public function __unset($value) {
+		unset($this->params[$value]);
+	}
 }
-
+      
 ?>
