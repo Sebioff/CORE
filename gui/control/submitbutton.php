@@ -18,9 +18,10 @@ class GUI_Control_SubmitButton extends GUI_Control {
 		$i = 1;
 		while (($callingObject = $trace[$i]['object']) == $this)
 			$i++;
-		$callbackName = 'on'.ucfirst(Text::underscoreToCamelCase($this->getName()));
-		if (method_exists($callingObject, $callbackName))
+		$callbackName = 'on'.Text::underscoreToCamelCase($this->getName(), true);
+		if (method_exists($callingObject, $callbackName)) {
 			$this->addCallback($callingObject, $callbackName);
+		}
 	}
 	
 	public function addCallback($object, $methodName) {

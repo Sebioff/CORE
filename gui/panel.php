@@ -96,6 +96,9 @@ class GUI_Panel {
 	}
 	
 	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
+		if ($this->hasPanel($panel->getName()))
+			throw new Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
+
 		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
 		// quite unlikely that a panels name is equal to the name of an attribute.
 		// -> the following check could be removed then.
@@ -111,6 +114,11 @@ class GUI_Panel {
 		if ($panel instanceof GUI_Control_Submitbutton) {
 			$this->submittable = true;
 		}
+	}
+	
+	public function removePanel(GUI_Panel $panel) {
+		$panel->setParent(null);
+		unset($this->panels[$panel->getName()]);
 	}
 	
 	/**
@@ -253,7 +261,7 @@ class GUI_Panel {
 	public function afterInit() {
 		foreach ($this->panels as $panel)
 			$panel->afterInit();
-
+			
 		if ($this->submittable) {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();
@@ -277,6 +285,7 @@ class GUI_Panel {
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function __get($panelName) {
+		$panelName = Text::camelCaseToUnderscore($panelName);
 		if (array_key_exists($panelName, $this->panels))
 			return $this->panels[$panelName];
 		else
@@ -311,7 +320,7 @@ class GUI_Panel {
 		return $this->parent;
 	}
 	
-	protected function setParent(GUI_Panel $parent) {
+	protected function setParent(GUI_Panel $parent = null) {
 		$this->parent = $parent;
 		$this->generateID();
 	}
