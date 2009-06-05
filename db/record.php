@@ -58,6 +58,14 @@ class DB_Record {
 			return null;
 	}
 	
+	public function __isset($property) {
+		return isset($this->properties[$property]);
+	}
+	
+	public function __unset($property) {
+		unset($this->properties[$property]);
+	}
+	
 	/**
 	 * Saves the record in the container it was created from.
 	 */

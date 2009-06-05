@@ -226,6 +226,13 @@ class GUI_Panel {
 			$this->errors[] = $message;
 	}
 	
+	/**
+	 * Removes all errors from this panel
+	 */
+	public function removeErrors() {
+		$this->errors = array();
+	}
+	
 	protected function executeCallbacks() {
 		foreach ($this->panels as $panel) {
 			$panel->executeCallbacks();
@@ -340,6 +347,14 @@ class GUI_Panel {
 	
 	public function hasErrors() {
 		return (!empty($this->errors));
+	}
+	
+	/**
+	 * Just a shorter version of a common task
+	 * @return Module the currently active module
+	 */
+	public function getModule() {
+		return Router::get()->getCurrentModule();
 	}
 	
 	protected function hasPanel($panelName) {

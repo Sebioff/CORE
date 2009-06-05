@@ -19,7 +19,7 @@ class Scriptlet {
 	/**
 	 * @return the url to this scriptlet.
 	 */
-	public function getUrl($params = array()) {
+	public function getUrl(array $params = array()) {
 		$route = $this->getRouteName();
 		$module = $this;
 		
