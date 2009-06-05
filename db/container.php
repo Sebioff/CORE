@@ -46,11 +46,12 @@ class DB_Container {
 	public function select(array $options) {
 		$records = array();
 
-		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '*').' FROM '.$this->table;
+		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '*').' FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($this->containerCache[$query]))
 			return $this->containerCache[$query];
+
 		$result = DB_Connection::get()->query($query);
 
 		while ($row = mysql_fetch_assoc($result)) {
@@ -78,8 +79,7 @@ class DB_Container {
 	
 	public function count(array $options = array()) {
 		$options['properties'] = 'COUNT(*)';
-		$result = $this->selectFirst($options)->getAllProperties();
-		return (int)array_shift($result);
+		return (int)$this->selectFirst($options)->{Text::underscoreToCamelCase('COUNT(*)')};
 	}
 	
 	/**
@@ -97,7 +97,7 @@ class DB_Container {
 		}
 		if (!$record->getPK()) {
 			// insert
-			$query = 'INSERT INTO '.$this->table;
+			$query = 'INSERT INTO `'.$this->table.'`';
 			$query .= ' ('.implode(', ', $properties).') VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
 			DB_Connection::get()->query($query);
@@ -107,7 +107,7 @@ class DB_Container {
 		}
 		else {
 			// update
-			$query = 'UPDATE '.$this->table.' SET ';
+			$query = 'UPDATE `'.$this->table.'` SET ';
 			$propertiesCount = count($properties);
 			$updates = array();
 			for ($i = 0; $i < $propertiesCount; $i++) {
@@ -143,7 +143,7 @@ class DB_Container {
 	 * Removes the entries specified by the $options array from the database
 	 */
 	protected function deleteByOptions(array $options) {
-		$query = 'DELETE FROM '.$this->table;
+		$query = 'DELETE FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
 		DB_Connection::get()->query($query);
 	}
@@ -152,7 +152,7 @@ class DB_Container {
 	 * Removes a given record from the database
 	 */
 	protected function deleteByRecord(DB_Record $record) {
-		$query = 'DELETE FROM '.$this->table.' WHERE ';
+		$query = 'DELETE FROM `'.$this->table.'` WHERE ';
 		$databaseSchema = $this->getDatabaseSchema();
 		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 		DB_Connection::get()->query($query);

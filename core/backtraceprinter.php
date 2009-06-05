@@ -10,7 +10,7 @@ class Core_BacktracePrinter {
 	 * @param $customMessage
 	 * @param $errorType a custom error type, useful to categorize errors.
 	 */
-	public static function printBacktrace(Array $backtrace, $customMessage = '', $errorType = '') {
+	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
 		if (ob_get_level() > 0)
 			ob_end_clean();
 			

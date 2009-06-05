@@ -30,6 +30,12 @@ class Net_Mail {
 				$this->recipients[] = $recipient;
 	}
 	
+	public function addRecipient($mailaddress, $name = '') {
+		if ($name)
+			$mailaddress = $name.' <'.$mailaddress.'>';
+		$this->recipients[] = $mailaddress;
+	}
+	
 	/**
 	 * Adds one or more copy recipients to this mail.
 	 * @param $recipients array or list of recipients
@@ -74,7 +80,9 @@ class Net_Mail {
 		$this->subject = $subject;
 	}
 	
-	public function setSender($sender) {
+	public function setSender($sender, $name = '') {
+		if ($name)
+			$sender = $name.' <'.$sender.'>';
 		$this->sender = $sender;
 	}
 	
