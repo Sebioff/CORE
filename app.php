@@ -189,6 +189,8 @@ class App_Autoloader {
 		if (!class_exists($className, false))
 			trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
 	}
+	
+	// TODO add public method to get a classes file location
 
 	/**
 	 * Gets the path of the file a given class is located in

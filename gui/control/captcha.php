@@ -22,7 +22,7 @@ class GUI_Control_Captcha extends GUI_Control {
 		parent::validate();
 		
 		$captchaValue = $this->getValue();
-		$inputValue = $this->input->getValue();
+		$inputValue = Text::toUpperCase($this->input->getValue());
 		$correct = true;
 		for ($i = 0; $i < 4; $i++) {
 			if ($inputValue[$i] != $captchaValue[$i]) {
