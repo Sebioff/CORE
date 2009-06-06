@@ -43,7 +43,7 @@ class Router {
 				$currentModule = $this->moduleRoutes[$param];
 				$params[] = &$lastModule;
 			}
-			elseif (isset($currentModule) && $module = $currentModule->getSubmodule($param)) {
+			elseif (isset($currentModule) && $currentModule instanceof Module && $module = $currentModule->getSubmodule($param)) {
 				$currentModule = $module;
 				$lastModule['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
 				$lastModule = &$lastModule['submodule'][count($lastModule['submodule']) - 1];
@@ -65,7 +65,14 @@ class Router {
 		
 		$languageScriptlet = Language_Scriptlet::get();
 		
-		$requestURI = explode('/', ltrim($_SERVER['REQUEST_URI'], '/'));
+		$url = parse_url($_SERVER['REQUEST_URI']);
+		$path = $url['path'];
+		
+		// add query params to route
+		if (isset($url['query']))
+			$path .= '/'.str_replace(array('&', '='), array('/', '_'), $url['query']);
+
+		$requestURI = explode('/', ltrim($path, '/'));
 		$this->requestParams = $requestURI;
 		
 		$languageIdentifierSet = false;

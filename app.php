@@ -86,7 +86,7 @@ class App {
 	 * @param $name_ the name of the new module
 	 * @param $module_ the module
 	 */
-	public function addModule(Module $module) {
+	public function addModule(Scriptlet $module) {
 		if (!in_array($module->getName(), $this->modules)) {
 			$this->modules[$module->getName()] = $module;
 			Router::get()->addScriptletRoute($module->getRouteName(), $module);
