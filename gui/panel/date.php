@@ -21,7 +21,7 @@ class GUI_Panel_Date extends GUI_Panel {
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getValue() {
-		return date($this->format, $this->getTime());
+		return date($this->format, $this->getTime()).(in_array($this->format, array(self::FORMAT_TIME, self::FORMAT_DATETIME)) ? ' Uhr' : '');
 	}
 	
 	public function getTime() {
