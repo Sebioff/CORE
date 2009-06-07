@@ -13,6 +13,7 @@ class DB_Container {
 	private $table = '';
 	private $databaseSchema = array();
 	private $containerCache = array();
+	private $insertCallbacks = array();
 
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
@@ -104,6 +105,9 @@ class DB_Container {
 			$record->setContainer($this);
 			$databaseSchema = $this->getDatabaseSchema();
 			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
+			// execute insertCallbacks
+			foreach ($this->insertCallbacks as $insertCallback)
+				call_user_func($insertCallback, $record);
 		}
 		else {
 			// update
@@ -280,6 +284,15 @@ class DB_Container {
 				$referencedColumn['referencedContainer'] = $container;
 			}
 		}
+	}
+	
+	/**
+	 * Adds a callback that is executed whenever a new record is added to this
+	 * container.
+	 * The callback receives the inserted DB_Record as first parameter.
+	 */
+	public function addInsertCallback($callback) {
+		$this->insertCallbacks[] = $callback;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
