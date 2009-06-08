@@ -187,6 +187,8 @@ class DB_Container {
 			$conditionSQL = implode(') AND (', $conditions);
 			$query .= ' WHERE ('.$conditionSQL.')';
 		}
+		if (isset($options['group']))
+			$query .= ' GROUP BY '.$options['group'];
 		if (isset($options['order']))
 			$query .= ' ORDER BY '.$options['order'];
 		if (isset($options['limit']))
