@@ -28,7 +28,7 @@ class GUI_Panel {
 		$this->setTemplate(dirname(__FILE__).'/panel.tpl');
 		$this->params = new GUI_Params();
 		// TODO rename to onConstruct()? init only for when the object is actually "constructed to be used"
-		$this->init();
+		//$this->init();
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -106,7 +106,9 @@ class GUI_Panel {
 			throw new Exception('Panel name is not allowed (already used internally): '.$panel->getName());
 		
 		$panel->setParent($this);
-		
+		$panel->beforeInit();
+		$panel->init();
+
 		if (!$toBeginning)
 			$this->panels[$panel->getName()] = $panel;
 		else
@@ -241,15 +243,15 @@ class GUI_Panel {
 	
 	// CALLBACKS ---------------------------------------------------------------
 	public function beforeInit() {
-		foreach ($this->panels as $panel)
-			$panel->beforeInit();
+//		foreach ($this->panels as $panel)
+//			$panel->beforeInit();
 	}
 	
 	/**
 	 * You probably don't want to override the constructor if it's not neccessary,
 	 * right? Well, then override this function instead, please.
 	 */
-	protected function init() {
+	public function init() {
 		// callback
 	}
 	
@@ -257,8 +259,9 @@ class GUI_Panel {
 	 * Executed after init and before display.
 	 * Executes validators and callbacks.
 	 * NOTE: this method operates on all added panels. If you overwrite it and
-	 * add panels in your method, you need to call parent::afterInit() AFTER
-	 * adding your panels.
+	 * add controls in your method, you need to call parent::afterInit() AFTER
+	 * adding your controls, otherwhise their callbacks won't work.
+	 * You CAN add normal panels that just display something after afterInit().
 	 * => Sequence of:
 	 *  - init (adding panels)
 	 *  - afterInit (executing callbacks and validators)
@@ -268,7 +271,7 @@ class GUI_Panel {
 	public function afterInit() {
 		foreach ($this->panels as $panel)
 			$panel->afterInit();
-			
+
 		if ($this->submittable) {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();

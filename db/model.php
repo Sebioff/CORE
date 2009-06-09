@@ -6,9 +6,9 @@
  * page up-to-date while the data changes. This class automatically provides models
  * for any record.
  */
-class DB_Model {
-	private static $models = array();
-	private $record = null;
+class DB_Model extends DB_Record {
+	private static $records = array();
+	public $record = null;
 	private $attribute = '';
 	
 	private function __construct(DB_Record $record) {
@@ -52,11 +52,13 @@ class DB_Model {
 	 */
 	public static function getModelForRecord(DB_Record $record, $attribute = '') {
 		$modelKey = $record->getContainer()->getTable().'_pk'.$record->getPK();
-		if (!isset($models[$modelKey]))
-			$models[$modelKey] = new self($record);
+		if (!isset(self::$records[$modelKey])) {
+			self::$records[$modelKey] = new self($record);
+		}
 		
-		$models[$modelKey]->setAttribute($attribute);
-		return $models[$modelKey];
+		$model = clone self::$records[$modelKey];
+		$model->setAttribute($attribute);
+		return $model;
 	}
 }
 

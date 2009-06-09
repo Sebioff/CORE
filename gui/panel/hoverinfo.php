@@ -14,12 +14,17 @@ class GUI_Panel_HoverInfo extends GUI_Panel {
 		$this->addClasses('core_gui_hoverinfo_panel');
 	}
 	
-	public function beforeDisplay() {
-		parent::beforeDisplay();
+	public function afterInit() {
+		parent::afterInit();
 		
 		$module = Router::get()->getCurrentModule();
 		$module->addJsRouteReference('core_js', 'panel/hoverinfo.js');
 		$module->addJsAfterContent(sprintf('new GUI_Panel_HoverInfo("%s", "%s");', $this->getID(), $this->getHoverText()));
+	}
+	
+	public function __toString() {
+		$this->beforeDisplay();
+		return $this->render();
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

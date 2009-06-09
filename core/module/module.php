@@ -31,7 +31,7 @@ class Module extends Scriptlet {
 	}
 	
 	public function init() {
-		
+		$this->mainPanel->init();
 	}
 	
 	public function addSubmodule(Scriptlet $submodule) {

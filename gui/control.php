@@ -5,6 +5,7 @@
  */
 abstract class GUI_Control extends GUI_Panel {
 	protected $value;
+	protected $defaultValue;
 	private $focused = false;
 	
 	/** contains all validators of this control */
@@ -33,7 +34,7 @@ abstract class GUI_Control extends GUI_Panel {
 	}
 	
 	public function __toString() {
-		return $this->getValue();
+		return (string)$this->getValue();
 	}
 	
 	protected function validate() {

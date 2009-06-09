@@ -74,7 +74,10 @@ abstract class Security {
 	}
 	
 	public function isInGroup(DB_Record $user, $groupIdentifier) {
-		$group = $this->getGroup($groupIdentifier);
+		if ($groupIdentifier instanceof DB_Record)
+			$group = $groupIdentifier;
+		else
+			$group = $this->getGroup($groupIdentifier);
 		$options = array();
 		$options['conditions'][] = array('user = ?', $user);
 		$options['conditions'][] = array('user_group = ?', $group);
@@ -83,15 +86,23 @@ abstract class Security {
 	}
 	
 	public function hasPrivilege(DB_Record $user, $privilegeIdentifier) {
-		$privilegeDefined = false;
-		
 		foreach ($this->getContainerGroupsUsersAssoc()->selectByUser($user->getPK()) as $userGroupAssoc) {
-			foreach ($this->getContainerPrivileges()->selectByUserGroup($userGroupAssoc->userGroup) as $privilege) {
-				if ($privilege->privilege == $privilegeIdentifier) {
-					if ($privilege->value == false)
-						return false;
-					$privilegeDefined = true;
-				}
+			if (!$this->groupHasPrivilege($userGroupAssoc->userGroup, $privilegeIdentifier)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	public function groupHasPrivilege($group, $privilegeIdentifier) {
+		$privilegeDefined = false;
+
+		foreach ($this->getContainerPrivileges()->selectByUserGroup($group) as $privilege) {
+			if ($privilege->privilege == $privilegeIdentifier) {
+				if ($privilege->value == false)
+					return false;
+				$privilegeDefined = true;
 			}
 		}
 		
