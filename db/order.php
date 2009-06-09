@@ -61,7 +61,9 @@ class DB_Order {
 		for ($i = 0; $i < $n; $i++) {
 			for ($j = $i; $j < $n; $j++) {			
 				$keyA = array_keys($this->orders, $this->records[$i]->getPK());
-				$keyB = array_keys($this->orders, $this->records[$j]->getPK());
+				$keyA =  is_numeric($keyA) ? $keyA : $n; 
+				$keyB = array_keys($this->orders, $this->records[$j]->getPK());;
+				$keyB =  is_numeric($keyB) ? $keyB : $n;
 				if ($keyA[0] > $keyB[0]) {
 					$_tmp = $this->records[$j];
 					$this->records[$j] = $this->records[$i];
