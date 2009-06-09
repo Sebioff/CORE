@@ -65,12 +65,24 @@ abstract class Security {
 	
 	public function getGroupUsers($groupIdentifier) {
 		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUserGroup($this->getGroup($groupIdentifier));
-		// TODO kinda not nice. Too bad array('id IN (?)', $assocEntries) doesn't
-		// work due to escaping. make it work?
-		$condition = 'id = '.implode(' OR id = ', $assocEntries);
+		$groupUsers = array();
+		foreach ($assocEntries as $assocEntry)
+			$groupUsers[] = $assocEntry->user;
+		$condition = 'id IN ('.implode(', ', $groupUsers).')';
 		$options = array();
 		$options['conditions'][] = array($condition);
 		return $this->getContainerUsers()->select($options);
+	}
+	
+	public function getUserGroups(DB_Record $user) {
+		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUser($user);
+		$userGroups = array();
+		foreach ($assocEntries as $assocEntry)
+			$userGroups[] = $assocEntry->userGroup;
+		$condition = 'id IN ('.implode(', ', $userGroups).')';
+		$options = array();
+		$options['conditions'][] = array($condition);
+		return $this->getContainerGroups()->select($options);
 	}
 	
 	public function isInGroup(DB_Record $user, $groupIdentifier) {
