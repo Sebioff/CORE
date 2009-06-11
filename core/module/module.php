@@ -42,6 +42,8 @@ class Module extends Scriptlet {
 	/**
 	 * @return Module
 	 */
+	// TODO: use $moduleName here instead of routename
+	// change getSubmoduleByName to getSubmoduleByRouteName
 	public function getSubmodule($moduleRouteName) {
 		if (isset($this->submodules[$moduleRouteName]))
 			return $this->submodules[$moduleRouteName];
@@ -62,9 +64,13 @@ class Module extends Scriptlet {
 	public function getAllSubmodules() {
 		return $this->submodules;
 	}	
+	
+	public function hasSubmodule($moduleRouteName) {
+		return isset($this->submodules[$moduleRouteName]);
+	}
 
 	public function hasSubmodules() {
-		return count($this->getAllSubmodules()) > 0;
+		return !empty($this->submodules);
 	}
 	
 	public function afterInit() {

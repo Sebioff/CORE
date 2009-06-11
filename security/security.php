@@ -97,9 +97,13 @@ abstract class Security {
 		return (!empty($assocs));
 	}
 	
-	public function hasPrivilege(DB_Record $user, $privilegeIdentifier) {
+	public function hasPrivilege(DB_Record $user = null, $privilegeIdentifier) {
+		if (!$user)
+			return false;
+
 		foreach ($this->getContainerGroupsUsersAssoc()->selectByUser($user->getPK()) as $userGroupAssoc) {
-			if (!$this->groupHasPrivilege($userGroupAssoc->userGroup, $privilegeIdentifier)) {
+			$group = $this->getContainerGroups()->selectByPK($userGroupAssoc->userGroup);
+			if (!$this->groupHasPrivilege($group, $privilegeIdentifier)) {
 				return false;
 			}
 		}
@@ -107,9 +111,9 @@ abstract class Security {
 		return true;
 	}
 	
-	public function groupHasPrivilege($group, $privilegeIdentifier) {
+	public function groupHasPrivilege(DB_Record $group, $privilegeIdentifier) {
 		$privilegeDefined = false;
-
+		
 		foreach ($this->getContainerPrivileges()->selectByUserGroup($group) as $privilege) {
 			if ($privilege->privilege == $privilegeIdentifier) {
 				if ($privilege->value == false)
@@ -121,14 +125,14 @@ abstract class Security {
 		if ($privilegeDefined)
 			return true;
 		else
-			return $this->getDefaultValue($privilegeIdentifier);
+			return $this->getDefaultValue($privilegeIdentifier, $group);
 	}
 	
 	/**
 	 * Override this method if you want to have custom default values for your
 	 * privileges.
 	 */
-	protected function getDefaultValue($privilegeIdentifier) {
+	protected function getDefaultValue($privilegeIdentifier, DB_Record $groupID) {
 		return false;
 	}
 	

@@ -20,7 +20,7 @@ class Core_ErrorHandler {
 				$errorType='Notice';
 				break;
 		}
-		throw new Core_Exception($errorType.': '.$errstr);
+		throw new Core_Exception($errorType.': '.$errstr.' in '.$errfile.'('.$errline.') thrown');
 	}
 }
 

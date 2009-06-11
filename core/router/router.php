@@ -72,7 +72,7 @@ class Router {
 		if (isset($url['query']))
 			$path .= '/'.str_replace(array('&', '='), array('/', '_'), $url['query']);
 
-		$requestURI = explode('/', ltrim($path, '/'));
+		$requestURI = explode('/', trim($path, '/'));
 		$this->requestParams = $requestURI;
 		
 		$languageIdentifierSet = false;
