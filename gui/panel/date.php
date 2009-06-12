@@ -8,7 +8,7 @@ class GUI_Panel_Date extends GUI_Panel {
 	private $time = 0;
 	private $format;
 	
-	public function __construct($name, $time = 0, $format = self::FORMAT_DATETIME, $title = '') {
+	public function __construct($name, $time = 0, $title = '', $format = self::FORMAT_DATETIME) {
 		parent::__construct($name, $title);
 		
 		if ($time == 0)
@@ -26,6 +26,10 @@ class GUI_Panel_Date extends GUI_Panel {
 	
 	public function getTime() {
 		return $this->time;
+	}
+	
+	public function setFormat($format) {
+		$this->format = $format;
 	}
 }
 

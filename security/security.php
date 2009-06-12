@@ -132,7 +132,7 @@ abstract class Security {
 	 * Override this method if you want to have custom default values for your
 	 * privileges.
 	 */
-	protected function getDefaultValue($privilegeIdentifier, DB_Record $groupID) {
+	protected function getDefaultValue($privilegeIdentifier, DB_Record $group) {
 		return false;
 	}
 	

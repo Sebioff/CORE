@@ -22,14 +22,17 @@ class GUI_Panel_PageView extends GUI_Panel {
 	public function getOptions() {
 		$options = array();
 		$options['limit'] = $this->getItemsPerPage();
-		$options['offset'] = $this->getPage() * $this->getItemsPerPage();
+		$options['offset'] = ($this->getPage() - 1) * $this->getItemsPerPage();
 		
 		return $options;
 	}
 	
-	public function getFilteredContainer() {
-		return $this->getContainer()->select($this->getOptions());
-	}
+	/**
+	 * @return DB_Container
+	 */
+//	public function getFilteredContainer() {
+//		return $this->getContainer()->select($this->getOptions());
+//	}
 	
 	public function getPage() {
 		if ($this->getModule()->getParam('page'))
@@ -47,6 +50,9 @@ class GUI_Panel_PageView extends GUI_Panel {
 		return $this->itemsPerPage;
 	}
 	
+	/**
+	 * @return DB_Container
+	 */
 	public function getContainer() {
 		return $this->container;
 	}
@@ -59,7 +65,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 class GUI_Panel_PageView_Pages extends GUI_Panel {
 	private $pageView = null;
 	
-	public function __construct(GUI_Panel_PageView_Pages $pageView) {
+	public function __construct(GUI_Panel_PageView $pageView) {
 		parent::__construct('pages');
 		
 		$this->pageView = $pageView;
@@ -68,8 +74,10 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 	public function init() {
 		parent::init();
 		
-		for ($i = 1; $i <= $this->pageView->getContainer()->count(); $i++) {
-			$this->addPanel(new GUI_Panel_Text($i, $i));
+		$pageCount = ceil($this->pageView->getContainer()->count() / $this->pageView->getItemsPerPage());
+		for ($i = 1; $i <= $pageCount; $i++) {
+			$url = $this->getModule()->getUrl(array('page' => $i));
+			$this->addPanel(new GUI_Control_Link($i, $i, $url));
 		}
 	}
 }

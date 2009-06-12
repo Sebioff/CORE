@@ -14,6 +14,7 @@ class DB_Container {
 	private $databaseSchema = array();
 	private $containerCache = array();
 	private $insertCallbacks = array();
+	private $filters = array();
 
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
@@ -52,7 +53,7 @@ class DB_Container {
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($this->containerCache[$query]))
 			return $this->containerCache[$query];
-
+			
 		$result = DB_Connection::get()->query($query);
 
 		while ($row = mysql_fetch_assoc($result)) {
@@ -66,7 +67,7 @@ class DB_Container {
 		}
 		
 		$this->containerCache[$query] = $records;
-
+		
 		return $records;
 	}
 	
@@ -166,6 +167,9 @@ class DB_Container {
 	 * @return MySQL query string, build from the given array of options
 	 */
 	protected function buildQueryString(array $options) {
+		if (!empty($this->filters))
+			$options = array_merge($options, $this->filters);
+		
 		$query = '';
 		if (isset($options['conditions'])) {
 			$conditions = array();
@@ -295,6 +299,17 @@ class DB_Container {
 	 */
 	public function addInsertCallback($callback) {
 		$this->insertCallbacks[] = $callback;
+	}
+	
+	/**
+	 * A filtered container is a container with filters that are applied to every
+	 * single query. A filter is nothing more than a usual options-array
+	 * @return DB_Container
+	 */
+	public function getFilteredContainer(array $filterOptions) {
+		$clone = clone $this;
+		$clone->filters = $filterOptions;
+		return $clone;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
