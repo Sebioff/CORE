@@ -28,17 +28,24 @@ class GUI_Panel_PageView extends GUI_Panel {
 	}
 	
 	/**
-	 * @return DB_Container
+	 * @return int the number of the currently opened page
 	 */
-//	public function getFilteredContainer() {
-//		return $this->getContainer()->select($this->getOptions());
-//	}
-	
 	public function getPage() {
-		if ($this->getModule()->getParam('page'))
-			return (int)$this->getModule()->getParam('page');
+		if ($this->getModule()->getParam('page')) {
+			$page = (int)$this->getModule()->getParam('page');
+			if ($page > $this->getPageCount())
+				$page = $this->getPageCount();
+			return $page;
+		}
 		else
 			return 1;
+	}
+	
+	/**
+	 * @return int the amount of available pages
+	 */
+	public function getPageCount() {
+		return ceil($this->getContainer()->count() / $this->getItemsPerPage());
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -69,16 +76,27 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 		parent::__construct('pages');
 		
 		$this->pageView = $pageView;
+		$this->setTemplate(dirname(__FILE__).'/pageview_pages.tpl');
+		$this->addClasses('core_gui_pageview_pages');
 	}
 	
 	public function init() {
 		parent::init();
 		
-		$pageCount = ceil($this->pageView->getContainer()->count() / $this->pageView->getItemsPerPage());
-		for ($i = 1; $i <= $pageCount; $i++) {
+		for ($i = 1; $i <= $this->getPageView()->getPageCount(); $i++) {
 			$url = $this->getModule()->getUrl(array('page' => $i));
-			$this->addPanel(new GUI_Control_Link($i, $i, $url));
+			$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
+			if ($i == $this->getPageView()->getPage())
+				$pageLink->addClasses('current_page');
 		}
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
+	/**
+	 * @return GUI_Panel_PageView
+	 */
+	public function getPageView() {
+		return $this->pageView;
 	}
 }
 
