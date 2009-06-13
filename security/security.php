@@ -65,6 +65,8 @@ abstract class Security {
 	
 	public function getGroupUsers($groupIdentifier) {
 		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUserGroup($this->getGroup($groupIdentifier));
+		if (empty($assocEntries))
+			return array();
 		$groupUsers = array();
 		foreach ($assocEntries as $assocEntry)
 			$groupUsers[] = $assocEntry->user;
@@ -76,6 +78,8 @@ abstract class Security {
 	
 	public function getUserGroups(DB_Record $user) {
 		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUser($user);
+		if (empty($assocEntries))
+			return array();
 		$userGroups = array();
 		foreach ($assocEntries as $assocEntry)
 			$userGroups[] = $assocEntry->userGroup;
@@ -100,15 +104,23 @@ abstract class Security {
 	public function hasPrivilege(DB_Record $user = null, $privilegeIdentifier) {
 		if (!$user)
 			return false;
+			
+		$privilegeDefined = false;
 
 		foreach ($this->getContainerGroupsUsersAssoc()->selectByUser($user->getPK()) as $userGroupAssoc) {
-			$group = $this->getContainerGroups()->selectByPK($userGroupAssoc->userGroup);
-			if (!$this->groupHasPrivilege($group, $privilegeIdentifier)) {
-				return false;
+			foreach ($this->getContainerPrivileges()->selectByUserGroup($userGroupAssoc->userGroup) as $privilege) {
+				if ($privilege->privilege == $privilegeIdentifier) {
+					if ($privilege->value == false)
+						return false;
+					$privilegeDefined = true;
+				}
 			}
 		}
 		
-		return true;
+		if ($privilegeDefined)
+			return true;
+		else
+			return $this->getDefaultValue($privilegeIdentifier, $user);
 	}
 	
 	public function groupHasPrivilege(DB_Record $group, $privilegeIdentifier) {
@@ -125,14 +137,14 @@ abstract class Security {
 		if ($privilegeDefined)
 			return true;
 		else
-			return $this->getDefaultValue($privilegeIdentifier, $group);
+			return false;
 	}
 	
 	/**
 	 * Override this method if you want to have custom default values for your
 	 * privileges.
 	 */
-	protected function getDefaultValue($privilegeIdentifier, DB_Record $group) {
+	protected function getDefaultValue($privilegeIdentifier, DB_Record $user) {
 		return false;
 	}
 	

@@ -24,10 +24,11 @@ class CMS_Navigation_Node {
 					$classes[] = 'core_navigation_node_last';
 				if ($nodeCount == 1)
 					$classes[] = 'core_navigation_node_single';
-				if ($node->isActive()) {
+				if ($node->isActive($this->getModule())) {
 					$classes[] = 'core_navigation_node_active';
+					$classes[] = 'core_navigation_node_inpath';
 				}
-				if ($node->isInPath()) {
+				elseif ($node->isInPath($this->getModule())) {
 					$classes[] = 'core_navigation_node_inpath';
 				}
 				$result .= '<li class="'.implode(' ', $classes).'">';
@@ -44,19 +45,19 @@ class CMS_Navigation_Node {
 		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getUrl());
 	}
 	
-	public function isInPath() {
-		foreach ($this->nodes as $node) {
-			if ($node->isActive())
+	public function isInPath(Module $module) {
+		foreach ($module->getAllSubmodules() as $subModule) {
+			if ($this->isActive($subModule))
 				return true;
 			else
-				return $node->isInPath();
+				return $this->isInPath($subModule);
 		}
 		
 		return false;
 	}
 	
-	public function isActive() {
-		return (Router::get()->getCurrentModule() == $this->getModule());
+	public function isActive(Module $module) {
+		return (Router::get()->getCurrentModule() == $module);
 	}
 	
 	/**

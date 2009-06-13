@@ -2,12 +2,14 @@
 
 class GUI_Control_Link extends GUI_Control {
 	private $url = '';
+	private $caption = '';
 	
 	// CONSTRUCTORS ------------------------------------------------------------
-	public function __construct($name, $caption, $url) {
-		parent::__construct($name, null, $caption);
-		$this->url = $url;
+	public function __construct($name, $caption, $url, $title = '') {
+		parent::__construct($name, null, $title);
 		
+		$this->url = $url;
+		$this->caption = $caption;
 		$this->setTemplate(dirname(__FILE__).'/link.tpl');
 		$this->addClasses('core_gui_link');
 	}
@@ -19,6 +21,10 @@ class GUI_Control_Link extends GUI_Control {
 	
 	public function setUrl($url) {
 		$this->url = $url;
+	}
+	
+	public function getCaption() {
+		return $this->caption;
 	}
 }
 

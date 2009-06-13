@@ -30,10 +30,11 @@ class CMS_Navigation {
 					$classes[] = 'core_navigation_node_last';
 			if ($nodeCount == 1)
 					$classes[] = 'core_navigation_node_single';
-			if ($node->isActive()) {
+			if ($node->isActive($node->getModule())) {
 				$classes[] = 'core_navigation_node_active';
+				$classes[] = 'core_navigation_node_inpath';
 			}
-			if ($node->isInPath()) {
+			elseif ($node->isInPath($node->getModule())) {
 				$classes[] = 'core_navigation_node_inpath';
 			}
 			$result .= '<li class="'.implode(' ', $classes).'">';

@@ -1,1 +1,1 @@
-<a href="<?= $this->getUrl() ?>" <?= $this->getAttributeString() ?>><?= $this->getTitle() ?></a>
+<a href="<?= $this->getUrl() ?>" <?= $this->getAttributeString() ?>><?= $this->getCaption() ?></a>
