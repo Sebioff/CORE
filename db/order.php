@@ -39,12 +39,16 @@ class DB_Order {
 		//Bubblesort
 		$n = count($this->records);
 		for ($i = 0; $i < $n; $i++) {
-			for ($j = $i; $j < $n; $j++) {			
-				$keyA = array_keys($this->orders, $this->records[$i]->getPK());
-				$keyA =  is_numeric($keyA) ? $keyA : $n; 
-				$keyB = array_keys($this->orders, $this->records[$j]->getPK());
-				$keyB =  is_numeric($keyB) ? $keyB : $n;
-				if ($keyA[0] < $keyB[0]) {
+			for ($j = $i; $j < $n; $j++) {	
+				$keyA = -1;
+				$keyB = -1;		
+				for ($k = 0; $k < count($this->orders); $k++) {
+					if ($this->orders[$k] == $this->records[$i]->getPK())
+						$keyA = $k;
+					if ($this->orders[$k] == $this->records[$j]->getPK())
+						$keyB = $k;
+				}	
+				if ($keyA < $keyB) {
 					$_tmp = $this->records[$j];
 					$this->records[$j] = $this->records[$i];
 					$this->records[$i] = $_tmp;
@@ -60,11 +64,15 @@ class DB_Order {
 		$n = count($this->records);
 		for ($i = 0; $i < $n; $i++) {
 			for ($j = $i; $j < $n; $j++) {			
-				$keyA = array_keys($this->orders, $this->records[$i]->getPK());
-				$keyA =  is_numeric($keyA) ? $keyA : $n; 
-				$keyB = array_keys($this->orders, $this->records[$j]->getPK());;
-				$keyB =  is_numeric($keyB) ? $keyB : $n;
-				if ($keyA[0] > $keyB[0]) {
+				$keyA = $n;
+				$keyB = $n;
+				for ($k = 0; $k < count($this->orders); $k++) {
+					if ($this->orders[$k] == $this->records[$i]->getPK())
+						$keyA = $k;
+					if ($this->orders[$k] == $this->records[$j]->getPK())
+						$keyB = $k;
+				}				
+				if ($keyA > $keyB) {
 					$_tmp = $this->records[$j];
 					$this->records[$j] = $this->records[$i];
 					$this->records[$i] = $_tmp;
