@@ -43,12 +43,13 @@ class DB_Container {
 	 * $options['order'] = order
 	 * $options['limit'] = limit
 	 * $options['offset'] = offset
+	 * $options['join'] = array of tables
 	 * @return an array of records fitting to the specified search parameters
 	 */
 	public function select(array $options) {
 		$records = array();
 
-		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '*').' FROM `'.$this->table.'`';
+		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($this->containerCache[$query]))
@@ -167,10 +168,19 @@ class DB_Container {
 	 * @return MySQL query string, build from the given array of options
 	 */
 	protected function buildQueryString(array $options) {
-		if (!empty($this->filters))
+		if (!empty($this->filters)) {
+			// multidimensional arrays have to be merged manually, otherwhise the array
+			// of the filter would totally overwrite the array of the options
+			if (isset($options['conditions']))
+				$this->filters['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
+			if (isset($options['join']))
+				$this->filters['join'] = array_merge($options['join'], $this->filters['join']);
 			$options = array_merge($options, $this->filters);
+		}
 		
 		$query = '';
+		if (isset($options['join']))
+			$query .= ', `'.implode('`, `', $options['join']).'`';
 		if (isset($options['conditions'])) {
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {

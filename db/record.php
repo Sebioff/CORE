@@ -51,7 +51,7 @@ class DB_Record {
 				else
 					$container = new DB_Container($reference['referencedTable']);
 				$this->properties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
-			}			
+			}
 			return $this->properties[$property];
 		}
 		else
@@ -73,7 +73,7 @@ class DB_Record {
 		$this->getContainer()->save($this);
 	}
 	
-	public function __toString() {
+	public final function __toString() {
 		return (string)$this->getPK();
 	}
 	

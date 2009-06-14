@@ -64,7 +64,7 @@ class Net_Mail {
 	 * Sends the mail.
 	 */
 	public function send() {
-		$headers = 'X-Mailer: CORE PHP Framework'."\r\n";
+		$headers = "X-Mailer: CORE PHP Framework\r\n";
 		if ($this->sender)
 			$headers .= 'From: '.$this->sender."\r\n";
 		if (!empty($this->cc))

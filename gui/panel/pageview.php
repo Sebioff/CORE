@@ -45,7 +45,10 @@ class GUI_Panel_PageView extends GUI_Panel {
 	 * @return int the amount of available pages
 	 */
 	public function getPageCount() {
-		return ceil($this->getContainer()->count() / $this->getItemsPerPage());
+		$pageCount = ceil($this->getContainer()->count() / $this->getItemsPerPage());
+		if ($pageCount <= 0)
+			$pageCount = 1;
+		return $pageCount;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

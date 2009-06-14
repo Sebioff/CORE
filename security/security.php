@@ -101,12 +101,52 @@ abstract class Security {
 		return (!empty($assocs));
 	}
 	
+	public function getPrivilegedUsers($privilegeIdentifier) {
+		$users = $this->getContainerUsers()->getTable();
+		$groupsUsersAssoc = $this->getContainerGroupsUsersAssoc()->getTable();
+		$groups = $this->getContainerGroups()->getTable();
+		$privileges = $this->getContainerPrivileges()->getTable();
+		// get all users with positively defined right
+		$options = array();
+		$options['join'] = array($groups, $groupsUsersAssoc, $privileges);
+		$options['conditions'][] = array($privileges.'.value = ?', true);
+		$options['conditions'][] = array($privileges.'.privilege = ?', $privilegeIdentifier);
+		$options['conditions'][] = array($privileges.'.user_group = '.$groups.'.id');
+		$options['conditions'][] = array($groupsUsersAssoc.'.user_group = '.$groups.'.id');
+		$options['conditions'][] = array($groupsUsersAssoc.'.user = '.$users.'.id');
+		$privilegedUsers = $this->getContainerUsers()->select($options);
+		$privilegedUsersIDs = implode(', ', $privilegedUsers);
+		// get all users with negatively defined right
+		$options = array();
+		$options['join'] = array($groups, $groupsUsersAssoc, $privileges);
+		$options['conditions'][] = array($privileges.'.value = ?', false);
+		$options['conditions'][] = array($privileges.'.privilege = ?', $privilegeIdentifier);
+		$options['conditions'][] = array($privileges.'.user_group = '.$groups.'.id');
+		$options['conditions'][] = array($groupsUsersAssoc.'.user_group = '.$groups.'.id');
+		$options['conditions'][] = array($groupsUsersAssoc.'.user = '.$users.'.id');
+		$unprivilegedUsers = $this->getContainerUsers()->select($options);
+		$unprivilegedUsersIDs = implode(', ', $unprivilegedUsers);
+		// check for undefined users
+		$options = array();
+		if (!empty($privilegedUsers))
+			$options['conditions'][] = array('id NOT IN ('.$privilegedUsersIDs.')');
+		if (!empty($unprivilegedUsers))
+			$options['conditions'][] = array('id NOT IN ('.$unprivilegedUsersIDs.')');
+		$undefinedUsers = $this->getContainerUsers()->select($options);
+		foreach ($undefinedUsers as $undefinedUser) {
+			if ($this->getDefaultValue($privilegeIdentifier, $undefinedUser))
+				$privilegedUsers[] = $undefinedUser;
+		}
+		return $privilegedUsers;
+	}
+	
 	public function hasPrivilege(DB_Record $user = null, $privilegeIdentifier) {
 		if (!$user)
 			return false;
 			
 		$privilegeDefined = false;
 
+		// TODO due to the new joins-feature this should be doable in one query
 		foreach ($this->getContainerGroupsUsersAssoc()->selectByUser($user->getPK()) as $userGroupAssoc) {
 			foreach ($this->getContainerPrivileges()->selectByUserGroup($userGroupAssoc->userGroup) as $privilege) {
 				if ($privilege->privilege == $privilegeIdentifier) {

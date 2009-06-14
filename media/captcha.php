@@ -22,9 +22,9 @@ class Media_Captcha extends Scriptlet {
 	public function display() {
 		$this->generateValue();
 		
-		header("Cache-Control: no-cache, must-revalidate");
-		header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
-		header("Content-type: image/png");
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+		header('Content-type: image/png');
 		$image = imagecreatetruecolor(110, 40);
 		imageantialias($image, true);
 		imagecolorallocate($image, 0, 0, 0);
