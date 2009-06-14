@@ -171,10 +171,18 @@ class DB_Container {
 		if (!empty($this->filters)) {
 			// multidimensional arrays have to be merged manually, otherwhise the array
 			// of the filter would totally overwrite the array of the options
-			if (isset($options['conditions']))
-				$this->filters['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
-			if (isset($options['join']))
-				$this->filters['join'] = array_merge($options['join'], $this->filters['join']);
+			if (isset($options['conditions'])) {
+				if (isset($this->filters['conditions']))
+					$this->filters['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
+				else
+					$this->filters['conditions'] = $options['conditions'];
+			}
+			if (isset($options['join'])) {
+				if (isset($this->filters['join']))
+					$this->filters['join'] = array_merge($options['join'], $this->filters['join']);
+				else
+					$this->filters['join'] = $options['join'];
+			}
 			$options = array_merge($options, $this->filters);
 		}
 		
