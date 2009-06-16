@@ -169,21 +169,22 @@ class DB_Container {
 	 */
 	protected function buildQueryString(array $options) {
 		if (!empty($this->filters)) {
+			$filterOptions = $this->filters['conditions'];
 			// multidimensional arrays have to be merged manually, otherwhise the array
 			// of the filter would totally overwrite the array of the options
 			if (isset($options['conditions'])) {
 				if (isset($this->filters['conditions']))
-					$this->filters['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
+					$filterOptions['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
 				else
-					$this->filters['conditions'] = $options['conditions'];
+					$filterOptions['conditions'] = $options['conditions'];
 			}
 			if (isset($options['join'])) {
 				if (isset($this->filters['join']))
-					$this->filters['join'] = array_merge($options['join'], $this->filters['join']);
+					$filterOptions['join'] = array_merge($options['join'], $this->filters['join']);
 				else
-					$this->filters['join'] = $options['join'];
+					$filterOptions['join'] = $options['join'];
 			}
-			$options = array_merge($options, $this->filters);
+			$options = array_merge($options, $filterOptions);
 		}
 		
 		$query = '';

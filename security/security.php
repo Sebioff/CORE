@@ -15,24 +15,6 @@ abstract class Security {
 	private $containerGroupsUsersAssoc = null;
 	private $containerPrivileges = null;
 	
-	public function __construct() {
-		// FIXME horrible, horrible abuse of exceptions
-		try {
-			$container = $this->defineContainerGroups();
-			$this->containerGroups = new $container[0]($container[1]);
-			$container = $this->defineContainerGroupsUsersAssoc();
-			$this->containerGroupsUsersAssoc = new $container[0]($container[1]);
-			$container = $this->defineContainerPrivileges();
-			$this->containerPrivileges = new $container[0]($container[1]);
-			$container = $this->defineContainerUsers();
-			$this->containerUsers = new $container[0]($container[1]);
-		}
-		catch (Core_QueryException $qe) {
-			if (!(Router::get()->getCurrentModule() instanceof CoreRoutes_Reset))
-				throw $qe;
-		}
-	}
-	
 	public function setPrivilege($privilegeIdentifier, DB_Record $userGroup, $value = true) {
 		$options = array();
 		$options['conditions'][] = array('user_group = ?', $userGroup);
@@ -63,7 +45,11 @@ abstract class Security {
 		return $this->getContainerGroups()->selectByGroupIdentifierFirst($groupIdentifier);
 	}
 	
+	/**
+	 * @return array of users that belong to the group identified by groupIdentifier
+	 */
 	public function getGroupUsers($groupIdentifier) {
+		// FIXME can be done in one query with joins
 		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUserGroup($this->getGroup($groupIdentifier));
 		if (empty($assocEntries))
 			return array();
@@ -76,19 +62,24 @@ abstract class Security {
 		return $this->getContainerUsers()->select($options);
 	}
 	
+	/**
+	 * @return array of groups the given user belongs to
+	 */
 	public function getUserGroups(DB_Record $user) {
-		$assocEntries = $this->getContainerGroupsUsersAssoc()->selectByUser($user);
-		if (empty($assocEntries))
-			return array();
-		$userGroups = array();
-		foreach ($assocEntries as $assocEntry)
-			$userGroups[] = $assocEntry->userGroup;
-		$condition = 'id IN ('.implode(', ', $userGroups).')';
+		$users = $this->getContainerUsersTableName();
+		$groupsUsersAssoc = $this->getContainerGroupsUsersAssocTableName();
+		$groups = $this->getContainerGroupsTableName();
 		$options = array();
-		$options['conditions'][] = array($condition);
+		$options['join'] = array($groupsUsersAssoc, $users);
+		$options['conditions'][] = array($groups.'.id = '.$groupsUsersAssoc.'.user_group');
+		$options['conditions'][] = array($groupsUsersAssoc.'.user = '.$users.'.id');
 		return $this->getContainerGroups()->select($options);
 	}
 	
+	/**
+	 * @return boolean true if the given user belongs to the group identified by
+	 * the given groupIdentifier
+	 */
 	public function isInGroup(DB_Record $user, $groupIdentifier) {
 		if ($groupIdentifier instanceof DB_Record)
 			$group = $groupIdentifier;
@@ -101,11 +92,14 @@ abstract class Security {
 		return (!empty($assocs));
 	}
 	
+	/**
+	 * @return array containing all users with the specified privilege
+	 */
 	public function getPrivilegedUsers($privilegeIdentifier) {
-		$users = $this->getContainerUsers()->getTable();
-		$groupsUsersAssoc = $this->getContainerGroupsUsersAssoc()->getTable();
-		$groups = $this->getContainerGroups()->getTable();
-		$privileges = $this->getContainerPrivileges()->getTable();
+		$users = $this->getContainerUsersTableName();
+		$groupsUsersAssoc = $this->getContainerGroupsUsersAssocTableName();
+		$groups = $this->getContainerGroupsTableName();
+		$privileges = $this->getContainerPrivilegesTableName();
 		// get all users with positively defined right
 		$options = array();
 		$options['join'] = array($groups, $groupsUsersAssoc, $privileges);
@@ -200,6 +194,7 @@ abstract class Security {
 	
 	public function onSetup() {
 		$queries = array();
+		// TODO use migration-executing method as soon as available
 		require dirname(__FILE__).'/migrations/001.setup.php';
 		foreach ($queries as $query)
 			DB_Connection::get()->query($query);
@@ -232,34 +227,6 @@ abstract class Security {
 		return array_keys($this->privileges);
 	}
 	
-	/**
-	 * @return DB_Container
-	 */
-	public function getContainerUsers() {
-		return $this->containerUsers;
-	}
-	
-	/**
-	 * @return DB_Container
-	 */
-	public function getContainerGroups() {
-		return $this->containerGroups;
-	}
-	
-	/**
-	 * @return DB_Container
-	 */
-	public function getContainerGroupsUsersAssoc() {
-		return $this->containerGroupsUsersAssoc;
-	}
-	
-	/**
-	 * @return DB_Container
-	 */
-	public function getContainerPrivileges() {
-		return $this->containerPrivileges;
-	}
-	
 	public function setContainerUsers($containerUsers) {
 		$this->containerUsers = $containerUsers;
 	}
@@ -277,18 +244,86 @@ abstract class Security {
 	}
 	
 	// ABSTRACT METHODS --------------------------------------------------------
-	/** Must return an array with a classname that inherits from DB_Container at
-	 * index 0 and a table name at index 1 */
-	protected abstract function defineContainerUsers();
-	/** Must return an array with a classname that inherits from DB_Container at
-	 * index 0 and a table name at index 1 */
-	protected abstract function defineContainerGroups();
-	/** Must return an array with a classname that inherits from DB_Container at
-	 * index 0 and a table name at index 1 */
-	protected abstract function defineContainerGroupsUsersAssoc();
-	/** Must return an array with a classname that inherits from DB_Container at
-	 * index 0 and a table name at index 1 */
-	protected abstract function defineContainerPrivileges();
+	/** 
+	 * @return DB_Container the container for users
+	 */
+	public function getContainerUsers() {
+		if ($this->containerUsers)
+			return $this->containerUsers;
+			
+		$this->containerUsers = new DB_Container($this->getContainerUsersTableName());
+		
+		return $this->containerUsers;
+	}
+	
+	/** 
+	 * @return DB_Container the container for groups
+	 */
+	public function getContainerGroups() {
+		if ($this->containerGroups)
+			return $this->containerGroups;
+			
+		$this->containerGroups = new DB_Container($this->getContainerGroupsTableName());
+		
+		return $this->containerGroups;
+	}
+	
+	/** 
+	 * @return DB_Container the container for the association between users and groups
+	 */
+	public function getContainerGroupsUsersAssoc() {
+		if ($this->containerGroupsUsersAssoc)
+			return $this->containerGroupsUsersAssoc;
+			
+		$this->containerGroupsUsersAssoc = new DB_Container($this->getContainerGroupsUsersAssocTableName());
+		
+		return $this->containerGroupsUsersAssoc;
+	}
+	
+	/** 
+	 * @return DB_Container the container for privileges
+	 */
+	public function getContainerPrivileges() {
+		if ($this->containerPrivileges)
+			return $this->containerPrivileges;
+			
+		$this->containerPrivileges = new DB_Container($this->getContainerPrivilegesTableName());
+		
+		return $this->containerPrivileges;
+	}
+	
+	/** 
+	 * @return String name of the user table
+	 */
+	protected function getContainerUsersTableName() {
+		return $this->getTablePrefix().'_users';
+	}
+	
+	/** 
+	 * @return String name of the groups table
+	 */
+	protected function getContainerGroupsTableName() {
+		return $this->getTablePrefix().'_groups';
+	}
+	
+	/** 
+	 * @return String name of the groups/users-assoc table
+	 */
+	protected function getContainerGroupsUsersAssocTableName() {
+		return $this->getTablePrefix().'_groups_users_assoc';
+	}
+	
+	/** 
+	 * @return String name of the privileges table
+	 */
+	protected function getContainerPrivilegesTableName() {
+		return $this->getTablePrefix().'_privileges';
+	}
+	
+	/** 
+	 * @return String prefix to be used for needed database tables
+	 */
+	protected abstract function getTablePrefix();
 }
 
 ?>
