@@ -65,9 +65,10 @@ class Core_MigrationsLoader {
 	/**
 	 * Executes all sql queries in the given migration file
 	 */
-	private static function executeMigration($migrationFile) {
+	public static function executeMigration($migrationFile, array $var_array = array()) {
+		extract($var_array);
 		$queries = array();
-		require_once $migrationFile;
+		require $migrationFile;
 		foreach ($queries as $query)
 			DB_Connection::get()->query($query);
 	}

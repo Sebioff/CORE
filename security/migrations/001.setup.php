@@ -1,9 +1,9 @@
 <?php
 
-$groupsContainer = $this->getContainerGroupsTableName();
-$groupsUsersAssocContainer = $this->getContainerGroupsUsersAssocTableName();
-$usersContainer = $this->getContainerUsersTableName();
-$privilegesContainer = $this->getContainerPrivilegesTableName();
+$groupsContainer = $self->getContainerGroupsTableName();
+$groupsUsersAssocContainer = $self->getContainerGroupsUsersAssocTableName();
+$usersContainer = $self->getContainerUsersTableName();
+$privilegesContainer = $self->getContainerPrivilegesTableName();
 
 // TODO: add users table
 // TODO: add check if tables exist
