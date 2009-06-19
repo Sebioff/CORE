@@ -169,7 +169,7 @@ class DB_Container {
 	 */
 	protected function buildQueryString(array $options) {
 		if (!empty($this->filters)) {
-			$filterOptions = $this->filters['conditions'];
+			$filterOptions = $this->filters;
 			// multidimensional arrays have to be merged manually, otherwhise the array
 			// of the filter would totally overwrite the array of the options
 			if (isset($options['conditions'])) {

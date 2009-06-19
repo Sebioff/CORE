@@ -51,6 +51,13 @@ class Scriptlet {
 			return null;
 	}
 	
+	/**
+	 * @return array of params for this scriptlet
+	 */
+	public function getParams() {
+		return Router::get()->getParamsForScriptlet($this);
+	}
+	
 	public function display() {
 		
 	}

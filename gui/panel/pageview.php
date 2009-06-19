@@ -87,7 +87,9 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 		parent::init();
 		
 		for ($i = 1; $i <= $this->getPageView()->getPageCount(); $i++) {
-			$url = $this->getModule()->getUrl(array('page' => $i));
+			$params = $this->getModule()->getParams();
+			$params['page'] = $i;
+			$url = $this->getModule()->getUrl($params);
 			$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
 			if ($i == $this->getPageView()->getPage())
 				$pageLink->addClasses('current_page');
