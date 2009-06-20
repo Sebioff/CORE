@@ -15,6 +15,7 @@ abstract class GUI_Control extends GUI_Panel {
 	public function __construct($name, $defaultValue = null, $title = '') {
 		parent::__construct($name, $title);
 		$this->value = $defaultValue;
+		$this->defaultValue = $defaultValue;
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -79,6 +80,19 @@ abstract class GUI_Control extends GUI_Panel {
 	}
 	
 	/**
+	 * Resets this control and all child controls to their default values
+	 */
+	public function resetValue() {
+		// TODO use lambda-function with PHP 5.3
+		$this->walkRecursive(array(self, 'resetValueFunction'));
+	}
+	
+	public static function resetValueFunction(GUI_Panel $panel) {
+		if ($panel instanceof GUI_Control)
+			$panel->setValue($panel->getDefaultValue());
+	}
+	
+	/**
 	 * Sets the focus on this control.
 	 */
 	public function setFocus() {
@@ -92,6 +106,10 @@ abstract class GUI_Control extends GUI_Panel {
 	
 	public function setValue($value) {
 		$this->value = $value;
+	}
+	
+	public function getDefaultValue() {
+		return $this->defaultValue;
 	}
 	
 	public function addValidator(GUI_Validator $validator) {

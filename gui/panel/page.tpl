@@ -14,7 +14,7 @@
 			<script type="text/javascript" src="<?= $jsRoute ?>"></script>
 		<? endforeach ?>
 	</head>
-	<body>
+	<body <?= $this->getAttributeString() ?>>
 		<? $this->display() ?>
 		<? if ($jsAfterContent = $this->getJsAfterContent()): ?>
 			<script type="text/javascript">

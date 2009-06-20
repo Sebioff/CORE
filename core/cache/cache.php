@@ -7,6 +7,7 @@ interface Cache {
 	/**
 	 * Updates the given key with the given value or inserts it into the cache
 	 * if it doesn't exist yet.
+	 * Default ttl: 1 week
 	 */
 	public function set($key, $value, $ttl = 604800);
 	

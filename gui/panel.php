@@ -9,6 +9,7 @@ class GUI_Panel {
 	/** contains all the errors of this panel + subpanels (as strings) if the validation
 	  * of one of these panel failed */
 	protected $errors = array();
+	protected $successMessage = '';
 	
 	private $attributes = array();
 	private $classes = array();
@@ -175,8 +176,15 @@ class GUI_Panel {
 	 * TODO use html lists instead of divs
 	 */
 	public function displayErrors() {
-		if ($this->hasErrors())
-			echo '<div class="core_common_error_list">'.implode('<br />', $this->errors).'</div>';
+		echo '<div class="core_common_error_list">'.implode('<br />', $this->errors).'</div>';
+	}
+	
+	/**
+	 * Displays all messages of this panel
+	 */
+	public function displayMessages() {
+		$this->displayErrors();
+		echo '<div class="core_common_success">'.$this->successMessage.'</div>';
 	}
 	
 	/**
@@ -238,6 +246,19 @@ class GUI_Panel {
 	protected function executeCallbacks() {
 		foreach ($this->panels as $panel) {
 			$panel->executeCallbacks();
+		}
+	}
+	
+	/**
+	 * Executes the given callback for this panel and all child panels
+	 * Callback receives the panel as first parameter
+	 * @param $callback
+	 */
+	public function walkRecursive($callback) {
+		call_user_func($callback, &$this);
+		foreach ($this->panels as $panel) {
+			call_user_func($callback, &$panel);
+			$panel->walkRecursive($callback);
 		}
 	}
 	
@@ -323,6 +344,12 @@ class GUI_Panel {
 		return $this->ID;
 	}
 	
+	public function setSuccessMessage($successMessage) {
+		$this->successMessage = $successMessage;
+		// TODO use lambda-function with PHP 5.3
+		$this->walkRecursive(array('GUI_Control', 'resetValueFunction'));
+	}
+	
 	/**
 	 * @return GUI_Panel
 	 */
@@ -350,6 +377,10 @@ class GUI_Panel {
 	
 	public function hasErrors() {
 		return (!empty($this->errors));
+	}
+	
+	public function hasMessages() {
+		return (!empty($this->errors) || $this->successMessage);
 	}
 	
 	/**
