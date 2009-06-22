@@ -5,6 +5,7 @@
  */
 class DB_Record {
 	private $properties = array();
+	private $virtualProperties = array();
 	private $container = null;
 	
 	// SETTERS / GETTERS -------------------------------------------------------
@@ -54,12 +55,20 @@ class DB_Record {
 			}
 			return $this->properties[$property];
 		}
+		elseif ($this->hasVirtualProperty($property))
+			return $this->getVirtualProperty($property);
 		else
 			return null;
 	}
 	
 	public function __isset($property) {
-		return isset($this->properties[$property]);
+		if (isset($this->properties[$property]))
+			return true;
+			
+		if ($this->hasVirtualProperty($property) && $this->getVirtualProperty($property) !== null)
+			return true;
+		
+		return false;
 	}
 	
 	public function __unset($property) {
@@ -93,6 +102,25 @@ class DB_Record {
 			return true;
 		else
 			return false;
+	}
+	
+	public function hasVirtualProperty($property) {
+		return isset($this->virtualProperties[$property]);
+	}
+	
+	private function getVirtualProperty($property) {
+		return call_user_func($this->virtualProperties[$property], $this);
+	}
+	
+	/**
+	 * A virtual property is just like a normal property, except that it doesn't
+	 * actually exist in the database.
+	 * @param $property the name of the property you want to define
+	 * @param $callback a callback that returns the value of your property. The
+	 * callback receives the record as first parameter.
+	 */
+	public function setVirtualProperty($property, $callback) {
+		$this->virtualProperties[Text::underscoreToCamelCase($property)] = $callback;
 	}
 }
 
