@@ -11,7 +11,7 @@ class GUI_Validator_Regex extends GUI_Validator {
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		return (ereg($this->regex, $this->control->getValue()) !== false);
+		return (preg_match($this->regex, $this->control->getValue()) !== false);
 	}
 	
 	public function getError() {

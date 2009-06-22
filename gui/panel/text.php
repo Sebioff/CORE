@@ -1,7 +1,7 @@
 <?php
 
 class GUI_Panel_Text extends GUI_Panel {
-	private $text = '';
+	protected $text = '';
 	
 	public function __construct($name, $text, $title = '') {
 		parent::__construct($name, $title);
