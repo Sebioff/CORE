@@ -1,1 +1,1 @@
-<a href="<?= $this->getUrl() ?>" <?= $this->getAttributeString() ?>><?= $this->getCaption() ?></a>
+<a href="<?= $this->getUrl() ?>" <?= $this->getAttributeString() ?><? if ($this->getConfirmation() !== null): ?> onclick="return(confirm('<?= $this->getConfirmation(); ?>'))"<? endif; ?>><?= $this->getCaption() ?></a>

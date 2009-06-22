@@ -28,7 +28,7 @@ class DB_Model extends DB_Record {
 	}
 	
 	public function __isset($property) {
-		return $this->record->_isset($property);
+		return $this->record->__isset($property);
 	}
 	
 	public function __unset($property) {

@@ -3,6 +3,7 @@
 class GUI_Control_Link extends GUI_Control {
 	private $url = '';
 	private $caption = '';
+	private $confirmation = null;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $caption, $url, $title = '') {
@@ -25,6 +26,13 @@ class GUI_Control_Link extends GUI_Control {
 	
 	public function getCaption() {
 		return $this->caption;
+	}
+	
+	public function getConfirmation() {
+		return $this->confirmation;
+	}
+	public function setConfirmation($message) {
+		$this->confirmation = $message;
 	}
 }
 
