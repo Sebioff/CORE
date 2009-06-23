@@ -255,9 +255,9 @@ class GUI_Panel {
 	 * @param $callback
 	 */
 	public function walkRecursive($callback) {
-		call_user_func($callback, &$this);
+		call_user_func($callback, $this);
 		foreach ($this->panels as $panel) {
-			call_user_func($callback, &$panel);
+			call_user_func($callback, $panel);
 			$panel->walkRecursive($callback);
 		}
 	}

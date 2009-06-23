@@ -3,7 +3,7 @@
 class GUI_Validator_Mail extends GUI_Validator {
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		//mail@domain.info ?!
+		// FIXME what about mail@domain.info ?!
 		return eregi('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$', $this->control->getValue());
 	}
 	
