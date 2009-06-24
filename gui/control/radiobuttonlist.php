@@ -32,6 +32,7 @@ class GUI_Control_RadioButtonList extends GUI_Control {
 			if ($item->getChecked())
 				return $item->getValue();
 		}
+		return null;
 	}
 }
 
