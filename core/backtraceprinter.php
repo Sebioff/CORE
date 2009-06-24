@@ -30,7 +30,7 @@ class Core_BacktracePrinter {
 		if (Environment::getCurrentEnvironment() == Environment::LIVE && defined('CALLBACK_ERROR'))
 			call_user_func(CALLBACK_ERROR, $backtrace, $customMessage, $errorType);
 		else
-			printBacktrace($backtrace, $customMessage, $errorType);
+			self::printBacktrace($backtrace, $customMessage, $errorType);
 		exit;
 	}
 	
