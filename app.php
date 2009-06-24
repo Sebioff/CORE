@@ -23,7 +23,6 @@ class App {
 	 */
 	public static function boot() {
 		ob_start();
-		error_reporting(E_ALL|E_STRICT);
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		$GLOBALS['cache'] = new Cache_Global_Session();
@@ -45,10 +44,13 @@ class App {
 		}
 		
 		// load configuration files
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+			error_reporting(E_ALL|E_STRICT);
 			require_once PROJECT_PATH.'/config/environments/config.development.php';
-		else
+		}
+		else {
 			require_once PROJECT_PATH.'/config/environments/config.live.php';
+		}
 		
 		// get project modules
 		require_once PROJECT_PATH.'/config/modules.php';

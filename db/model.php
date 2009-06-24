@@ -40,10 +40,12 @@ class DB_Model extends DB_Record {
 	}
 	
 	public function __toString() {
-		if ($this->attribute)
+		if ($this->attribute) {
 			return (string)$this->record->{$this->attribute};
-		else
+		}
+		else {
 			return '';
+		}
 	}
 	
 	/**

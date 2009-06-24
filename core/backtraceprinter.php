@@ -10,10 +10,10 @@ class Core_BacktracePrinter {
 	 * @param $customMessage
 	 * @param $errorType a custom error type, useful to categorize errors.
 	 */
-	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
+	public static function handle(array $backtrace, $customMessage = '', $errorType = '') {
 		if (ob_get_level() > 0)
 			ob_end_clean();
-			
+		
 		foreach ($backtrace as &$backtraceItem) {
 			if (isset($backtraceItem['args'])) {
 				foreach ($backtraceItem['args'] as &$argument) {
@@ -30,8 +30,15 @@ class Core_BacktracePrinter {
 		if (Environment::getCurrentEnvironment() == Environment::LIVE && defined('CALLBACK_ERROR'))
 			call_user_func(CALLBACK_ERROR, $backtrace, $customMessage, $errorType);
 		else
-			require_once('backtraceprinter.tpl');
+			printBacktrace($backtrace, $customMessage, $errorType);
 		exit;
+	}
+	
+	/**
+	 * Does the actual printing
+	 */
+	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
+		require_once('backtraceprinter.tpl');
 	}
 }
 

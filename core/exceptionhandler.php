@@ -9,7 +9,7 @@ class Core_ExceptionHandler {
 		$backtrace = $exception->getTrace();
 		if (isset($backtrace[0]['class']) && $backtrace[0]['class'] == 'Core_ErrorHandler')
 			unset($backtrace[0]);
-		Core_BacktracePrinter::printBacktrace($backtrace, $message, 'Uncaught '.get_class($exception));
+		Core_BacktracePrinter::handle($backtrace, $message, 'Uncaught '.get_class($exception));
 	}
 }
 
