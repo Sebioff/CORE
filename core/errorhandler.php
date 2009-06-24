@@ -20,7 +20,9 @@ class Core_ErrorHandler {
 				$errorType='Notice';
 				break;
 		}
-		throw new Core_Exception($errorType.': '.$errstr.' in '.$errfile.'('.$errline.') thrown');
+		
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+			throw new Core_Exception($errorType.': '.$errstr.' in '.$errfile.'('.$errline.') thrown');
 	}
 }
 
