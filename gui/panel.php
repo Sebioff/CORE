@@ -43,8 +43,8 @@ class GUI_Panel {
 		$this->beforeDisplay();
 		
 		if ($this->submittable) {
-			echo sprintf('<form name="%s" id="%s" action="%s" method="post">\n<fieldset>', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
-			echo '\n';
+			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
+			echo '<fieldset>';
 		}
 		
 		echo $this->render();
@@ -52,7 +52,7 @@ class GUI_Panel {
 		if ($this->submittable) {
 			$this->addPanel($hasBeenSubmittedBox = new GUI_Control_HiddenBox('hasbeensubmitted', 1));
 			$hasBeenSubmittedBox->display();
-			echo '\n</fieldset>\n</form>', '\n';
+			echo '</fieldset>', '</form>';
 		}
 	}
 	
