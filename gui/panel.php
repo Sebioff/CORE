@@ -43,7 +43,7 @@ class GUI_Panel {
 		$this->beforeDisplay();
 		
 		if ($this->submittable) {
-			echo sprintf('<form name="%s" id="%s" action="%s" method="post">', $this->getID(), $this->getID(), $_SERVER['REQUEST_URI']);
+			echo sprintf('<form id="%s" action="%s" method="post">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
 		}
 		

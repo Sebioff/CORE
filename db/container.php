@@ -169,22 +169,7 @@ class DB_Container {
 	 */
 	protected function buildQueryString(array $options) {
 		if (!empty($this->filters)) {
-			$filterOptions = $this->filters;
-			// multidimensional arrays have to be merged manually, otherwhise the array
-			// of the filter would totally overwrite the array of the options
-			if (isset($options['conditions'])) {
-				if (isset($this->filters['conditions']))
-					$filterOptions['conditions'] = array_merge($options['conditions'], $this->filters['conditions']);
-				else
-					$filterOptions['conditions'] = $options['conditions'];
-			}
-			if (isset($options['join'])) {
-				if (isset($this->filters['join']))
-					$filterOptions['join'] = array_merge($options['join'], $this->filters['join']);
-				else
-					$filterOptions['join'] = $options['join'];
-			}
-			$options = array_merge($options, $filterOptions);
+			$options = self::mergeOptions($options, $this->filters);
 		}
 		
 		$query = '';
@@ -330,6 +315,28 @@ class DB_Container {
 		$clone = clone $this;
 		$clone->filters = $filterOptions;
 		return $clone;
+	}
+	
+	/**
+	 * Merges two options-arrays. Note that options defined in $majorOptions
+	 * will override options set in $minorOptions if they conflict.
+	 */
+	public static function mergeOptions(array $minorOptions, array $majorOptions) {
+		// multidimensional arrays have to be merged manually, otherwhise the array
+		// of the $majorOptions would totally overwrite the array of the $minorOptions
+		if (isset($minorOptions['conditions'])) {
+			if (isset($majorOptions['conditions']))
+				$majorOptions['conditions'] = array_merge($minorOptions['conditions'], $majorOptions['conditions']);
+			else
+				$majorOptions['conditions'] = $minorOptions['conditions'];
+		}
+		if (isset($minorOptions['join'])) {
+			if (isset($majorOptions['join']))
+				$majorOptions['join'] = array_merge($minorOptions['join'], $majorOptions['join']);
+			else
+				$majorOptions['join'] = $minorOptions['join'];
+		}
+		return array_merge($minorOptions, $majorOptions);
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
