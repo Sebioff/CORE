@@ -14,6 +14,7 @@ class DB_Container {
 	private $databaseSchema = array();
 	private $containerCache = array();
 	private $insertCallbacks = array();
+	private $updateCallbacks = array();
 	private $filters = array();
 
 	public function __construct($table, $recordClass = 'DB_Record') {
@@ -57,6 +58,7 @@ class DB_Container {
 			
 		$result = DB_Connection::get()->query($query);
 
+		// create records from query result
 		while ($row = mysql_fetch_assoc($result)) {
 			$record = new $this->recordClass();
 			$record->setContainer($this);
@@ -126,6 +128,9 @@ class DB_Container {
 			$databaseSchema = $this->getDatabaseSchema();
 			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 			DB_Connection::get()->query($query);
+			// execute updateCallbacks
+			foreach ($this->updateCallbacks as $updateCallback)
+				call_user_func($updateCallback, $record);
 		}
 		
 		// clear cache
@@ -304,6 +309,15 @@ class DB_Container {
 	 */
 	public function addInsertCallback($callback) {
 		$this->insertCallbacks[] = $callback;
+	}
+	
+	/**
+	 * Adds a callback that is executed whenever a record is updated in this
+	 * container.
+	 * The callback receives the updated DB_Record as first parameter.
+	 */
+	public function addUpdateCallback($callback) {
+		$this->updateCallbacks[] = $callback;
 	}
 	
 	/**
