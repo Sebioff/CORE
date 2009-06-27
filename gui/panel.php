@@ -45,6 +45,7 @@ class GUI_Panel {
 		if ($this->submittable) {
 			echo sprintf('<form id="%s" action="%s" method="post">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
+			echo '<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" name="IESucks" /><![endif]-->';
 		}
 		
 		echo $this->render();

@@ -31,8 +31,8 @@ class GUI_Panel_PageView extends GUI_Panel {
 	 * @return int the number of the currently opened page
 	 */
 	public function getPage() {
-		if ($this->getModule()->getParam('page')) {
-			$page = (int)$this->getModule()->getParam('page');
+		if ($this->getModule()->getParam($this->getName().'-page')) {
+			$page = (int)$this->getModule()->getParam($this->getName().'-page');
 			if ($page > $this->getPageCount())
 				$page = $this->getPageCount();
 			return $page;
@@ -88,7 +88,7 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 		
 		for ($i = 1; $i <= $this->getPageView()->getPageCount(); $i++) {
 			$params = $this->getModule()->getParams();
-			$params['page'] = $i;
+			$params[$this->getPageView()->getName().'-page'] = $i;
 			$url = $this->getModule()->getUrl($params);
 			$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
 			if ($i == $this->getPageView()->getPage())
