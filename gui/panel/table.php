@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Panel to display a html table
+ */
 class GUI_Panel_Table extends GUI_Panel {
 	private $lines = array();
 	private $header = array();
