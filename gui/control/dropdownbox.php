@@ -4,7 +4,7 @@ class GUI_Control_DropDownBox extends GUI_Control {
 	private $values = array();
 	
 	// CONSTRUCTORS ------------------------------------------------------------
-	public function __construct($name, $values, $defaultValue = null, $title = '') {
+	public function __construct($name, array $values, $defaultValue = null, $title = '') {
 		parent::__construct($name, $defaultValue, $title);
 
 		$this->values = $values;

@@ -76,7 +76,7 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 	private $pageView = null;
 	
 	public function __construct(GUI_Panel_PageView $pageView) {
-		parent::__construct('pages');
+		parent::__construct('pages', 'Seite');
 		
 		$this->pageView = $pageView;
 		$this->setTemplate(dirname(__FILE__).'/pageview_pages.tpl');

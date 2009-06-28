@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Panel to display a html table
  */

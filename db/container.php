@@ -27,7 +27,7 @@ class DB_Container {
 	/**
 	 * @return DB_Record returns only the first fitting record (or null if there is none)
 	 */
-	public function selectFirst(array $options) {
+	public function selectFirst(array $options = array()) {
 		$options['limit'] = 1;
 		$records = $this->select($options);
 		if (!empty($records))
@@ -47,7 +47,7 @@ class DB_Container {
 	 * $options['join'] = array of tables
 	 * @return an array of records fitting to the specified search parameters
 	 */
-	public function select(array $options) {
+	public function select(array $options = array()) {
 		$records = array();
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
@@ -140,7 +140,7 @@ class DB_Container {
 	/**
 	 * @param $args either an options-array or a record
 	 */
-	public function delete($args) {
+	public function delete($args = array()) {
 		if (is_array($args))
 			$this->deleteByOptions($args);
 		else
