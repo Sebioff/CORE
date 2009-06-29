@@ -34,6 +34,11 @@ class App {
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 		session_start();
 		
+		// overwrite $_SESSION
+		if (!isset($_SESSION[PROJECT_NAME]))
+			$_SESSION[PROJECT_NAME] = array();
+		$GLOBALS['_SESSION'] = &$_SESSION[PROJECT_NAME];
+		
 		// first boot
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			self::systemCheck();

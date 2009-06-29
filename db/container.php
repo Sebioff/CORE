@@ -69,6 +69,8 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
+		// FIXME careful: this caching only works as long as just ONE container
+		// accesses the table. make containerCache static.
 		$this->containerCache[$query] = $records;
 		
 		return $records;
@@ -94,7 +96,6 @@ class DB_Container {
 	public function save(DB_Record $record) {
 		$properties = array();
 		$values = array();
-		$return = null;
 		foreach ($record->getAllProperties() as $property => $value) {
 			$properties[] = Text::camelCaseToUnderscore($property);
 			if (is_object($value) && $value instanceof DB_Record)
@@ -106,7 +107,7 @@ class DB_Container {
 			$query = 'INSERT INTO `'.$this->table.'`';
 			$query .= ' ('.implode(', ', $properties).') VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
-			$return = DB_Connection::get()->query($query);
+			DB_Connection::get()->query($query);
 			$record->setContainer($this);
 			$databaseSchema = $this->getDatabaseSchema();
 			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
@@ -128,7 +129,7 @@ class DB_Container {
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
 			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
-			$return = DB_Connection::get()->query($query);
+			DB_Connection::get()->query($query);
 			// execute updateCallbacks
 			foreach ($this->updateCallbacks as $updateCallback)
 				call_user_func($updateCallback, $record);
@@ -136,8 +137,6 @@ class DB_Container {
 		
 		// clear cache
 		$this->containerCache = array();
-		
-		return (bool)$return;
 	}
 	
 	/**
