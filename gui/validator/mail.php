@@ -4,7 +4,20 @@ class GUI_Validator_Mail extends GUI_Validator {
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
 		// FIXME what about mail@domain.info ?!
-		return eregi('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$', $this->control->getValue());
+		$nonascii      = "\x80-\xff"; # Non-ASCII-Chars are not allowed
+	    $nqtext        = "[^\\\\$nonascii\015\012\"]";
+	    $qchar         = "\\\\[^$nonascii]";
+	    $protocol      = '(?:mailto:)';
+	    $normuser      = '[a-zA-Z0-9-][a-zA-Z0-9_.-]*';
+	    $quotedstring  = "\"(?:$nqtext|$qchar)+\"";
+	    $user_part     = "(?:$normuser|$quotedstring)";
+	    $dom_mainpart  = '[a-zA-Z0-9][a-zA-Z0-9._-]*\\.';
+	    $dom_subpart   = '(?:[a-zA-Z0-9][a-zA-Z0-9._-]*\\.)*';
+	    $dom_tldpart   = '[a-zA-Z]{2,5}';
+	    $domain_part   = "$dom_subpart$dom_mainpart$dom_tldpart";
+	    $regex         = "$protocol?$user_part\@$domain_part";
+		
+		return (bool)preg_match("/^$regex$/", $this->control->getValue());
 	}
 	
 	public function getError() {
