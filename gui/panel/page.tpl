@@ -5,7 +5,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="imagetoolbar" content="no" />
 		<? foreach ($this->getMetaTags() as $key => $value): ?>
-			<meta http-equiv="<?= $key ?>" content="<?= $value ?>" />
+			<meta name="<?= $key ?>" content="<?= $value ?>" />
 		<? endforeach ?>
 		<? foreach ($this->getCssRouteReferences() as $cssRoute): ?>
 			<link rel="stylesheet" type="text/css" href="<?= $cssRoute ?>" /> 

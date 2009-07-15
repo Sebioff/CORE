@@ -9,10 +9,11 @@
  * @method array countByPROPERTY()
  */
 class DB_Container {
+	private static $containerCache = array();
+	
 	private $recordClass = '';
 	private $table = '';
 	private $databaseSchema = array();
-	private $containerCache = array();
 	private $insertCallbacks = array();
 	private $updateCallbacks = array();
 	private $filters = array();
@@ -53,8 +54,8 @@ class DB_Container {
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
 		$databaseSchema = $this->getDatabaseSchema();
-		if (isset($this->containerCache[$query]))
-			return $this->containerCache[$query];
+		if (isset(self::$containerCache[$this->getTable()][$query]))
+			return self::$containerCache[$this->getTable()][$query];
 			
 		$result = DB_Connection::get()->query($query);
 
@@ -69,9 +70,7 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
-		// FIXME careful: this caching only works as long as just ONE container
-		// accesses the table. make containerCache static.
-		$this->containerCache[$query] = $records;
+		self::$containerCache[$this->getTable()][$query] = $records;
 		
 		return $records;
 	}
@@ -136,7 +135,7 @@ class DB_Container {
 		}
 		
 		// clear cache
-		$this->containerCache = array();
+		self::$containerCache[$this->getTable()] = array();
 	}
 	
 	/**
@@ -149,7 +148,7 @@ class DB_Container {
 			$this->deleteByRecord($args);
 			
 		// clear cache
-		$this->containerCache = array();
+		self::$containerCache[$this->getTable()] = array();
 	}
 	
 	/**

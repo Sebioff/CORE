@@ -1,6 +1,5 @@
 <?php
 
-// TODO use late static binding for singleton instance in PHP 5.3
 /**
  * Provides functions for security protection.
  * Users are associated with groups.
@@ -9,11 +8,17 @@
  * security object using Security::register() in your modules.php
  */
 abstract class Security {
+	private static $stack = array();
+	
 	private $privileges = array();
 	private $containerUsers = null;
 	private $containerGroups = null;
 	private $containerGroupsUsersAssoc = null;
 	private $containerPrivileges = null;
+	
+	protected function __construct() {
+		// Singleton
+	}
 	
 	public function setPrivilege($privilegeIdentifier, DB_Record $userGroup, $value = true) {
 		$options = array();
@@ -194,6 +199,32 @@ abstract class Security {
 	 */
 	public static function register(Security $securityImpl) {
 		CoreRoutes_Reset::addCallbackOnAfterReset(array($securityImpl, 'onSetup'));
+	}
+	
+	// TODO use late static binding PHP 5.3, remove $class parameter (use current class)
+	public static function get($class = '', $name = '') {
+		$stackName = $class.$name;
+		if (!isset(self::$stack[$stackName]) || empty(self::$stack[$stackName]))
+			self::push(new $class(), $name, $class); // TODO remove $class parameter with php 5.3, use late static binding
+		
+		return end(self::$stack[$stackName]);
+	}
+	
+	// TODO use late static binding PHP 5.3, remove $class parameter (use current class)
+	public static function push(Security $context, $name = '', $class = '') {
+		$stackName = $class.$name;
+		
+		if (!isset(self::$stack[$stackName]))
+			self::$stack[$stackName] = array();
+
+		array_push(self::$stack[$stackName], $context);
+	}
+	
+	// TODO use late static binding PHP 5.3, remove $class parameter (use current class)
+	public static function pop($name = '', $class = '') {
+		$stackName = $class.$name;
+		
+		return array_pop(self::$stack[$stackName]);
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

@@ -45,7 +45,7 @@ class Module extends Scriptlet {
 	// TODO: use $moduleName here instead of routename
 	// change getSubmoduleByName to getSubmoduleByRouteName
 	public function getSubmodule($moduleRouteName) {
-		if (isset($this->submodules[$moduleRouteName]))
+		if (isset($this->submodules[$moduleRouteName]) && $this->submodules[$moduleRouteName]->checkPrivileges())
 			return $this->submodules[$moduleRouteName];
 		else
 			return null;
@@ -55,9 +55,14 @@ class Module extends Scriptlet {
 	 * @return Module
 	 */
 	public function getSubmoduleByName($moduleName) {
-		foreach ($this->submodules as $submodule)
-			if ($submodule->getName() == $moduleName)
-				return $submodule;
+		foreach ($this->submodules as $submodule) {
+			if ($submodule->getName() == $moduleName) {
+				if ($submodule->checkPrivileges())
+					return $submodule;
+				else
+					return null;
+			}
+		}
 		return null;
 	}
 	
@@ -66,7 +71,7 @@ class Module extends Scriptlet {
 	}	
 	
 	public function hasSubmodule($moduleRouteName) {
-		return isset($this->submodules[$moduleRouteName]);
+		return (isset($this->submodules[$moduleRouteName]) && $this->submodules[$moduleRouteName]->checkPrivileges());
 	}
 
 	public function hasSubmodules() {
@@ -118,6 +123,11 @@ class Module extends Scriptlet {
 		return $this->cssRouteReferences;
 	}
 	
+	/**
+	 * Redirects to the specified url after an amout of time, using JavaScript
+	 * @param $url the url to redirect to
+	 * @param $timeOffset the amount of time in milliseconds after which to redirect
+	 */
 	public function jsRedirect($url, $timeOffset = 0) {
 		$this->addJsAfterContent(sprintf('setTimeout(function() {window.location=\'%s\';}, %d);', $url, $timeOffset));
 	}
@@ -132,13 +142,21 @@ class Module extends Scriptlet {
 		// callback
 	}
 	
+	/**
+	 * Override this if you want to restrict access to this module.
+	 * @return boolean true if acccess is granted, false otherwhise
+	 */
+	public function checkPrivileges() {
+		return true;
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getMetaTags() {
 		return $this->metaTags;
 	}
 	
-	public function setMetaTag($key, $value) {
-		$this->metaTags[$key] = $value;
+	public function setMetaTag($name, $content) {
+		$this->metaTags[$name] = Text::escapeHTML($content);
 	}
 }
 
