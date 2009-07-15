@@ -40,7 +40,7 @@ class GUI_Validator_HTML extends GUI_Validator {
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		preg_match_all('=<([a-z]+\d?)>=Ui', $this->control->getValue(), $matches);
+		preg_match_all('=<([a-z]+\d?).*>=Uim', $this->control->getValue(), $matches);
 		foreach ($matches[1] as $element) {
 			if (in_array($element, $this->denied)) {
 				return false;
@@ -49,7 +49,6 @@ class GUI_Validator_HTML extends GUI_Validator {
 		return true;
 	}
 	
-	//FIXME: Maybe delete this, problem with JS validator don't get the added elements
 	public function addDeniedElement($element) {
 		if (in_array($element, $this->elements) && !in_array($element, $this->denied)) {
 			$this->denied[] = $element;
@@ -65,8 +64,14 @@ class GUI_Validator_HTML extends GUI_Validator {
 	}
 	
 	public function getJs() {
-		//TODO: Add JS Validator
-//		return array('email', 'true');
+		$js = 'jQuery.validator.addMethod("html", function(value, element) {
+				pattern = new RegExp("/'.implode('|', $this->denied).'/im");
+				return !pattern.test(value);
+			},
+			"Text enthält nicht erlaubte HTML-Elemente"
+		);';
+		Router::get()->getCurrentModule()->addJsAfterContent($js);
+		return array('html', 'true'); 
 	}
 }
 
