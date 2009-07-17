@@ -1,7 +1,7 @@
 <?php
 
 class GUI_Validator_HTML extends GUI_Validator {
-	private $denied = array('applet',
+	private $blacklist = array('applet',
 		'base', 'basefont', 'bdo', 'body', 'button',
 		'dir',
 		'fieldset', 'form', 'frame', 'frameset',
@@ -40,23 +40,44 @@ class GUI_Validator_HTML extends GUI_Validator {
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		preg_match_all('=<([a-z]+\d?).*>=Uim', $this->control->getValue(), $matches);
+		preg_match_all('=<([a-z]+[1-6]?).*?>=im', $this->control->getValue(), $matches);
 		foreach ($matches[1] as $element) {
-			if (in_array($element, $this->denied)) {
+			if (in_array($element, $this->blacklist)) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	public function addDeniedElement($element) {
-		if (in_array($element, $this->elements) && !in_array($element, $this->denied)) {
-			$this->denied[] = $element;
+	/**
+	 * Add an HTML-element to blacklist.
+	 * @param $element
+	 */
+	public function addToBlacklist($element) {
+		if (in_array($element, $this->elements) && !in_array($element, $this->blacklist)) {
+			$this->blacklist[] = $element;
+		}
+	}
+	
+	/**
+	 * Override actual blacklist with new blacklist.
+	 * @param list of elements
+	 */
+	public function setBlacklistElements() {
+		$elements = func_get_args();
+		$new_denieds = array();
+		foreach ($elements as $element) {
+			if (in_array($element, $this->elements)) {
+				$new_elements[] = $element;
+			}
+		}
+		if (count($new_elements) > 0) {
+			$this->blacklist = $new_elements;
 		}
 	}
 	
 	public function getAllowedElements() {
-		return array_diff($this->elements, $this->denied);
+		return array_diff($this->elements, $this->blacklist);
 	}
 	
 	public function getError() {
@@ -64,14 +85,20 @@ class GUI_Validator_HTML extends GUI_Validator {
 	}
 	
 	public function getJs() {
-		$js = 'jQuery.validator.addMethod("html", function(value, element) {
-				pattern = new RegExp("/'.implode('|', $this->denied).'/im");
-				return !pattern.test(value);
+		$js = 'jQuery.validator.addMethod("html'.$this->control->getName().'", function(value, element) {
+				elements = " '.implode(' ', $this->blacklist).' ";
+				pattern = /<([a-z]+[1-6]?).*?>/gim;
+				while (treffer = pattern.exec(value)) {
+					if (elements.indexOf(" "+treffer[1]+" ") != -1) {
+						return false;
+					}
+				}
+				return true;
 			},
-			"Text enthält nicht erlaubte HTML-Elemente"
+			"'.$this->getError().'"
 		);';
 		Router::get()->getCurrentModule()->addJsAfterContent($js);
-		return array('html', 'true'); 
+		return array('html'.$this->control->getName(), 'true'); 
 	}
 }
 
