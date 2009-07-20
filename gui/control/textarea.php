@@ -10,6 +10,8 @@ class GUI_Control_TextArea extends GUI_Control {
 
 		$this->setTemplate(dirname(__FILE__).'/textarea.tpl');
 		$this->addClasses('core_gui_textarea');
+		$this->setAttribute('rows', 10);
+		$this->setAttribute('cols', 50);
 	}
 }
 

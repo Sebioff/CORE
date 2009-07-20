@@ -65,6 +65,8 @@ class GUI_Validator_HTML extends GUI_Validator {
 	 */
 	public function setBlacklistElements() {
 		$elements = func_get_args();
+		if (is_array($elements[0]))
+			$elements = $elements[0];
 		$new_denieds = array();
 		foreach ($elements as $element) {
 			if (in_array($element, $this->elements)) {
