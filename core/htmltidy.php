@@ -2,6 +2,9 @@
 
 class HTMLTidy {
 	public static function tidy() {
+		if (Router::get()->getRequestMode() != Router::REQUESTMODE_GET)
+			return;
+		
 		$tidy = new tidy();
 		$config = array(
 			'indent-spaces' => 2,

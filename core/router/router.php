@@ -6,6 +6,9 @@
  * TODO needs cleanup, a bit of a mixup between module/scriptlet
  */
 class Router {
+	const REQUESTMODE_GET = 0;
+	const REQUESTMODE_AJAX = 1;
+	
 	private static $instance = null;
 	/** contains static routes = routes to files/folders */
 	private $staticRoutes = array();
@@ -17,6 +20,7 @@ class Router {
 	private $params = array();
 	/** the single sections of the current URI */
 	private $requestParams = null;
+	private $requestMode = self::REQUESTMODE_GET;
 	
 	private function __construct() {
 		// Singleton
@@ -62,6 +66,9 @@ class Router {
 	 */
 	public function init() {
 		require_once PROJECT_PATH.'/config/routes.php';
+		
+		if (isset($_POST['core_ajax']))
+			$this->requestMode = self::REQUESTMODE_AJAX;
 		
 		$languageScriptlet = Language_Scriptlet::get();
 		
@@ -211,6 +218,10 @@ class Router {
 	
 	public function getRequestParams() {
 		return $this->requestParams;
+	}
+	
+	public function getRequestMode() {
+		return $this->requestMode;
 	}
 	
 	public static function get() {

@@ -23,7 +23,39 @@ class GUI_Panel_Main extends GUI_Panel {
 	}
 	
 	public function displayContent() {
-		require dirname(__FILE__).'/page.tpl';
+		if (Router::get()->getRequestMode() != Router::REQUESTMODE_AJAX) {
+			require dirname(__FILE__).'/page.tpl';
+		}
+		else {
+			require dirname(__FILE__).'/page_ajax.tpl';
+		}
+	}
+	
+	/**
+	 * Displays the content of a page that is loaded via Ajax
+	 * -> displays only specific panels
+	 */
+	public function displayContentAjax() {
+		$panels = explode(',', $_POST['refreshPanels']);
+		$panelsCount = count($panels);
+		for ($i = 0; $i < $panelsCount; $i++) {
+			$panelTree = explode('-', $panels[$i]);
+			$currentPanel = $this;
+			$panelExists = true;
+			$panelTreeCount = count($panelTree);
+			for ($j = 1; $j < $panelTreeCount; $j++) {
+				if (!$currentPanel->hasPanel($panelTree[$j])) {
+					$panelExists = false;
+					break;
+				}
+				
+				$currentPanel = $currentPanel->{$panelTree[$j]};
+			}
+			
+			if ($panelExists)
+				echo $currentPanel->display();
+		}
+		//echo $this->getJsAfterContent();
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

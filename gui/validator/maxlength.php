@@ -9,7 +9,11 @@ class GUI_Validator_MaxLength extends GUI_Validator {
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function onSetControl() {
-		$this->control->setAttribute('maxlength', $this->maxLength);
+		if ($this->control instanceof GUI_Control_TextBox
+			|| $this->control instanceof GUI_Control_PasswordBox
+			|| $this->control instanceof GUI_Control_DigitBox
+		)
+			$this->control->setAttribute('maxlength', $this->maxLength);
 	}
 	
 	public function isValid() {
@@ -17,7 +21,7 @@ class GUI_Validator_MaxLength extends GUI_Validator {
 	}
 	
 	public function getError() {
-		return 'Darf nicht länger als '.$this->maxLength.' Zeichen sein';
+		return 'Darf nicht länger als '.$this->maxLength.' Zeichen sein (momentan: '.Text::length($this->control->getValue()).')';
 	}
 	
 	public function getJs() {

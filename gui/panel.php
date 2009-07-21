@@ -22,6 +22,10 @@ class GUI_Panel {
 	private $submittable = false;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
+	/**
+	 * @param $name name of the panel, MAY NOT CONTAIN: -,
+	 * Those chars are currently not prohibited by code (to save time), but don't use them!
+	 */
 	public function __construct($name, $title = '') {
 		$this->setName($name);
 		$this->setTitle($title);
@@ -45,6 +49,7 @@ class GUI_Panel {
 		if ($this->submittable) {
 			echo sprintf('<form id="%s" action="%s" method="post">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
+			// fix for IE not submitting button name in post data if form is submitted with enter in forms with only one input
 			echo '<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" name="IESucks" /><![endif]-->';
 		}
 		

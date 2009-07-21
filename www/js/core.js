@@ -11,3 +11,33 @@ $().ready( function() {
 		}
 	});
 });
+
+(function($) {
+	$.core = function() {}
+	
+	$.core.loadPanels = function(panelNames, callback) {
+		$.post(document.location.href, { core_ajax: true, refreshPanels: panelNames.join(',') },
+			function(data) {
+				var result = new Array();
+				data = $(data);
+				
+				for(var i = 0; i < panelNames.length; i++) {
+					result[panelNames[i]] = data.find("#" + panelNames[i]);
+				}
+				
+				if (callback != null)
+					callback(result);
+			}
+		);
+	}
+	
+	$.core.refreshPanels = function(panelNames) {
+		$.core.loadPanels(panelNames, 
+			function(panelData) {
+				for (panelName in panelData) {
+					$("#" + panelName).replaceWith(panelData[panelName]);
+				}
+			}
+		);
+	}
+})(jQuery);
