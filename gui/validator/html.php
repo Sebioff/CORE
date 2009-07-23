@@ -89,13 +89,14 @@ class GUI_Validator_HTML extends GUI_Validator {
 	public function getJs() {
 		$js = 'jQuery.validator.addMethod("html'.$this->control->getName().'", function(value, element) {
 				elements = " '.implode(' ', $this->blacklist).' ";
+				ret = true;
 				pattern = /<([a-z]+[1-6]?).*?>/gim;
 				while (treffer = pattern.exec(value)) {
 					if (elements.indexOf(" "+treffer[1]+" ") != -1) {
-						return false;
+						ret = false;
 					}
 				}
-				return true;
+				return ret;
 			},
 			"'.$this->getError().'"
 		);';
