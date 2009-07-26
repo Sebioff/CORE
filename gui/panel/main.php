@@ -41,19 +41,18 @@ class GUI_Panel_Main extends GUI_Panel {
 		for ($i = 0; $i < $panelsCount; $i++) {
 			$panelTree = explode('-', $panels[$i]);
 			$currentPanel = $this;
-			$panelExists = true;
 			$panelTreeCount = count($panelTree);
 			for ($j = 1; $j < $panelTreeCount; $j++) {
 				if (!$currentPanel->hasPanel($panelTree[$j])) {
-					$panelExists = false;
 					break;
 				}
 				
 				$currentPanel = $currentPanel->{$panelTree[$j]};
 			}
 			
-			if ($panelExists)
+			if ($currentPanel->getID() == $panels[$i]) {
 				echo $currentPanel->display();
+			}
 		}
 		//echo $this->getJsAfterContent();
 	}

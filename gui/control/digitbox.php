@@ -13,6 +13,10 @@ class GUI_Control_DigitBox extends GUI_Control {
 		$this->addValidator(new GUI_Validator_Digits());
 		$this->addClasses('core_gui_digitbox');
 	}
+	
+	public function getValue() {
+		return (int)parent::getValue();
+	}
 }
 
 ?>

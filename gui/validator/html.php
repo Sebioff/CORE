@@ -87,6 +87,8 @@ class GUI_Validator_HTML extends GUI_Validator {
 	}
 	
 	public function getJs() {
+		// TODO as of FF 3.5.1, this validator doesn't work when using "break;"
+		// after setting ret = false. Should be checked again later.
 		$js = 'jQuery.validator.addMethod("html'.$this->control->getName().'", function(value, element) {
 				elements = " '.implode(' ', $this->blacklist).' ";
 				ret = true;

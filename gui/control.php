@@ -84,7 +84,7 @@ abstract class GUI_Control extends GUI_Panel {
 	 */
 	public function resetValue() {
 		// TODO use lambda-function with PHP 5.3
-		$this->walkRecursive(array(self, 'resetValueFunction'));
+		$this->walkRecursive(array('GUI_Control', 'resetValueFunction'));
 	}
 	
 	public static function resetValueFunction(GUI_Panel $panel) {
