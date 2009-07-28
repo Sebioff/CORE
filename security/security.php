@@ -50,6 +50,10 @@ abstract class Security {
 		return $this->getContainerGroups()->selectByGroupIdentifierFirst($groupIdentifier);
 	}
 	
+	public function getGroups() {
+		return $this->getContainerGroups()->select();
+	}
+	
 	/**
 	 * @return array of users that belong to the group identified by groupIdentifier
 	 */
