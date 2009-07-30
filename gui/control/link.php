@@ -1,12 +1,12 @@
 <?php
 
-class GUI_Control_Link extends GUI_Control {
+class GUI_Control_Link extends GUI_Control_Submittable {
 	private $url = '';
 	private $caption = '';
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $caption, $url, $title = '') {
-		parent::__construct($name, null, $title);
+		parent::__construct($name, $caption, $title);
 		
 		$this->url = $url;
 		$this->caption = $caption;
@@ -25,10 +25,6 @@ class GUI_Control_Link extends GUI_Control {
 	
 	public function getCaption() {
 		return $this->caption;
-	}
-	
-	public function setConfirmationMessage($message) {
-		$this->setAttribute('onClick', sprintf('return(confirm(\'%s\'))', $message));
 	}
 }
 

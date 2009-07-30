@@ -1,11 +1,11 @@
 <?php
 
-class GUI_Control_SubmitButton extends GUI_Control {
+class GUI_Control_SubmitButton extends GUI_Control_Submittable {
 	private $callbacks = array();
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $caption = '') {
-		parent::__construct($name, $caption, $caption);
+		parent::__construct($name, $caption);
 		
 		$this->setTemplate(dirname(__FILE__).'/submitbutton.tpl');
 		$this->addClasses('core_gui_submitbutton');
