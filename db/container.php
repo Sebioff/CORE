@@ -99,20 +99,14 @@ class DB_Container {
 			$properties[] = Text::camelCaseToUnderscore($property);
 			if (is_object($value) && $value instanceof DB_Record)
 				$value = $value->getPK();
-			$values[] = $this->escape($value);
+			$values[] = self::escape($value);
 		}
 		if (!$record->getPK()) {
 			// insert
 			$query = 'INSERT INTO `'.$this->table.'`';
 			$query .= ' ('.implode(', ', $properties).') VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
-			DB_Connection::get()->query($query);
-			$record->setContainer($this);
-			$databaseSchema = $this->getDatabaseSchema();
-			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
-			// execute insertCallbacks
-			foreach ($this->insertCallbacks as $insertCallback)
-				call_user_func($insertCallback, $record);
+			$this->insert($query, $record);
 		}
 		else {
 			// update
@@ -128,10 +122,7 @@ class DB_Container {
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
 			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
-			DB_Connection::get()->query($query);
-			// execute updateCallbacks
-			foreach ($this->updateCallbacks as $updateCallback)
-				call_user_func($updateCallback, $record);
+			$this->update($query, $record);
 		}
 		
 		// clear cache
@@ -168,7 +159,34 @@ class DB_Container {
 		$databaseSchema = $this->getDatabaseSchema();
 		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 		DB_Connection::get()->query($query);
-	}	
+	}
+	
+	/**
+	 * Executes an insert query.
+	 * NOTE: it should usually not be neccessary to use this method!
+	 */
+	public function insert($query, DB_Record $record) {
+		$result = DB_Connection::get()->query($query);
+		$record->setContainer($this);
+		$databaseSchema = $this->getDatabaseSchema();
+		$record->$databaseSchema['primaryKey'] = mysql_insert_id();
+		// execute insertCallbacks
+		foreach ($this->insertCallbacks as $insertCallback)
+			call_user_func($insertCallback, $record);
+		return $result;
+	}
+	
+	/**
+	 * Executes an update query.
+	 * NOTE: it should usually not be neccessary to use this method!
+	 */
+	public function update($query, DB_Record $record = null) {
+		$result = DB_Connection::get()->query($query);
+		// execute updateCallbacks
+		foreach ($this->updateCallbacks as $updateCallback)
+			call_user_func($updateCallback, $record);
+		return $result;
+	}
 	
 	/**
 	 * @return MySQL query string, build from the given array of options
@@ -193,7 +211,7 @@ class DB_Container {
 					else {
 						$conditionValue = $condition[$i];
 					}
-					$condition[0] = substr_replace($condition[0], '\''.$this->escape($conditionValue).'\'', $nextQuestionMark, 1);
+					$condition[0] = substr_replace($condition[0], '\''.self::escape($conditionValue).'\'', $nextQuestionMark, 1);
 					$nextQuestionMark = strpos($condition[0], '?', $nextQuestionMark + Text::length($conditionValue) + 1);
 				}
 				$conditions[] = $condition[0];
@@ -230,28 +248,6 @@ class DB_Container {
 		}
 
 		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
-	}
-	
-	/**
-	 * Does just the same as mysql_real_escape_string(), but without need for an
-	 * open database connection.
-	 * @param $value the String which is to be escaped
-	 */
-	public function escape($value) {
-		if ($value === null)
-			return null;
-
-		return strtr(
-			$value, array(
-				"\x00" => '\x00',
-				"\n" => '\n', 
-				"\r" => '\r', 
-				'\\' => '\\\\',
-				"'" => "\'", 
-				'"' => '\"', 
-				"\x1a" => '\x1a'
-			)
-		);
 	}
 	
 	/**
@@ -315,7 +311,7 @@ class DB_Container {
 	/**
 	 * Adds a callback that is executed whenever a record is updated in this
 	 * container.
-	 * The callback receives the updated DB_Record as first parameter.
+	 * The callback receives the updated DB_Record as first parameter (optional).
 	 */
 	public function addUpdateCallback($callback) {
 		$this->updateCallbacks[] = $callback;
@@ -352,6 +348,28 @@ class DB_Container {
 				$majorOptions['join'] = $minorOptions['join'];
 		}
 		return array_merge($minorOptions, $majorOptions);
+	}
+	
+	/**
+	 * Does just the same as mysql_real_escape_string(), but without need for an
+	 * open database connection.
+	 * @param $value the string which is to be escaped
+	 */
+	public static function escape($value) {
+		if ($value === null)
+			return null;
+
+		return strtr(
+			$value, array(
+				"\x00" => '\x00',
+				"\n" => '\n', 
+				"\r" => '\r', 
+				'\\' => '\\\\',
+				"'" => "\'", 
+				'"' => '\"', 
+				"\x1a" => '\x1a'
+			)
+		);
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
