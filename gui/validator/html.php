@@ -73,7 +73,7 @@ class GUI_Validator_HTML extends GUI_Validator {
 				$new_elements[] = $element;
 			}
 		}
-		if (count($new_elements) > 0) {
+		if (!empty($new_elements)) {
 			$this->blacklist = $new_elements;
 		}
 	}

@@ -167,7 +167,7 @@ class App_Autoloader {
 				require_once $path;
 				
 		// path not cached or wrong cached, search for class
-		if (!$path || !class_exists($className, false)) {
+		if ((!class_exists($className, false) && !interface_exists($className, false)) || !$path) {
 			$parts = explode('_', $className);
 			$isProjectClass = ($parts[0] == PROJECT_NAME);
 			
@@ -191,7 +191,7 @@ class App_Autoloader {
 			}
 		}
 		
-		if (!class_exists($className, false))
+		if (!class_exists($className, false) && !interface_exists($className, false))
 			trigger_error(sprintf('Class \'%s\' not found', $className), E_USER_ERROR);
 	}
 	
@@ -205,24 +205,25 @@ class App_Autoloader {
 	 * @return String the path of the file the searched class is in
 	 */
 	private static function loadClass($className, Array $parts, $basePath) {
-		for ($i = count($parts)-1; $i >= 0; $i--) {
+		$partsCount = count($parts);
+		for ($i = $partsCount - 1; $i >= 0; $i--) {
 			// Just_Some_Class -> just/some/class.php, just/someclass.php, ...
 			$path = $basePath;
 			for ($j = 0; $j < $i; $j++)
 				$path .= '/'.$parts[$j];
 			$file = '';
-			for ($j = $i; $j < count($parts); $j++)
+			for ($j = $i; $j < $partsCount; $j++)
 				$file .= $parts[$j];
 			$path .= '/'.$file.'.php';
 			if (self::correctClassPath($className, $path))
 				return $path;
 
-			if ($i != count($parts)-1) {
+			if ($i != $partsCount - 1) {
 				// Just_Some_Class -> just/class.php, some.php, ...
 				$path = $basePath;
 				for ($j = 0; $j < $i; $j++)
 					$path .= '/'.$parts[$j];
-				$path .= '/'.$parts[count($parts)-1].'.php';
+				$path .= '/'.$parts[$partsCount - 1].'.php';
 				if (self::correctClassPath($className, $path))
 					return $path;
 			}
@@ -230,7 +231,7 @@ class App_Autoloader {
 		
 		if (!empty($parts)) {
 			// Just_Some_Class -> just/some/class/class.php
-			$path = $basePath.'/'.implode('/', $parts).'/'.$parts[count($parts) - 1].'.php';
+			$path = $basePath.'/'.implode('/', $parts).'/'.$parts[$partsCount - 1].'.php';
 			if (self::correctClassPath($className, $path))
 					return $path;
 			
@@ -253,7 +254,7 @@ class App_Autoloader {
 	private static function correctClassPath($className, $path) {
 		if (file_exists($path)) {
 			require_once $path;
-			if (class_exists($className, false)) {
+			if (class_exists($className, false) || interface_exists($className, false)) {
 				$GLOBALS['cache']->set($className, $path);
 				return true;
 			}

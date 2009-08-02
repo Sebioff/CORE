@@ -34,7 +34,7 @@ class Core_MigrationsLoader {
 				$fileXPath = array_slice($fileXPathParts, 0, $i+1);
 				$fileXPath = implode('/', $fileXPath);
 				$result = $xml->xpath('/content/'.$fileXPath);
-				if (!count($result))
+				if (empty($result))
 					$currentXMLNode = $currentXMLNode[0]->addChild($fileXPathParts[$i]);
 				else
 					$currentXMLNode = $result;
@@ -46,7 +46,7 @@ class Core_MigrationsLoader {
 		natsort($migrationFiles);
 		foreach ($migrationFiles as $migrationFile) {
 			$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
-			if (!count($result)) {
+			if (empty($result)) {
 				$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
 				$child = $result[0]->addChild('file');
 				$child->addAttribute('name', $migrationFile);
