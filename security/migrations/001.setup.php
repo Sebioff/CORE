@@ -10,7 +10,7 @@ $privilegesContainer = $self->getContainerPrivilegesTableName();
 
 $queries[] = 'CREATE TABLE IF NOT EXISTS `'.$groupsContainer.'` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(25) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `group_identifier` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=0;';

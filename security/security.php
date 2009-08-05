@@ -60,6 +60,12 @@ abstract class Security {
 		$this->getContainerGroupsUsersAssoc()->delete($options);
 	}
 	
+	public function removeFromAllGroups(DB_Record $user) {
+		$options = array();
+		$options['conditions'][] = array('user = ?', $user);
+		$this->getContainerGroupsUsersAssoc()->delete($options);
+	}
+	
 	public function getGroup($groupIdentifier) {
 		return $this->getContainerGroups()->selectByGroupIdentifierFirst($groupIdentifier);
 	}

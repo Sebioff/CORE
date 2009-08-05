@@ -112,6 +112,10 @@ abstract class GUI_Control extends GUI_Panel {
 		return $this->defaultValue;
 	}
 	
+	public function setDefaultValue($defaultValue) {
+		$this->defaultValue = $defaultValue;
+	}
+	
 	public function addValidator(GUI_Validator $validator) {
 		$validator->setControl($this);
 		$this->validators[] = $validator;

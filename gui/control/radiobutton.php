@@ -1,32 +1,14 @@
 <?php
 
-class GUI_Control_RadioButton extends GUI_Control {
+class GUI_Control_RadioButton extends GUI_Control_Selectable {
 	private $group = '';
-	private $checkedDefaultValue = false;
-	private $checkedValue = false;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, $value = '', $checked = false, $title = '') {
-		if ($value === '')
-			$value = $name;
-		parent::__construct($name, $value, $title);
-		
-		$this->checkedDefaultValue = $checked;
+		parent::__construct($name, $value, $checked, $title);
+
 		$this->setTemplate(dirname(__FILE__).'/radiobutton.tpl');
 		$this->addClasses('core_gui_radiobutton');
-	}
-	
-	protected function generateID() {
-		parent::generateID();
-		
-		if (!empty($_POST)) {
-			if (isset($_POST[$this->getID()])) {
-				$this->checkedValue = true;
-			}
-		}
-		else {
-			$this->checkedValue = $this->checkedDefaultValue;
-		}
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -48,14 +30,6 @@ class GUI_Control_RadioButton extends GUI_Control {
 		}
 		
 		$this->group = $group;
-	}
-	
-	public function getChecked() {
-		return $this->checkedValue;
-	}
-	
-	public function setChecked($checked) {
-		$this->checkedDefaultValue = $checked;
 	}
 }
 

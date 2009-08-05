@@ -29,7 +29,7 @@ class GUI_Control_RadioButtonList extends GUI_Control {
 	
 	public function getValue() {
 		foreach ($this->getItems() as $item) {
-			if ($item->getChecked())
+			if ($item->getSelected())
 				return $item->getValue();
 		}
 		return null;

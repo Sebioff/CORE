@@ -4,9 +4,10 @@
  * Encapsulates a connection to the database.
  */
 class DB_Connection {
+	private static $instance = null;
+
 	private $connectionOptions = null;
 	private $connection = null;
-	private static $instance = null;
 	
 	/**
 	 * NOTE: you should only create new objects of this class if you really need
@@ -42,7 +43,7 @@ class DB_Connection {
 			if (!mysql_select_db($this->getDatabaseName(), $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 		}
-
+		
 		$result = mysql_query($query, $this->connection);
 		if (!$result)
 			throw new Core_QueryException('MySQL Query failed: '.mysql_error());

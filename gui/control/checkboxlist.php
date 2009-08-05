@@ -26,6 +26,16 @@ class GUI_Control_CheckBoxList extends GUI_Control {
 	public function getItems() {
 		return $this->items;
 	}
+	
+	public function getSelectedItems() {
+		$selectedItems = array();
+		
+		foreach ($this->items as $item)
+			if ($item->getSelected())
+				$selectedItems[] = $item;
+			
+		return $selectedItems;
+	}
 }
 
 ?>
