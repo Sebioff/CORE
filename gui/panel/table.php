@@ -16,6 +16,14 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->addClasses('core_gui_table');
 	}
 	
+	public function beforeInit() {
+		$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.min.js');
+	}
+	
+	public function afterInit() {
+		$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter(); });');
+	}
+	
 	private function checkLine($line) {
 		foreach ($line as $key => $value) {
 			if ($value instanceof GUI_Panel)

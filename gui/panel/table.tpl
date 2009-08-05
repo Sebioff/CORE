@@ -4,7 +4,7 @@
 <? if ($this->hasErrors()): ?>
 	<? $this->displayErrors(); ?>
 <? endif; ?>
-<table <?= $this->getAttributeString(); ?>>
+<table id="<?= $this->getID(); ?>" <?= $this->getAttributeString(); ?>>
 	<? $i = 0; ?>
 	<? if (count($this->getHeaders()) > 0): ?>
 		<thead>
