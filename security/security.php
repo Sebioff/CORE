@@ -39,11 +39,25 @@ abstract class Security {
 		}
 	}
 	
+	public function removePrivilege($privilegeIdentifier, DB_Record $userGroup) {
+		$options = array();
+		$options['conditions'][] = array('user_group = ?', $userGroup);
+		$options['conditions'][] = array('privilege = ?', $privilegeIdentifier);
+		$this->getContainerPrivileges()->delete($options);
+	}
+	
 	public function addToGroup(DB_Record $user, DB_Record $userGroup) {
 		$usersGroupAssoc = new DB_Record();
 		$usersGroupAssoc->user = $user;
 		$usersGroupAssoc->userGroup = $userGroup;
 		$this->getContainerGroupsUsersAssoc()->save($usersGroupAssoc);
+	}
+	
+	public function removeFromGroup(DB_Record $user, DB_Record $userGroup) {
+		$options = array();
+		$options['conditions'][] = array('user = ?', $user);
+		$options['conditions'][] = array('user_group = ?', $userGroup);
+		$this->getContainerGroupsUsersAssoc()->delete($options);
 	}
 	
 	public function getGroup($groupIdentifier) {
@@ -150,26 +164,26 @@ abstract class Security {
 		$options = array();
 		$options['join'] = array($groups, $groupsUsersAssoc);
 		$options['conditions'][] = array($privileges.'.privilege = ?', $privilegeIdentifier);
-		$options['conditions'][] = array($privileges.'.value = ?', true);
 		$options['conditions'][] = array($privileges.'.user_group = '.$groups.'.id');
 		$options['conditions'][] = array($groups.'.id = '.$groupsUsersAssoc.'.user_group');
 		$options['conditions'][] = array($groupsUsersAssoc.'.user = ?', $user);
-		$privilegeDefined = $this->getContainerPrivileges()->selectFirst($options);
+		$privilege = $this->getContainerPrivileges()->selectFirst($options);
 		
-		if ($privilegeDefined)
+		if (!$privilege)
+			return $this->getDefaultValue($privilegeIdentifier, $user);
+		else if ($privilege->value == true)
 			return true;
 		else
-			return $this->getDefaultValue($privilegeIdentifier, $user);
+			return false;
 	}
 	
 	public function groupHasPrivilege(DB_Record $group, $privilegeIdentifier) {
 		$options = array();
 		$options['conditions'][] = array('privilege = ?', $privilegeIdentifier);
-		$options['conditions'][] = array('value = ?', true);
 		$options['conditions'][] = array('user_group = ?', $group);
-		$privilegeDefined = $this->getContainerPrivileges()->selectFirst($options);
+		$privilege = $this->getContainerPrivileges()->selectFirst($options);
 		
-		if ($privilegeDefined)
+		if ($privilege && $privilege->value == true)
 			return true;
 		else
 			return false;
