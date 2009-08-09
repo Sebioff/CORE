@@ -8,6 +8,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	private $header = array();
 	private $footer = array();
 	private $numberOfColumns = 0;
+	private $enableSortable = false;
 	
 	public function __construct($name, $title = '') {
 		parent::__construct($name, $title);
@@ -16,12 +17,12 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->addClasses('core_gui_table');
 	}
 	
-	public function beforeInit() {
-		$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.min.js');
-	}
-	
 	public function afterInit() {
-		$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter(); });');
+		if ($this->enabledSortable()) {
+			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
+			$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter(); });');
+			$this->addClasses('core_gui_table_sortable');
+		}
 	}
 	
 	private function checkLine($line) {
@@ -31,8 +32,8 @@ class GUI_Panel_Table extends GUI_Panel {
 		}
 		return $line;
 	}
-	// GETTERS / SETTERS -------------------------------------------------------
 	
+	// GETTERS / SETTERS -------------------------------------------------------
 	public function addLine(array $line) {
 		if ($this->numberOfColumns == 0)
 			$this->numberOfColumns = count($line);
@@ -73,6 +74,14 @@ class GUI_Panel_Table extends GUI_Panel {
 	
 	public function getFooters() {
 		return $this->footer;
+	}
+	
+	public function enabledSortable() {
+		return $this->enableSortable;
+	}
+	
+	public function enableSortable($enable = true) {
+		$this->enableSortable = $enable;
 	}
 }
 

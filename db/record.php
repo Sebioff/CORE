@@ -5,6 +5,7 @@
  */
 class DB_Record {
 	private $properties = array();
+	private $resolvedProperties = array();
 	private $virtualProperties = array();
 	private $container = null;
 	
@@ -43,22 +44,40 @@ class DB_Record {
 	public function __get($property) {
 		if (isset($this->properties[$property])) {
 			// handle foreign keys
-			if ($this->hasForeignKey($property) && $this->properties[$property] != null && !is_object($this->properties[$property])) {
-				$databaseSchema = $this->container->getDatabaseSchema();
-				$reference = $databaseSchema['constraints'][$property];
-
-				if (isset($reference['referencedContainer'])) {
-					$container = $reference['referencedContainer'];
+			if ($this->hasForeignKey($property) && $this->properties[$property] != null) {
+				// property not resolved yet? -> resolve
+				if (!isset($this->resolvedProperties[$property])) {
+					$databaseSchema = $this->container->getDatabaseSchema();
+					$reference = $databaseSchema['constraints'][$property];
+	
+					if (isset($reference['referencedContainer'])) {
+						$container = $reference['referencedContainer'];
+					}
+					else {
+						$container = new DB_Container($reference['referencedTable']);
+					}
+					$this->resolvedProperties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
 				}
-				else {
-					$container = new DB_Container($reference['referencedTable']);
-				}
-				$this->properties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
+				return $this->resolvedProperties[$property];
 			}
-			return $this->properties[$property];
+			// no foreign keys, just a plain old normal property
+			else
+				return $this->properties[$property];
 		}
+		// property not defined - let's check if it's a virtual property...
 		elseif ($this->hasVirtualProperty($property))
 			return $this->getVirtualProperty($property);
+		else
+			return null;
+	}
+	
+	/**
+	 * @return the plain value of the given property, without resolving any references
+	 * or null if the property doesn't exist
+	 */
+	public function get($property) {
+		if (isset($this->properties[$property]))
+			return $this->properties[$property];
 		else
 			return null;
 	}

@@ -4,7 +4,7 @@
  * Ensures the input consists only of digits.
  */
 class GUI_Validator_Digits extends GUI_Validator {
-	const INFINITY = 999999999999999999;
+	const INFINITY = PHP_INT_MAX;
 	
 	private $minValue = 0;
 	private $maxValue = self::INFINITY;
@@ -17,12 +17,24 @@ class GUI_Validator_Digits extends GUI_Validator {
 	
 	public function isValid() {
 		return ctype_digit((string)$this->control->getValue()) 
-				&& $this->minValue <= $this->control->getValue()
+				&& $this->control->getValue() >= $this->minValue
 				&& $this->control->getValue() <= $this->maxValue;
 	}
 	
 	public function getError() {
-		return 'Darf nur Ziffern beinhalten und Zahl muss zwischen '.$this->minValue.' und '.$this->maxValue.' liegen';
+		$errorMessage = 'Darf nur Ziffern beinhalten';
+		
+		if ($this->minValue > 0 || $this->maxValue < self::INFINITY) {
+			$errorMessage .= ' und Zahl muss';
+			if ($this->minValue > 0 && $this->maxValue < self::INFINITY)
+		 		$errorMessage .= ' zwischen '.$this->minValue.' und '.$this->maxValue.' liegen';
+		 	else if ($this->minValue > 0)
+		 		$errorMessage .= ' größer als '.$this->minValue.' sein';
+		 	else if ($this->maxValue < self::INFINITY)
+		 		$errorMessage .= ' kleiner als '.$this->maxValue.' sein';
+		}
+		
+		return $errorMessage;
 	}
 	
 	public function getJs() {

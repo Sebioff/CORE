@@ -16,6 +16,7 @@ class DB_Container {
 	private $databaseSchema = array();
 	private $insertCallbacks = array();
 	private $updateCallbacks = array();
+	private $deleteCallbacks = array();
 	private $filters = array();
 
 	public function __construct($table, $recordClass = 'DB_Record') {
@@ -83,6 +84,10 @@ class DB_Container {
 		return $this->selectFirst($options);
 	}
 	
+	/**
+	 * @return int the number of rows that match the conditions specified in the
+	 * given options array
+	 */
 	public function count(array $options = array()) {
 		$options['properties'] = 'COUNT(*)';
 		return (int)$this->selectFirst($options)->{Text::underscoreToCamelCase('COUNT(*)')};
@@ -148,7 +153,7 @@ class DB_Container {
 	protected function deleteByOptions(array $options) {
 		$query = 'DELETE FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
-		DB_Connection::get()->query($query);
+		$this->deleteByQuery($query);
 	}
 	
 	/**
@@ -158,12 +163,12 @@ class DB_Container {
 		$query = 'DELETE FROM `'.$this->table.'` WHERE ';
 		$databaseSchema = $this->getDatabaseSchema();
 		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
-		DB_Connection::get()->query($query);
+		$this->deleteByQuery($query, $record);
 	}
 	
 	/**
 	 * Executes an insert query.
-	 * NOTE: it should usually not be neccessary to use this method!
+	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
 	 */
 	public function insert($query, DB_Record $record) {
 		$result = DB_Connection::get()->query($query);
@@ -178,7 +183,7 @@ class DB_Container {
 	
 	/**
 	 * Executes an update query.
-	 * NOTE: it should usually not be neccessary to use this method!
+	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
 	 */
 	public function update($query, DB_Record $record = null) {
 		$result = DB_Connection::get()->query($query);
@@ -189,7 +194,19 @@ class DB_Container {
 	}
 	
 	/**
-	 * @return MySQL query string, build from the given array of options
+	 * Executes an delete query.
+	 * NOTE: it should usually not be neccessary to use this method! Use delete() instead.
+	 */
+	public function deleteByQuery($query, DB_Record $record = null) {
+		$result = DB_Connection::get()->query($query);
+		// execute deleteCallbacks
+		foreach ($this->deleteCallbacks as $deleteCallback)
+			call_user_func($deleteCallback, $record);
+		return $result;
+	}
+	
+	/**
+	 * @return string MySQL query string, build from the given array of options
 	 */
 	protected function buildQueryString(array $options) {
 		if (!empty($this->filters)) {
@@ -231,6 +248,10 @@ class DB_Container {
 		return $query;
 	}
 	
+	/**
+	 * Automatically loads the schema of this containers' table.
+	 * This way, primary keys and foreign keys can be resolved easily.
+	 */
 	private function loadDatabaseSchema() {
 		if($this->databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table))
 			return;
@@ -238,8 +259,9 @@ class DB_Container {
 		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
 		while ($keyColumn = mysql_fetch_assoc($result)) {
 			$keyColumn['COLUMN_NAME'] = Text::underscoreToCamelCase($keyColumn['COLUMN_NAME']);
-			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY')
+			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY') {
 				$this->databaseSchema['primaryKey'] = $keyColumn['COLUMN_NAME'];
+			}
 			else {
 				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['type'] = 'foreignKey';
 				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedTable'] = $keyColumn['REFERENCED_TABLE_NAME'];
@@ -283,18 +305,39 @@ class DB_Container {
 	}
 	
 	/**
-	 * If any column of this container references the table of the given container,
-	 * references will be resolved using the given container.
+	 * If the given column of this container references the table of the given container,
+	 * the reference will be resolved using the given container. Note that if you
+	 * specify $referencedColumn as well this can also be used if the database doesn't
+	 * support foreign keys or no foreign keys are defined.
+	 * If no column is given all references of this container to the table of 
+	 * the given container will be resolved with the given container (only possible
+	 * if the database supports foreign keys).
 	 * It is NOT neccessary to add referenced containers like this (but if you don't,
 	 * a standard DB_Container will be used to resolve the reference)
+	 * @param $column string name of the column that references the given container
+	 * or null if all references to the table of the given container should be
+	 * resolved with the given container
+	 * @param $referencedColumn string name of the referenced column. Only needed
+	 * in combination with $column and if database doesn't support foreign keys 
+	 * or no foreign keys are defined.
 	 */
-	// TODO implement "lazy instantiation": except giving a container, give a
+	// TODO implement "lazy instantiation": instead of giving a container, give a
 	// callback to a method that creates/returns the container. That way the container
 	// is only instantiated if really needed
-	public function addReferencedContainer(DB_Container $container) {
-		foreach ($this->databaseSchema['constraints'] as &$referencedColumn) {
-			if ($referencedColumn['referencedTable'] == $container->getTable()) {
-				$referencedColumn['referencedContainer'] = $container;
+	public function addReferencedContainer(DB_Container $container, $column = null, $referencedColumn = null) {
+		if ($column === null) {
+			foreach ($this->databaseSchema['constraints'] as &$referencedColumn) {
+				if ($referencedColumn['referencedTable'] == $container->getTable()) {
+					$referencedColumn['referencedContainer'] = $container;
+				}
+			}
+		}
+		else {
+			$this->databaseSchema['constraints'][$column]['referencedContainer'] = $container;
+			if ($referencedColumn !== null) {
+				$this->databaseSchema['constraints'][$column]['type'] = 'foreignKey';
+				$this->databaseSchema['constraints'][$column]['referencedTable'] = $container->getTable();
+				$this->databaseSchema['constraints'][$column]['referencedColumn'] = $referencedColumn;
 			}
 		}
 	}
@@ -315,6 +358,15 @@ class DB_Container {
 	 */
 	public function addUpdateCallback($callback) {
 		$this->updateCallbacks[] = $callback;
+	}
+	
+	/**
+	 * Adds a callback that is executed whenever a record is deleted in this
+	 * container.
+	 * The callback receives the deleted DB_Record as first parameter (optional).
+	 */
+	public function addDeleteCallback($callback) {
+		$this->deleteCallbacks[] = $callback;
 	}
 	
 	/**
@@ -377,6 +429,9 @@ class DB_Container {
 		return $this->databaseSchema;
 	}
 	
+	/**
+	 * @return string the name of the table this container encapsulates
+	 */
 	public function getTable() {
 		return $this->table;
 	}

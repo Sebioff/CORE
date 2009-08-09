@@ -1,7 +1,7 @@
 <?php
 
 class GUI_Control_Link extends GUI_Control_Submittable {
-	private $url = '';
+	private $url = '#';
 	private $caption = '';
 	
 	// CONSTRUCTORS ------------------------------------------------------------

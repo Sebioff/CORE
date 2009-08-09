@@ -179,10 +179,12 @@ class GUI_Panel {
 	
 	/**
 	 * Displays a list of errors associated with this panel
-	 * TODO use html lists instead of divs
 	 */
 	public function displayErrors() {
-		echo '<div class="core_common_error_list">'.implode('<br />', $this->errors).'</div>';
+		echo '<ul class="core_common_error_list">';
+		if ($this->errors)
+			echo '<li>'.implode('</li><li>', $this->errors).'</li>';
+		echo '</ul>';
 	}
 	
 	/**
