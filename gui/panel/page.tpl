@@ -10,12 +10,12 @@
 		<? foreach ($this->getCssRouteReferences() as $cssRoute): ?>
 			<link rel="stylesheet" type="text/css" href="<?= $cssRoute ?>" /> 
 		<? endforeach ?>
-		<? foreach ($this->getJsRouteReferences() as $jsRoute): ?>
-			<script type="text/javascript" src="<?= $jsRoute ?>"></script>
-		<? endforeach ?>
 	</head>
 	<body <?= $this->getAttributeString() ?>>
 		<? $this->display() ?>
+		<? foreach ($this->getJsRouteReferences() as $jsRoute): ?>
+			<script type="text/javascript" src="<?= $jsRoute ?>"></script>
+		<? endforeach ?>
 		<? if ($jsAfterContent = $this->getJsAfterContent()): ?>
 			<script type="text/javascript">
 				<?= $jsAfterContent ?>

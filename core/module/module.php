@@ -45,10 +45,14 @@ class Module extends Scriptlet {
 	// TODO: use $moduleName here instead of routename
 	// change getSubmoduleByName to getSubmoduleByRouteName
 	public function getSubmodule($moduleRouteName) {
-		if (isset($this->submodules[$moduleRouteName]) && $this->submodules[$moduleRouteName]->checkPrivileges())
-			return $this->submodules[$moduleRouteName];
-		else
+		if (isset($this->submodules[$moduleRouteName])) {
+			// TODO privilege checks should probably also available for scriptlets
+			if (!($this->submodules[$moduleRouteName] instanceof Module) || $this->submodules[$moduleRouteName]->checkPrivileges())
+				return $this->submodules[$moduleRouteName];
+		}
+		else {
 			return null;
+		}
 	}
 	
 	/**
@@ -92,7 +96,7 @@ class Module extends Scriptlet {
 	 * @param $path the name of your .js file
 	 */
 	public function addJsRouteReference($routeName, $path) {
-		$this->jsRouteReferences[$routeName.$path] = Router::get()->getStaticRoute($routeName, $path);
+		$this->jsRouteReferences[$routeName.$path] = $this->applyStaticFileVersioning(Router::get()->getStaticRoute($routeName, $path));
 	}
 	
 	public function getJsRouteReferences() {
@@ -116,11 +120,16 @@ class Module extends Scriptlet {
 	 * @param $path the name of your .css file
 	 */
 	public function addCssRouteReference($routeName, $path) {
-		$this->cssRouteReferences[$routeName.$path] = Router::get()->getStaticRoute($routeName, $path);
+		$this->cssRouteReferences[$routeName.$path] = $this->applyStaticFileVersioning(Router::get()->getStaticRoute($routeName, $path));
 	}
 	
 	public function getCssRouteReferences() {
 		return $this->cssRouteReferences;
+	}
+	
+	private function applyStaticFileVersioning($fileName) {
+		$fileNameParts = pathinfo($fileName);
+		return $fileNameParts['dirname'].'/'.$fileNameParts['filename'].'-cb'.PROJECT_VERSION.'.'.$fileNameParts['extension'];
 	}
 	
 	/**

@@ -76,10 +76,28 @@ class App {
 		}
 		
 		Router::get()->runCurrentModule();
-
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
-			if (Router::get()->getCurrentModule() instanceof Module)
+		
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
+			if (Router::get()->getCurrentModule() instanceof Module) {
 				HTMLTidy::tidy();
+			}
+		}
+		else {
+			/*
+			 * TODO there is an issue with using dump()/dump_flat() when using
+			 * gzip. ATM not so important since gzip is only used on LIVE (where
+			 * dumps shouldn't be needed anyway)
+			 */
+			// output gzip'ed content
+			if ((strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false
+				|| strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate') !== false)
+				&& function_exists('gzencode')
+			) {
+				header('Content-Encoding: gzip');
+				header('Vary: Accept-Encoding');
+				echo gzencode(ob_get_clean());
+			}
+		}
 		
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			$GLOBALS['cache']->set('CORE_booted', true);
