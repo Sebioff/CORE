@@ -109,7 +109,7 @@ class DB_Container {
 		if (!$record->getPK()) {
 			// insert
 			$query = 'INSERT INTO `'.$this->table.'`';
-			$query .= ' ('.implode(', ', $properties).') VALUES';
+			$query .= ' (`'.implode('`, `', $properties).'`) VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
 			$this->insert($query, $record);
 		}
@@ -120,9 +120,9 @@ class DB_Container {
 			$updates = array();
 			for ($i = 0; $i < $propertiesCount; $i++) {
 				if ($values[$i] === null)
-					$updates[] = $properties[$i].' = NULL';
+					$updates[] = '`'.$properties[$i].'` = NULL';
 				else
-					$updates[] = $properties[$i].' = \''.$values[$i].'\'';
+					$updates[] = '`'.$properties[$i].'` = \''.$values[$i].'\'';
 			}
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
