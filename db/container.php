@@ -174,7 +174,8 @@ class DB_Container {
 		$result = DB_Connection::get()->query($query);
 		$record->setContainer($this);
 		$databaseSchema = $this->getDatabaseSchema();
-		$record->$databaseSchema['primaryKey'] = mysql_insert_id();
+		if (isset($databaseSchema['primaryKey']))
+			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
 		// execute insertCallbacks
 		foreach ($this->insertCallbacks as $insertCallback)
 			call_user_func($insertCallback, $record);
@@ -309,7 +310,7 @@ class DB_Container {
 	 * the reference will be resolved using the given container. Note that if you
 	 * specify $referencedColumn as well this can also be used if the database doesn't
 	 * support foreign keys or no foreign keys are defined.
-	 * If no column is given all references of this container to the table of 
+	 * If no column is given all references of this container to the table of
 	 * the given container will be resolved with the given container (only possible
 	 * if the database supports foreign keys).
 	 * It is NOT neccessary to add referenced containers like this (but if you don't,
@@ -318,7 +319,7 @@ class DB_Container {
 	 * or null if all references to the table of the given container should be
 	 * resolved with the given container
 	 * @param $referencedColumn string name of the referenced column. Only needed
-	 * in combination with $column and if database doesn't support foreign keys 
+	 * in combination with $column and if database doesn't support foreign keys
 	 * or no foreign keys are defined.
 	 */
 	// TODO implement "lazy instantiation": instead of giving a container, give a
@@ -414,11 +415,11 @@ class DB_Container {
 		return strtr(
 			$value, array(
 				"\x00" => '\x00',
-				"\n" => '\n', 
-				"\r" => '\r', 
+				"\n" => '\n',
+				"\r" => '\r',
 				'\\' => '\\\\',
-				"'" => "\'", 
-				'"' => '\"', 
+				"'" => "\'",
+				'"' => '\"',
 				"\x1a" => '\x1a'
 			)
 		);
