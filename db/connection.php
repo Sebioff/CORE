@@ -2,6 +2,10 @@
 
 /**
  * Encapsulates a connection to the database.
+ * For most of the time it is recommended to use the singleton-like
+ * DB_Connection::get() to ensure that all db queries use the same object.
+ * It is also possible to have multiple objects of this class though (e.g.
+ * when working with multiple databases).
  */
 class DB_Connection {
 	private static $instance = null;
@@ -14,10 +18,14 @@ class DB_Connection {
 	 * a fresh connection to the database (e.g. if you want to connect to another
 	 * database than the default one). Use DB_Connection::get() in every other case.
 	 * @see DB_Connection::get()
-	 * @param $connectionOptions a String of the format: mysql://username[:passwort]@server[:port]?database
+	 * @param $connectionOptions string of the format: mysql://username[:passwort]@server[:port]?database
 	 */
 	public function __construct($connectionOptions = DB_CONNECTION) {
 		$this->connectionOptions = parse_url($connectionOptions);
+	}
+	
+	public function __destruct() {
+		mysql_close($this->connection);
 	}
 
 	/**

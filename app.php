@@ -9,11 +9,12 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  */
 class App {
 	private static $instance = null;
+	
 	private $modules = array();
 
 	// CONSTRUCTION ------------------------------------------------------------
 	private function __construct() {
-		// Singleton
+		// singleton
 	}
 
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -26,18 +27,19 @@ class App {
 		error_reporting(E_ALL|E_STRICT);
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
-		$GLOBALS['cache'] = new Cache_Global_Session();
 		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
-		set_error_handler(array('Core_ErrorHandler', 'handleError'));
-		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
-		session_start();
-		
 		// overwrite $_SESSION
+		session_start();
 		if (!isset($_SESSION[PROJECT_NAME]))
 			$_SESSION[PROJECT_NAME] = array();
 		$GLOBALS['_SESSION'] = &$_SESSION[PROJECT_NAME];
+		$GLOBALS['cache'] = new Cache_Global_Session();
+		App_Autoloader::loadClassesByURL();
+		// register error handlers
+		set_error_handler(array('Core_ErrorHandler', 'handleError'));
+		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
 		
 		// first boot
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
@@ -50,10 +52,13 @@ class App {
 		}
 		
 		// load configuration files
-		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
+		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
 			require_once PROJECT_PATH.'/config/environments/config.development.php';
-		else
+		}
+		else {
+			ini_set('display_errors', 0);
 			require_once PROJECT_PATH.'/config/environments/config.live.php';
+		}
 		
 		// get project modules
 		require_once PROJECT_PATH.'/config/modules.php';
@@ -154,12 +159,12 @@ class App {
 		$extensions = array('mbstring', 'gd', 'mysql');
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)
 			$extensions[] = 'tidy';
-
-		foreach( $extensions as $extension)
+		
+		foreach ($extensions as $extension)
 			if (!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
-		foreach (array(/*'register_globals'=>0, */'magic_quotes_runtime'=>0, 'short_open_tag'=>1) as $option=>$value)
+		foreach (array(/*'register_globals' => 0, */'magic_quotes_runtime' => 0, 'short_open_tag' => 1) as $option => $value)
 			if ($value != ini_get($option))
 				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');
 	}
@@ -172,18 +177,32 @@ class App {
  */
 class App_Autoloader {
 	// CUSTOM METHODS ----------------------------------------------------------
+	public static function loadClassesByURL() {
+		if ($classPaths = $GLOBALS['cache']->get('classPaths'.$_SERVER['REQUEST_URI'])) {
+			foreach ($classPaths as $classPath) {
+				if (file_exists($classPath)) {
+					require_once $classPath;
+				}
+			}
+		}
+	}
+	
 	public static function autoload($className) {
 		$path = null;
 		
-		// TODO as some crazy-ass optimization, we could also keep a single list
-		// of all files that have been required for each url in cache. would cut
-		// another few nanoseconds from load time.
-		
 		// is path cached?
-		if (($path = $GLOBALS['cache']->get($className)))
-			if (file_exists($path))
+		if ($path = $GLOBALS['cache']->get($className)) {
+			if (file_exists($path)) {
+				// cache all class paths belonging to this url
+				$classPaths = $GLOBALS['cache']->get('classPaths'.$_SERVER['REQUEST_URI']);
+				if (!$classPaths || !in_array($path, $classPaths)) {
+					$classPaths[] = $path;
+					$GLOBALS['cache']->set('classPaths'.$_SERVER['REQUEST_URI'], $classPaths);
+				}
 				require_once $path;
-				
+			}
+		}
+		
 		// path not cached or wrong cached, search for class
 		if ((!class_exists($className, false) && !interface_exists($className, false)) || !$path) {
 			$parts = explode('_', $className);

@@ -14,6 +14,7 @@ class GUI_Panel_Table extends GUI_Panel {
 		parent::__construct($name, $title);
 		
 		$this->setTemplate(dirname(__FILE__).'/table.tpl');
+		$this->setAttribute('summary', $title);
 		$this->addClasses('core_gui_table');
 	}
 	

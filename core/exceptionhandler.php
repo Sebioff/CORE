@@ -5,7 +5,7 @@
  */
 class Core_ExceptionHandler {
 	public static function handleException(Exception $exception) {
-		$message=$exception->getMessage().' in:<br>'.$exception->getFile().'('.$exception->getLine().')';
+		$message = $exception->getMessage().' in:<br>'.$exception->getFile().'('.$exception->getLine().')';
 		$backtrace = $exception->getTrace();
 		if (isset($backtrace[0]['class']) && $backtrace[0]['class'] == 'Core_ErrorHandler')
 			unset($backtrace[0]);

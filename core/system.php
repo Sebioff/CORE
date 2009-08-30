@@ -12,7 +12,7 @@ abstract class System {
 	 * System::OS_*
 	 */
 	public static function getOS() {
-		return (strpos(PHP_OS, 'Win') === 0) ? self::OS_WINDOWS : self::OS_LINUX;
+		return (stripos(PHP_OS, 'Win') === 0) ? self::OS_WINDOWS : self::OS_LINUX;
 	}
 	
 	/**

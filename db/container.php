@@ -114,6 +114,8 @@ class DB_Container {
 			$this->insert($query, $record);
 		}
 		else {
+			if (empty($properties))
+				return;
 			// update
 			$query = 'UPDATE `'.$this->table.'` SET ';
 			$propertiesCount = count($properties);

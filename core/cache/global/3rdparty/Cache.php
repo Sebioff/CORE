@@ -15,28 +15,28 @@
 
 /**
 * Caching Libraries for PHP5
-* 
+*
 * Handles data and output caching. Defaults to /dev/shm
 * (shared memory). All methods are static.
-* 
+*
 * Eg: (output caching)
-* 
+*
 * if (!OutputCache::Start('group', 'unique id', 600)) {
-* 
+*
 *   // ... Output
-* 
+*
 *   OutputCache::End();
 * }
-* 
+*
 * Eg: (data caching)
-* 
+*
 * if (!$data = DataCache::Get('group', 'unique id')) {
-* 
+*
 *   $data = time();
-* 
+*
 *   DataCache::Put('group', 'unique id', 10, $data);
 * }
-* 
+*
 * echo $data;
 */
     class Phpguru_Cache
@@ -61,7 +61,7 @@
 
         /**
         * Stores data
-        * 
+        *
         * @param string $group Group to store data under
         * @param string $id    Unique ID of this data
         * @param int    $ttl   How long to cache for (in seconds)
@@ -70,21 +70,22 @@
         {
             $filename = self::getFilename($group, $id);
             
-            if ($fp = @fopen($filename, 'xb')) {
-            
-                if (flock($fp, LOCK_EX)) {
-                    fwrite($fp, $data);
-                }
-                fclose($fp);
-                
-                // Set filemtime
-                touch($filename, time() + $ttl);
+            if (!file_exists($filename)) {
+	            if ($fp = @fopen($filename, 'xb')) {
+	                if (flock($fp, LOCK_EX)) {
+	                    fwrite($fp, $data);
+	                }
+	                fclose($fp);
+	                
+	                // Set filemtime
+	                touch($filename, time() + $ttl);
+	            }
             }
         }
         
         /**
         * Reads data
-        * 
+        *
         * @param string $group Group to store data under
         * @param string $id    Unique ID of this data
         */
@@ -97,7 +98,7 @@
         
         /**
         * Determines if an entry is cached
-        * 
+        *
         * @param string $group Group to store data under
         * @param string $id    Unique ID of this data
         */
@@ -118,7 +119,7 @@
         /**
         * Builds a filename/path from group, id and
         * store.
-        * 
+        *
         * @param string $group Group to store data under
         * @param string $id    Unique ID of this data
         */
@@ -131,7 +132,7 @@
         
         /**
         * Sets the filename prefix to use
-        * 
+        *
         * @param string $prefix Filename Prefix to use
         */
         public static function setPrefix($prefix)
@@ -142,7 +143,7 @@
         /**
         * Sets the store for cache files. Defaults to
         * /dev/shm. Must have trailing slash.
-        * 
+        *
         * @param string $store The dir to store the cache data in
         */
         public static function setStore($store)
@@ -177,7 +178,7 @@
         /**
         * Starts caching off. Returns true if cached, and dumps
         * the output. False if not cached and start output buffering.
-        * 
+        *
         * @param  string $group Group to store data under
         * @param  string $id    Unique ID of this data
         * @param  int    $ttl   How long to cache for (in seconds)
@@ -221,7 +222,7 @@
     
         /**
         * Retrieves data from the cache
-        * 
+        *
         * @param  string $group Group this data belongs to
         * @param  string $id    Unique ID of the data
         * @return mixed         Either the resulting data, or null
@@ -237,7 +238,7 @@
         
         /**
         * Stores data in the cache
-        * 
+        *
         * @param string $group Group this data belongs to
         * @param string $id    Unique ID of the data
         * @param int    $ttl   How long to cache for (in seconds)

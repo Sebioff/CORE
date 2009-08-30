@@ -9,18 +9,6 @@ class DB_Record {
 	private $virtualProperties = array();
 	private $container = null;
 	
-	// SETTERS / GETTERS -------------------------------------------------------
-	public function setContainer(DB_Container $container) {
-		$this->container = $container;
-	}
-	
-	/**
-	 * @return DB_Container
-	 */
-	public function getContainer() {
-		return $this->container;
-	}
-	
 	/**
 	 * @return int the primary key of this record
 	 */
@@ -142,6 +130,18 @@ class DB_Record {
 	 */
 	public function setVirtualProperty($property, $callback) {
 		$this->virtualProperties[Text::underscoreToCamelCase($property)] = $callback;
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
+	/**
+	 * @return DB_Container
+	 */
+	public function getContainer() {
+		return $this->container;
+	}
+	
+	public function setContainer(DB_Container $container) {
+		$this->container = $container;
 	}
 }
 

@@ -26,6 +26,10 @@ class GUI_Control_Link extends GUI_Control_Submittable {
 	public function getCaption() {
 		return $this->caption;
 	}
+	
+	public function setCaption($caption) {
+		$this->caption = $caption;
+	}
 }
 
 ?>
