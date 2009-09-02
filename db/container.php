@@ -282,25 +282,25 @@ class DB_Container {
 		// selectByPROPERTYFirst($propertyValue, $options)
 		if (preg_match('/^selectBy(.*)First$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
-			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			$options['conditions'][] = array('`'.Text::camelCaseToUnderscore($matches[1]).'` = ?', $params[0]);
 			return $this->selectFirst($options);
 		}
 		// selectByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^selectBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
-			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			$options['conditions'][] = array('`'.Text::camelCaseToUnderscore($matches[1]).'` = ?', $params[0]);
 			return $this->select($options);
 		}
 		// deleteByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^deleteBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
-			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			$options['conditions'][] = array('`'.Text::camelCaseToUnderscore($matches[1]).'` = ?', $params[0]);
 			return $this->delete($options);
 		}
 		// countByPROPERTY($propertyValue, $options)
 		elseif (preg_match('/^countBy(.*)$/', $name, $matches)) {
 			$options = isset($params[1]) ? $params[1] : array();
-			$options['conditions'][] = array(Text::camelCaseToUnderscore($matches[1]).' = ?', $params[0]);
+			$options['conditions'][] = array('`'.Text::camelCaseToUnderscore($matches[1]).'` = ?', $params[0]);
 			return $this->count($options);
 		}
 		else
