@@ -11,10 +11,10 @@ class Environment {
 	const LIVE = 1;
 	
 	public static function getCurrentEnvironment() {
-		if(defined('ENVIRONMENT'))
-			return ENVIRONMENT;
+		if (defined('PROJECT_ENVIRONMENT'))
+			return PROJECT_ENVIRONMENT;
 		
-		if($_SERVER['SERVER_ADDR'] == '127.0.0.1')
+		if ($_SERVER['SERVER_ADDR'] == '127.0.0.1')
 			return self::DEVELOPMENT;
 		else
 			return self::LIVE;

@@ -1,11 +1,37 @@
 <?php
 
+// TODO replace all dirname(__FILE__) with __DIR__ with PHP 5.3
+
 require_once 'core/cache/cache.php'; // can't be autoloaded since the cache (see below) uses this class
 require_once 'core/cache/global/session.php'; // can't be autoloaded since the autoloader uses this class
 
 /**
+ * This class represents the single point of entrance for the web application.
+ * It is mainly responsible for setting up basic settings and managing the main
+ * modules.
+ *
  * Magic methods:
  * @method Module getMODULENAMEModule()
+ *
+ * Required defines:
+ * CORE_PATH				- path on the server to CORE's main folder (defined in constants.php)
+ * PROJECT_NAME				- unique name of the project (defined in constants.php)
+ * PROJECT_VERSION			- current project version, should be increased with each build (defined in config/constants.php)
+ * DB_CONNECTION			- defines the main db connection, see class DB_Connection (defined in config/environments/config.*.php)
+ *
+ * Available defines:
+ * PROJECT_PATH				- path to the projects main folder
+ * PROJECT_ROOTURI			- root uri of the project
+ *
+ * Optional defines:
+ * CORE_MAILSENDER			- standard sender for CORE's mail functions if no sender is explicitly given
+ * CORE_ENABLE_LOGGING		- can be set to "false" to disable logging
+ * PROJECT_ENVIRONMENT		- overrides the environment that is automatically detected by Environment::getCurrentEnvironment()
+ *
+ * Callback defines:
+ * CALLBACK_ERROR			- executed as soon as an error occurs. If not defined the error message and a backtrace will be printed
+ * CALLBACK_ONAFTERRESET	- executed after the project has been reset
+ * CALLBACK_MAINTENANCE		- if defined, the application switches into maintenance mode (nothing except this callback is executed)
  */
 class App {
 	private static $instance = null;
@@ -46,8 +72,8 @@ class App {
 			self::systemCheck();
 		}
 		
-		if (defined('MAINTENANCE_MODE_CALLBACK')) {
-			call_user_func(MAINTENANCE_MODE_CALLBACK);
+		if (defined('CALLBACK_MAINTENANCE')) {
+			call_user_func(CALLBACK_MAINTENANCE);
 			exit;
 		}
 		
@@ -199,7 +225,7 @@ class App_Autoloader {
 					$classPaths[] = $path;
 					$GLOBALS['cache']->set('classPaths'.$_SERVER['REQUEST_URI'], $classPaths);
 				}
-				require_once $path;
+				require $path;
 			}
 		}
 		

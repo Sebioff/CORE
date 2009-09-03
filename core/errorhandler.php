@@ -10,15 +10,15 @@ class Core_ErrorHandler {
 			case E_ERROR:
 			case E_USER_ERROR:
 				$errorType = 'Error';
-				break;
+			break;
 			case E_WARNING:
 			case E_USER_WARNING:
 				$errorType = 'Warning';
-				break;
+			break;
 			case E_NOTICE:
 			case E_USER_NOTICE:
 				$errorType = 'Notice';
-				break;
+			break;
 		}
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT)

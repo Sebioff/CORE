@@ -3,7 +3,7 @@
 class GUI_Validator_Mail extends GUI_Validator {
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		$nonascii      = "\x80-\xff"; # Non-ASCII-Chars are not allowed
+		$nonascii      = "\x80-\xff"; // Non-ASCII-Chars are not allowed
 	    $nqtext        = "[^\\\\$nonascii\015\012\"]";
 	    $qchar         = "\\\\[^$nonascii]";
 	    $protocol      = '(?:mailto:)';

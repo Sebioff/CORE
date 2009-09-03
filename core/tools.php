@@ -21,7 +21,7 @@ abstract class Tools {
 			return null;
 		}
     	$old_serialized_object = serialize($object);
-    	$new_serialized_object = 'O:'.strlen($newClass).':"'.$newClass.'":' .
+    	$new_serialized_object = 'O:'.strlen($newClass).':"'.$newClass.'":'.
     		substr($old_serialized_object, $old_serialized_object[2] + 7);
     	return unserialize($new_serialized_object);
 	}
