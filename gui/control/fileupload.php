@@ -76,12 +76,15 @@ class GUI_Control_FileUpload extends GUI_Control {
 	 * @return array name: original name set by user; new_name: name for file in filesystem; path: full path to uploaded file
 	 */
 	public function moveTo($path) {
+		$pathparts = explode('/', str_replace('\\', '/', $path));
+		$path = implode('/', array_map('urlencode', $pathparts));
+		
 		if (!is_dir(PROJECT_PATH.'/uploads/'.$path))
 			mkdir(PROJECT_PATH.'/uploads/'.$path);
+			
 		$this->fileData = $this->getValue();
 		if ($this->isValid()) {
-			$extension = explode('.', $this->fileData['name']); 
-			$filename = time().'.'.end($extension);
+			$filename = time().'.'.IO_Utils::getFileExtension($this->fileData['name']);
 			move_uploaded_file($this->fileData['tmp_name'], PROJECT_PATH.'/uploads/'.$path.'/'.$filename);
 			return array('name' => $this->fileData['name'], 'new_name' => $filename, 'path' => PROJECT_PATH.'/uploads/'.$path);
 		}
@@ -95,7 +98,7 @@ class GUI_Control_FileUpload extends GUI_Control {
 					$this->addError('The uploaded file exceeds the upload_max_filesize directive in php.ini');
 				break;
 				case UPLOAD_ERR_FORM_SIZE:
-					$this->addError('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form');
+					$this->addError('The uploaded file exceeds the MAX_FILE_SIZE ('.round($this->getMaxFilesize() / 1024, 2).' KB) directive that was specified in the HTML form');
 				break;
 				case UPLOAD_ERR_PARTIAL:
 					$this->addError('The uploaded file was only partially uploaded');
@@ -123,7 +126,7 @@ class GUI_Control_FileUpload extends GUI_Control {
 			return false;
 		}
 		if ($this->fileData['size'] > $this->getMaxFilesize()) {
-			$this->addError('Filesize is greater than '.$this->getMaxFilesize().' Bytes');
+			$this->addError('Filesize is greater than ('.round($this->getMaxFilesize() / 1024, 2).' KB)');
 			return false;
 		}
 		if (!in_array($this->fileData['type'], $this->allowedFiletypes)) {

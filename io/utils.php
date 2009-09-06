@@ -24,7 +24,7 @@ abstract class IO_Utils {
 		if ($handle = opendir($path)) {
 			while (false !== ($fileName = readdir($handle))) {
 				if ($fileName != '.' && $fileName != '..') {
-					if (!$extensions || in_array(self::getFileExtension($fileName), $extensions))
+					if (!$extensions || in_array(self::getFileExtension($path.'/'.$fileName), $extensions))
 						$files[] = $fileName;
 				}
 			}
@@ -42,6 +42,27 @@ abstract class IO_Utils {
 	public static function getFileExtension($path) {
 		return pathinfo($path, PATHINFO_EXTENSION);
 	}
+	
+	/**
+	 * Delete a folder which is not empty
+	 * @param $path Folder to delete
+	 */
+	public static function deleteFolder($path) {
+		if (!is_dir($path))
+			return false;
+		
+		$ret = array();
+		$dir = dir($path);
+		while (false !== ($file = $dir->read())) {
+			if (in_array($file, array('.', '..')))
+				continue;
+			
+			if (is_file($path.'/'.$file)) $ret[] = unlink($path.'/'.$file);
+			if (is_dir($path.'/'.$file)) $ret[] = self::deleteFolder($path.'/'.$file);
+		}
+		$dir->close();
+		$ret[] = rmdir($path);
+		return (in_array(false, $ret)) ? false : true;
+	}
 }
-
 ?>
