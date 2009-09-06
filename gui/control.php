@@ -99,6 +99,10 @@ abstract class GUI_Control extends GUI_Panel {
 		$this->focused = true;
 	}
 	
+	public function addError($message, GUI_Panel $panel = null) {
+		$this->getParent()->addError($message, $panel);
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getValue() {
 		return $this->value;

@@ -30,7 +30,7 @@ class IO_File {
 	/**
 	 * opens the file
 	 */
-	public function open($mode = READ_WRITE_PREPEND) {
+	public function open($mode = self::READ_WRITE_PREPEND) {
 		$this->mode = $mode;
 		$this->resource = fopen($this->file, $mode);
 	}

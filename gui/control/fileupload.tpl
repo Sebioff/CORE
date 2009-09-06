@@ -1,0 +1,2 @@
+<input type="hidden" name="MAX_FILE_SIZE" value="<?= $this->getMaxFileSize(); ?>" />
+<input type="file" name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?> />
