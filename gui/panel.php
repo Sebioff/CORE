@@ -20,8 +20,6 @@ class GUI_Panel {
 	private $parent;
 	/** decides whether this panel behaves like a formular */
 	private $submittable = false;
-	/** form contains a fileupload field */
-	private $fileupload = false;
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	/**
@@ -49,11 +47,7 @@ class GUI_Panel {
 		$this->beforeDisplay();
 		
 		if ($this->submittable) {
-			if ($this->fileupload)
-				echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data">', $this->getID(), $_SERVER['REQUEST_URI']);
-			else
-				echo sprintf('<form id="%s" action="%s" method="post">', $this->getID(), $_SERVER['REQUEST_URI']);
-				
+			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
 			// fix for IE not submitting button name in post data if form is submitted with enter in forms with only one input
 			echo '<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" name="IESucks" /><![endif]-->';
@@ -129,8 +123,6 @@ class GUI_Panel {
 		if ($panel instanceof GUI_Control_Submitbutton) {
 			$this->submittable = true;
 		}
-		if ($panel instanceof GUI_Control_FileUpload) 
-			$this->fileupload = true;
 	}
 	
 	public function removePanel(GUI_Panel $panel) {
@@ -222,9 +214,9 @@ class GUI_Panel {
 	 */
 	protected function validate() {
 		foreach ($this->panels as $panel)
-			foreach($panel->validate() as $error)
+			foreach ($panel->validate() as $error)
 				$this->addError($error, $panel);
-			
+				
 		return $this->errors;
 	}
 	
@@ -322,6 +314,9 @@ class GUI_Panel {
 				
 				if ($this->hasErrors())
 					$this->addClasses('core_common_error');
+				// FIXME fix for "old output", find a better solution
+				else
+					$this->getModule()->reRender = true;
 			}
 		}
 	}

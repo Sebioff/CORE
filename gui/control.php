@@ -38,6 +38,12 @@ abstract class GUI_Control extends GUI_Panel {
 		return (string)$this->getValue();
 	}
 	
+	/**
+	 * Executes all validators belonging to this control.
+	 * Overwrite this method if you want to check for custom errors.
+	 * Must return $this->errors.
+	 * @see gui/GUI_Panel#validate()
+	 */
 	protected function validate() {
 		foreach ($this->validators as $validator) {
 			if (!$validator->isValid()) {
@@ -97,10 +103,6 @@ abstract class GUI_Control extends GUI_Panel {
 	 */
 	public function setFocus() {
 		$this->focused = true;
-	}
-	
-	public function addError($message, GUI_Panel $panel = null) {
-		$this->getParent()->addError($message, $panel);
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

@@ -57,8 +57,10 @@ abstract class IO_Utils {
 			if (in_array($file, array('.', '..')))
 				continue;
 			
-			if (is_file($path.'/'.$file)) $ret[] = unlink($path.'/'.$file);
-			if (is_dir($path.'/'.$file)) $ret[] = self::deleteFolder($path.'/'.$file);
+			if (is_file($path.'/'.$file))
+				$ret[] = unlink($path.'/'.$file);
+			else if (is_dir($path.'/'.$file))
+				$ret[] = self::deleteFolder($path.'/'.$file);
 		}
 		$dir->close();
 		$ret[] = rmdir($path);

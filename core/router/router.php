@@ -125,6 +125,13 @@ class Router {
 		$module->beforeInit();
 		$module->init();
 		$module->afterInit();
+		// FIXME fix for "old output", find a better solution
+		if ($module->reRender) {
+			$_POST = array();
+			$module->beforeInit();
+			$module->init();
+			$module->afterInit();
+		}
 		$module->display();
 	}
 	

@@ -1,1 +1,0 @@
-<span id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>><?= $this->getText() ?></span>

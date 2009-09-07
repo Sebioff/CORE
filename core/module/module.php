@@ -72,7 +72,7 @@ class Module extends Scriptlet {
 	
 	public function getAllSubmodules() {
 		return $this->submodules;
-	}	
+	}
 	
 	public function hasSubmodule($moduleRouteName) {
 		return (isset($this->submodules[$moduleRouteName]) && $this->submodules[$moduleRouteName]->checkPrivileges());
