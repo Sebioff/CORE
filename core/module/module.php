@@ -46,8 +46,7 @@ class Module extends Scriptlet {
 	// change getSubmoduleByName to getSubmoduleByRouteName
 	public function getSubmodule($moduleRouteName) {
 		if (isset($this->submodules[$moduleRouteName])) {
-			// TODO privilege checks should probably also available for scriptlets
-			if (!($this->submodules[$moduleRouteName] instanceof Module) || $this->submodules[$moduleRouteName]->checkPrivileges())
+			if (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges())
 				return $this->submodules[$moduleRouteName];
 		}
 		else {
@@ -61,7 +60,7 @@ class Module extends Scriptlet {
 	public function getSubmoduleByName($moduleName) {
 		foreach ($this->submodules as $submodule) {
 			if ($submodule->getName() == $moduleName) {
-				if ($submodule->checkPrivileges())
+				if (!($submodule instanceof Scriptlet_Privileged) || $submodule->checkPrivileges())
 					return $submodule;
 				else
 					return null;
@@ -75,7 +74,7 @@ class Module extends Scriptlet {
 	}
 	
 	public function hasSubmodule($moduleRouteName) {
-		return (isset($this->submodules[$moduleRouteName]) && $this->submodules[$moduleRouteName]->checkPrivileges());
+		return (isset($this->submodules[$moduleRouteName]) && (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges()));
 	}
 
 	public function hasSubmodules() {
@@ -149,14 +148,6 @@ class Module extends Scriptlet {
 	 */
 	public function onConstruct() {
 		// callback
-	}
-	
-	/**
-	 * Override this if you want to restrict access to this module.
-	 * @return boolean true if acccess is granted, false otherwhise
-	 */
-	public function checkPrivileges() {
-		return true;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

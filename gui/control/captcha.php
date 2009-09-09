@@ -16,6 +16,13 @@ class GUI_Control_Captcha extends GUI_Control {
 		$this->addPanel(new GUI_Panel_Image('image', Media_Captcha::get()->getUrl(), 'Captcha'));
 		$this->addPanel($input = new GUI_Control_TextBox('input'));
 		$input->addValidator(new GUI_Validator_Mandatory());
+		$this->addPanel(new GUI_Control_Link('reload', 'Neu laden', $this->getModule()->getUrl(), 'Neu laden'));
+	}
+	
+	public function afterInit() {
+		parent::afterInit();
+		
+		$this->reload->setAttribute('onclick', sprintf('$(\'#%s .core_gui_captcha_image img\').attr(\'src\', \'%s?cb=\' + new Date().getTime()); return false;', $this->getID(), Media_Captcha::get()->getUrl()));
 	}
 
 	protected function validate() {
