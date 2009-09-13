@@ -19,6 +19,8 @@ class GUI_Control_FileUpload extends GUI_Control {
 	const TYPE_RAR = 'application/x-rar-compressed';
 	// ... add more, see http://de.php.net/manual/en/function.mime-content-type.php#87856
 	
+	// Misc
+	private static $uploadDirectory = null;
 	private $maxFileSize = 0;
 	private $allowedFiletypes = array();
 	
@@ -40,15 +42,22 @@ class GUI_Control_FileUpload extends GUI_Control {
 	 * @return array name: original name set by user; new_name: name for file in filesystem; path: full path to uploaded file
 	 */
 	public function moveTo($path) {
-		$pathparts = explode('/', str_replace('\\', '/', $path));
-		$path = implode('/', array_map('urlencode', $pathparts));
+		$pathparts = explode(DIRECTORY_SEPARATOR, str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path));
+		$path = implode(DIRECTORY_SEPARATOR, array_map('urlencode', $pathparts));
 		
-		if (!is_dir(PROJECT_PATH.'/uploads/'.$path))
-			mkdir(PROJECT_PATH.'/uploads/'.$path);
+		if (!is_dir(self::getUploadDirectory().DIRECTORY_SEPARATOR.$path)) {
+			mkdir(self::getUploadDirectory().DIRECTORY_SEPARATOR.$path, 0777, true);
+			$htaccess = new IO_File(self::getUploadDirectory().DIRECTORY_SEPARATOR.'.htaccess');
+			if (!$htaccess->exists()) {
+				$htaccess->open(IO_File::WRITE_NEWFILE);
+				$htaccess->write('authType basic'.System::getNewLine().'order deny,allow'.System::getNewLine().'deny from all');
+				$htaccess->close();
+			}
+		}
 			
 		$filename = time().'.'.IO_Utils::getFileExtension($this->value['name']);
-		move_uploaded_file($this->value['tmp_name'], PROJECT_PATH.'/uploads/'.$path.'/'.$filename);
-		return array('name' => $this->value['name'], 'new_name' => $filename, 'path' => PROJECT_PATH.'/uploads/'.$path);
+		move_uploaded_file($this->value['tmp_name'], self::getUploadDirectory().DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$filename);
+		return array('name' => $this->value['name'], 'new_name' => $filename, 'path' => self::getUploadDirectory().DIRECTORY_SEPARATOR.$path);
 	}
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
@@ -133,6 +142,13 @@ class GUI_Control_FileUpload extends GUI_Control {
 			if (strpos($key, 'TYPE_') === 0)
 				$types[] = $constant;
 		return $types;
+	}
+	
+	public static function getUploadDirectory() {
+		if (!self::$uploadDirectory)
+			self::$uploadDirectory = PROJECT_PATH.DIRECTORY_SEPARATOR.'uploads';
+			
+		return self::$uploadDirectory;
 	}
 }
 
