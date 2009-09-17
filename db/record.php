@@ -86,9 +86,18 @@ class DB_Record {
 	
 	/**
 	 * Saves the record in the container it was created from.
+	 * Shortcut for Container::save($record)
 	 */
 	public function save() {
 		$this->getContainer()->save($this);
+	}
+	
+	/**
+	 * Removes the record from its container.
+	 * Shortcut for Container::delete($record)
+	 */
+	public function delete() {
+		$this->getContainer()->delete($this);
 	}
 	
 	public final function __toString() {

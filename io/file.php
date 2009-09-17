@@ -51,7 +51,7 @@ class IO_File {
 	 * @return the amount of read bytes
 	 */
 	public function read($length = null) {
-		if ($length)
+		if ($length === null)
 			$length = filesize($this->file);
 			
 		$result = fread($this->resource, $length);
@@ -69,7 +69,7 @@ class IO_File {
 	 */
 	public function write($string) {
 		$result = fwrite($this->resource, $string);
-		if (!$result)
+		if ($result === false)
 			throw new Core_Exception('Can\' write file (mode is '.$this->mode.').');
 		else
 			return $result;
