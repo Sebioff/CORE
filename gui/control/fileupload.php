@@ -56,8 +56,10 @@ class GUI_Control_FileUpload extends GUI_Control {
 		}
 			
 		$filename = time().'.'.IO_Utils::getFileExtension($this->value['name']);
-		move_uploaded_file($this->value['tmp_name'], self::getUploadDirectory().DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$filename);
-		return array('name' => $this->value['name'], 'new_name' => $filename, 'path' => self::getUploadDirectory().DIRECTORY_SEPARATOR.$path);
+		return move_uploaded_file($this->value['tmp_name'], self::getUploadDirectory().DIRECTORY_SEPARATOR.$path.DIRECTORY_SEPARATOR.$filename) ?
+			array('name' => $this->value['name'], 'new_name' => $filename, 'path' => self::getUploadDirectory().DIRECTORY_SEPARATOR.$path) :
+			false;
+			
 	}
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
@@ -146,7 +148,7 @@ class GUI_Control_FileUpload extends GUI_Control {
 	
 	public static function getUploadDirectory() {
 		if (!self::$uploadDirectory)
-			self::$uploadDirectory = PROJECT_PATH.DIRECTORY_SEPARATOR.'uploads';
+			self::$uploadDirectory = PROJECT_PATH.DIRECTORY_SEPARATOR.'www'.DIRECTORY_SEPARATOR.'uploads';
 			
 		return self::$uploadDirectory;
 	}

@@ -9,6 +9,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	private $footer = array();
 	private $numberOfColumns = 0;
 	private $enableSortable = false;
+	private $sorterOptions = array();
 	
 	public function __construct($name, $title = '') {
 		parent::__construct($name, $title);
@@ -21,7 +22,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	public function afterInit() {
 		if ($this->enabledSortable()) {
 			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
-			$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter(); });');
+			$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter( { '.$this->getSorterOptions().'	} )	} );');
 			$this->addClasses('core_gui_table_sortable');
 		}
 	}
@@ -83,6 +84,14 @@ class GUI_Panel_Table extends GUI_Panel {
 	
 	public function enableSortable($enable = true) {
 		$this->enableSortable = $enable;
+	}
+	
+	public function addSorterOptions($javascript) {
+		$this->sorterOptions[] = '{ '.$javascript.' }';
+	}
+	
+	private function getSorterOptions() {
+		return implode(', ', $this->sorterOptions);
 	}
 }
 

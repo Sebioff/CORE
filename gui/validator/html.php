@@ -91,7 +91,7 @@ class GUI_Validator_HTML extends GUI_Validator {
 				elements = " '.implode(' ', $this->blacklist).' ";
 				ret = true;
 				pattern = /<([a-z]+[1-6]?).*?>/gim;
-				while ((treffer = pattern.exec(value)) && ret) {
+				while (ret && (treffer = pattern.exec(value))) {
 					if (elements.indexOf(" "+treffer[1]+" ") != -1) {
 						ret = false;
 					}
