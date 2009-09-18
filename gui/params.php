@@ -4,7 +4,7 @@ class GUI_Params {
 	private $params = array();
 	
 	public function __get($value) {
-		if(array_key_exists($value, $this->params))
+		if (array_key_exists($value, $this->params))
 			return $this->params[$value];
 		else
 			throw new CORE_Exception('Param value does not exist: '.$value);

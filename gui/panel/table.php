@@ -86,7 +86,7 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->enableSortable = $enable;
 	}
 	
-	public function addSorterOptions($javascript) {
+	public function addSorterOption($javascript) {
 		$this->sorterOptions[] = '{ '.$javascript.' }';
 	}
 	
