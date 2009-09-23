@@ -338,7 +338,7 @@ class GUI_Panel {
 		return $this->_name;
 	}
 	
-	private function setName($name) {
+	protected function setName($name) {
 		$this->_name = $name;
 		$this->generateID();
 	}
