@@ -314,9 +314,6 @@ class GUI_Panel {
 				
 				if ($this->hasErrors())
 					$this->addClasses('core_common_error');
-				// FIXME fix for "old output", find a better solution
-				else
-					$this->getModule()->reRender = true;
 			}
 		}
 	}

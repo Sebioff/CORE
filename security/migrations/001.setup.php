@@ -25,8 +25,8 @@ $queries[] = 'CREATE TABLE IF NOT EXISTS `'.$groupsUsersAssocContainer.'` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=0;';
 
 $queries[] = 'ALTER TABLE `'.$groupsUsersAssocContainer.'`
-  ADD CONSTRAINT `'.$groupsUsersAssocContainer.'_ibfk_1` FOREIGN KEY (`user`) REFERENCES `'.$usersContainer.'` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `'.$groupsUsersAssocContainer.'_ibfk_2` FOREIGN KEY (`user_group`) REFERENCES `'.$groupsContainer.'` (`id`) ON DELETE SET NULL;';
+  ADD CONSTRAINT `'.$groupsUsersAssocContainer.'_ibfk_1` FOREIGN KEY (`user`) REFERENCES `'.$usersContainer.'` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `'.$groupsUsersAssocContainer.'_ibfk_2` FOREIGN KEY (`user_group`) REFERENCES `'.$groupsContainer.'` (`id`) ON DELETE CASCADE;';
 
 $queries[] = 'CREATE TABLE IF NOT EXISTS `'.$privilegesContainer.'` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -38,6 +38,6 @@ $queries[] = 'CREATE TABLE IF NOT EXISTS `'.$privilegesContainer.'` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=0;';
 
 $queries[] = 'ALTER TABLE `'.$privilegesContainer.'`
-  ADD CONSTRAINT `'.$privilegesContainer.'_ibfk_1` FOREIGN KEY (`user_group`) REFERENCES `'.$groupsContainer.'` (`id`) ON DELETE SET NULL;';
+  ADD CONSTRAINT `'.$privilegesContainer.'_ibfk_1` FOREIGN KEY (`user_group`) REFERENCES `'.$groupsContainer.'` (`id`) ON DELETE CASCADE;';
 
 ?>

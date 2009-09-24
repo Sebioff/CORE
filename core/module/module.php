@@ -141,6 +141,23 @@ class Module extends Scriptlet {
 	}
 	
 	/**
+	 * In some situations changes made in panel A can affect the content that should
+	 * be displayed in panel B.
+	 * For example, if panel A modifies values in the database in its submit-handler
+	 * that have been read by panel B before in its init-method, panel B will display
+	 * old data.
+	 * You can fix this by using event-handlers on the appropriate containers, though
+	 * this can be quite a lot of work. Another solution is calling this method
+	 * after panel A modified the data, resulting in the whole module being invalidated
+	 * and executed another time. Thanks to database queries being cached per
+	 * page-load this usually results in near to no overhead. Considering this
+	 * requires a lot less implementation-work this solution might be preferred.
+	 */
+	public function invalidate() {
+		$this->isInvalid = true;
+	}
+	
+	/**
 	 * Called as soon as the module is constructed.
 	 * Override this callback if you want to add additional functionality to the
 	 * constructor, without having to override it (-> you don't need to copy all
@@ -157,6 +174,10 @@ class Module extends Scriptlet {
 	
 	public function setMetaTag($name, $content) {
 		$this->metaTags[$name] = Text::escapeHTML($content);
+	}
+
+	public function isInvalid() {
+		return $this->isInvalid;
 	}
 }
 

@@ -4,9 +4,6 @@
  * Scriptlets are simple php scripts that are reachable under a specific route
  */
 class Scriptlet {
-	// FIXME fix for "old output", find a better solution
-	public $reRender = false;
-	
 	private $name = '';
 	private $routeName = '';
 	private $parent = null;
