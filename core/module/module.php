@@ -13,6 +13,7 @@ class Module extends Scriptlet {
 	private $metaTags = array();
 	private $submodules = array();
 	private $jsAfterContent = '';
+	private $isInvalid = false;
 	
 	public function __construct($name) {
 		parent::__construct($name);
