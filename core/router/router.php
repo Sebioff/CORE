@@ -103,10 +103,16 @@ class Router {
 		// provide PROJECT_ROOTURI
 		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
 		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
-		$route = implode('/', $this->getRequestParams());
+		$scriptPathParts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
+		$urlParts = explode('/', trim($path, '/'));
+		foreach ($scriptPathParts as $scriptPathPart) {
+			if (in_array($scriptPathPart, $urlParts))
+				$rootURI .= '/'.$scriptPathPart;
+			else
+				break;
+		}
 		if ($languageIdentifierSet)
-			$route = $languageScriptlet->getCurrentLanguage().'/'.$route;
-		$rootURI .= str_replace($route, '', $_SERVER['REQUEST_URI']);
+			$rootURI .= '/'.$languageScriptlet->getCurrentLanguage();
 		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		
 		// redirect to correct language version if there is more than one available

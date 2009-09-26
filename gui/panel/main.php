@@ -16,7 +16,7 @@ class GUI_Panel_Main extends GUI_Panel {
 	
 	public function beforeDisplay() {
 		$this->module->contentPanel->beforeDisplay();
-	}	
+	}
 	
 	public function displayPage() {
 		$this->module->contentPanel->display();

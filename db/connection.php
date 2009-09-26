@@ -12,18 +12,24 @@ class DB_Connection {
 
 	private $connectionOptions = null;
 	private $connection = null;
+	private $transaction = false;
 	
 	/**
 	 * NOTE: you should only create new objects of this class if you really need
 	 * a fresh connection to the database (e.g. if you want to connect to another
 	 * database than the default one). Use DB_Connection::get() in every other case.
 	 * @see DB_Connection::get()
-	 * @param $connectionOptions string of the format: mysql://username[:passwort]@server[:port]?database
+	 * @param $connectionOptions string of the format: mysql://username[:password]@server[:port]?database
 	 */
 	public function __construct($connectionOptions = DB_CONNECTION) {
 		$this->connectionOptions = parse_url($connectionOptions);
 	}
 	
+	/**
+	 * Closes the database connection. Usually not really neccessary since the
+	 * connection would be closed when the script terminates anyway; only interesting
+	 * if there are multiple connections.
+	 */
 	public function __destruct() {
 		mysql_close($this->connection);
 	}
@@ -59,6 +65,9 @@ class DB_Connection {
 		return $result;
 	}
 	
+	/**
+	 * @return string the name of the database this object is connected to
+	 */
 	public function getDatabaseName() {
 		return $this->connectionOptions['query'];
 	}
@@ -68,7 +77,7 @@ class DB_Connection {
 	}
 	
 	/**
-	 * Deletes all tables in the database
+	 * Deletes ALL tables in the database (even those belonging to other projects)
 	 */
 	public function deleteTables() {
 		$this->query('SET FOREIGN_KEY_CHECKS=0');
@@ -83,7 +92,10 @@ class DB_Connection {
 	 * Starts a transaction (set of atomar database operations)
 	 */
 	public function beginTransaction() {
-		$this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+		if (!$this->transaction) {
+			$this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+			$this->transaction = true;
+		}
 		$this->query('START TRANSACTION');
 	}
 	
@@ -91,6 +103,7 @@ class DB_Connection {
 	 * Commits all database operations started since the last beginTransaction()
 	 */
 	public function commit() {
+		$this->transaction = false;
 		return $this->query('COMMIT');
 	}
 	

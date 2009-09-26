@@ -402,6 +402,10 @@ class GUI_Panel {
 	protected function hasPanel($panelName) {
 		return array_key_exists($panelName, $this->panels);
 	}
+	
+	public function isSubmittable() {
+		return $this->submittable;
+	}
 }
 
 ?>

@@ -22,6 +22,7 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * Available defines:
  * PROJECT_PATH				- path to the projects main folder
  * PROJECT_ROOTURI			- root uri of the project
+ * DS						- shortcut for DIRECTORY_SEPARATOR
  *
  * Optional defines:
  * CORE_MAILSENDER			- standard sender for CORE's mail functions if no sender is explicitly given
@@ -54,6 +55,7 @@ class App {
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		$backtrace = debug_backtrace();
+		define('DS', DIRECTORY_SEPARATOR);
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		// overwrite $_SESSION
