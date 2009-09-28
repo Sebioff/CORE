@@ -16,8 +16,8 @@ class Environment {
 	public static function getCurrentEnvironment() {
 		if (defined('PROJECT_ENVIRONMENT'))
 			return PROJECT_ENVIRONMENT;
-		
-		if ($_SERVER['SERVER_ADDR'] == '127.0.0.1')
+			
+		if (in_array($_SERVER['SERVER_ADDR'], array('::1', '127.0.0.1')))
 			return self::DEVELOPMENT;
 		else
 			return self::LIVE;
