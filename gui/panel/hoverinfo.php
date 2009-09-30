@@ -19,7 +19,7 @@ class GUI_Panel_HoverInfo extends GUI_Panel {
 		
 		$module = Router::get()->getCurrentModule();
 		$module->addJsRouteReference('core_js', 'panel/hoverinfo.js');
-		$module->addJsAfterContent(sprintf('new GUI_Panel_HoverInfo("%s", "%s");', $this->getID(), $this->getHoverText()));
+		$this->addJS(sprintf('new GUI_Panel_HoverInfo("%s", "%s");', $this->getID(), $this->getHoverText()));
 	}
 	
 	public function __toString() {

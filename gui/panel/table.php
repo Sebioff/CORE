@@ -22,7 +22,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	public function afterInit() {
 		if ($this->enabledSortable()) {
 			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
-			$this->getModule()->addJsAfterContent('$().ready(function() { $("#'.$this->getID().'").tablesorter( { '.$this->getSorterOptions().'	} )	} );');
+			$this->addJS('$().ready(function() { $("#'.$this->getID().'").tablesorter( { '.$this->getSorterOptions().'	} )	} );');
 			$this->addClasses('core_gui_table_sortable');
 		}
 	}

@@ -100,8 +100,8 @@ class GUI_Validator_HTML extends GUI_Validator {
 			},
 			"'.$this->getError().'"
 		);';
-		Router::get()->getCurrentModule()->addJsAfterContent($js);
-		return array('html'.$this->control->getName(), 'true'); 
+		$this->control->addJS($js);
+		return array('html'.$this->control->getName(), 'true');
 	}
 }
 
