@@ -41,11 +41,16 @@ class GUI_Panel {
 	public function render() {
 		ob_start();
 		require $this->template;
-		$renderedTemplate = ob_get_clean();
+		/**
+		 * When working with ajax we only want to execute js belonging to requested
+		 * panels, so js belonging to this panel is only added to the page if
+		 * the panel is being displayed. Otherwise it is instantly added to the
+		 * page (see GUI_Panel::addJS()).
+		 */
 		if ($this->getJS()) {
-			$renderedTemplate .= '<script type="text/javascript" charset="utf-8">'.$this->getJS().'</script>';
+			$this->getModule()->addJsAfterContent($this->getJS());
 		}
-		return $renderedTemplate;
+		return ob_get_clean();
 	}
 	
 	public function display() {

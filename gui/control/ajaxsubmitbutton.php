@@ -30,24 +30,14 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 			$("#%1$s").ajaxify({
 				"append": "",
 				"contentType": "application/x-www-form-urlencoded",
-				'.
-				(($refreshPanelsIDs) ?
-					'
-					"dataFilter": function(data, type) {
-						var panels = $.core.extractPanels(data, new Array("'.implode('", "', $totalRefreshPanelsIDs).'"));
-						for (panelName in panels) {
-							if (panelName == "%1$s")
-								continue;
-							$("#" + panelName).replaceWith(panels[panelName]);
-						}
-					
-						return panels["%1$s"];
-					},
-					'
+				"dataFilter": function(data, type) {
+					'.(($refreshPanelsIDs) ?
+						'var panelNames = new Array("'.implode('", "', $totalRefreshPanelsIDs).'");'
 					:
-					''
-				)
-				.'
+						'var panelNames = ["%1$s"];'
+					).'
+					$.core.replacePanels(data, panelNames);
+				},
 				"data": {
 					"core_ajax": "1",
 					"refreshPanels": "%2$s",

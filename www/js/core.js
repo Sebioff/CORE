@@ -41,11 +41,18 @@ $().ready( function() {
 	$.core.refreshPanels = function(panelNames) {
 		$.core.loadPanels(panelNames, 
 			function(panelData) {
-				var panels = $.core.extractPanels(panelData, panelNames);
-				for (panelName in panels) {
-					$("#" + panelName).replaceWith(panels[panelName]);
-				}
+				$.core.replacePanels(panelData, panelNames);
 			}
 		);
+	}
+	
+	// replaces all panels specified by panelNames and contained in panelData
+	$.core.replacePanels = function(panelData, panelNames) {
+		var panels = $.core.extractPanels(panelData, panelNames);
+		for (panelName in panels) {
+			$("#" + panelName).replaceWith(panels[panelName]);
+		}
+		// execute loaded js
+		$("body").append($(panelData).find("#ajax_js").html());
 	}
 })(jQuery);
