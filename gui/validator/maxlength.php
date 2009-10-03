@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the controls value isn't longer than a given length
+ */
 class GUI_Validator_MaxLength extends GUI_Validator {
 	private $maxLength = 0;
 	

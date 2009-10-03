@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the controls value matches a given regex.
+ */
 class GUI_Validator_Regex extends GUI_Validator {
 	private $regex = '';
 	private $errorMessage = '';

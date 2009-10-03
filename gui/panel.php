@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * A panel is an element that containts any type of content that should be displayed.
+ * Panels can have child panels.
+ * If one of this child panels is a submittable control such as GUI_Control_SubmitButton
+ * the panel can be submitted using POST.
+ * Panels can have error messages attached to them. If you add validators to a
+ * panel the validator automatically attaches its error message to the panel
+ * if anything is wrong.
+ */
 class GUI_Panel {
 	public $params;
 	
@@ -93,6 +102,15 @@ class GUI_Panel {
 			$this->$panelName->displayErrors();
 	}
 	
+	/**
+	 * Displays a label for a child panel. The label uses the titel of the specified
+	 * panel. It can indicate if the panel has any errors.
+	 * If the panel is mandatory an asterisk will be displayed after the panels
+	 * title.
+	 * @param $panelName string the name of the child panel for which to display
+	 * the label
+	 * @param $additionalCSSClasses adds the given css classes to the label
+	 */
 	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
 		if (!$this->hasPanel($panelName)) {
 			IO_Log::get()->warning('Tried to display label for non-existant panel: '.$panelName);
@@ -112,6 +130,13 @@ class GUI_Panel {
 		echo '</label>';
 	}
 	
+	/**
+	 * Adds a child panel to this panel.
+	 * @param $panel GUI_Panel the panel to be added
+	 * @param $toBeginning bool by default the child panel is added to the end of the
+	 * panel list. In some cases (e.g. if you iterate over the panel list) it
+	 * can be useful to add a panel to the beginning of the list instead.
+	 */
 	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
 		if ($this->hasPanel($panel->getName()))
 			throw new Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
@@ -135,6 +160,10 @@ class GUI_Panel {
 		}
 	}
 	
+	/**
+	 * Removes a child panel from this panel.
+	 * @param $panel GUI_Panel the panel to be removed
+	 */
 	public function removePanel(GUI_Panel $panel) {
 		$panel->setParent(null);
 		unset($this->panels[$panel->getName()]);

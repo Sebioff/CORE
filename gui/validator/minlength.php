@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the controls value has at least the given length
+ */
 class GUI_Validator_MinLength extends GUI_Validator {
 	private $minLength = 0;
 	

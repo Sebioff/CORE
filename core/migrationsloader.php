@@ -2,8 +2,8 @@
 
 /**
  * Handles execution of migration files located under PROJECT_ROOT/migrations
- * A migration is a file containing a set of database instructions (usually database structure
- * + content)
+ * A migration is a file containing a set of database instructions (usually database
+ * structure + content)
  */
 class Core_MigrationsLoader {
 	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
@@ -64,6 +64,9 @@ class Core_MigrationsLoader {
 	
 	/**
 	 * Executes all sql queries in the given migration file
+	 * @var $var_array array associative array of key/values that are available
+	 * for use in the migration file. E.g.: array('key' = 'value') can be used
+	 * as $key in the migration file.
 	 */
 	public static function executeMigration($migrationFile, array $var_array = array()) {
 		extract($var_array);

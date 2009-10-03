@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the controls value is in a given range of length.
+ */
 class GUI_Validator_RangeLength extends GUI_Validator {
 	private $minLength = 0;
 	private $maxLength = 0;

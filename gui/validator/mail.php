@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the control contains a valid mail address.
+ */
 class GUI_Validator_Mail extends GUI_Validator {
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {

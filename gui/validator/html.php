@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Ensures the controls value only contains allowed HTML elements.
+ */
 class GUI_Validator_HTML extends GUI_Validator {
 	private $blacklist = array('applet',
 		'base', 'basefont', 'bdo', 'body', 'button',

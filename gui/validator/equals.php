@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Ensures that the content of the control this validator is attached to equals
+ * the content of the control given in the constructor.
+ */
 class GUI_Validator_Equals extends GUI_Validator {
 	private $equalsControl = null;
 	
