@@ -21,6 +21,7 @@ class Router {
 	/** the single sections of the current URI */
 	private $requestParams = null;
 	private $requestMode = self::REQUESTMODE_GET;
+	private $enableURLRewrite = true;
 	
 	private function __construct() {
 		// Singleton
@@ -101,18 +102,22 @@ class Router {
 		$this->generateParams();
 		
 		// provide PROJECT_ROOTURI
-		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'])?'https':'http';
+		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ? 'https' : 'http';
 		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
-		$scriptPathParts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
-		$urlParts = explode('/', trim($path, '/'));
-		foreach ($scriptPathParts as $scriptPathPart) {
-			if (in_array($scriptPathPart, $urlParts))
-				$rootURI .= '/'.$scriptPathPart;
-			else
-				break;
+		// PROJECT_ROOTURI depends on whether url-rewriting is available or not
+		if ($this->getEnableURLRewrite()) {
+			$scriptPathParts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
+			$urlParts = explode('/', trim($path, '/'));
+			foreach ($scriptPathParts as $scriptPathPart) {
+				if (in_array($scriptPathPart, $urlParts))
+					$rootURI .= '/'.$scriptPathPart;
+				else
+					break;
+			}
 		}
-		if ($languageIdentifierSet)
-			$rootURI .= '/'.$languageScriptlet->getCurrentLanguage();
+		else {
+			$rootURI .= $_SERVER['PHP_SELF'].'?route=';
+		}
 		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		
 		// redirect to correct language version if there is more than one available
@@ -224,6 +229,11 @@ class Router {
 		return '/'.IO_Utils::getRelativePath($path, $_SERVER['DOCUMENT_ROOT']);
 	}
 	
+	public static function get() {
+		return (self::$instance) ? self::$instance : self::$instance = new self();
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
 	public function getParams() {
 		return $this->params;
 	}
@@ -236,8 +246,11 @@ class Router {
 		return $this->requestMode;
 	}
 	
-	public static function get() {
-		return (self::$instance) ? self::$instance : self::$instance = new self();
+	public function getEnableURLRewrite() {
+		if (defined('CORE_ENABLE_URLREWRITE') && CORE_ENABLE_URLREWRITE === false)
+			return false;
+			
+		return (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules()));
 	}
 }
 

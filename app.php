@@ -27,6 +27,7 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * Optional defines:
  * CORE_MAILSENDER			- standard sender for CORE's mail functions if no sender is explicitly given
  * CORE_ENABLE_LOGGING		- can be set to "false" to disable logging
+ * CORE_ENABLE_URLREWRITE	- can be set to "false" to disable rewriting urls even if mod_rewrite is available
  * PROJECT_ENVIRONMENT		- overrides the environment that is automatically detected by Environment::getCurrentEnvironment()
  *
  * Callback defines:

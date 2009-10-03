@@ -127,9 +127,24 @@ class Module extends Scriptlet {
 		return $this->cssRouteReferences;
 	}
 	
+	/**
+	 * Modifies the name of static files so that the file name is unique for
+	 * each version of the project. This way it's possible to use methods like
+	 * browser-side-caching without any problems, because if the project version
+	 * changes (which means the static files might have changed as well) the
+	 * filenames will change and thus re-caching is enforced (= "cache busting").
+	 */
 	private function applyStaticFileVersioning($fileName) {
 		$fileNameParts = pathinfo($fileName);
-		return $fileNameParts['dirname'].'/'.$fileNameParts['filename'].'-cb'.PROJECT_VERSION.'.'.$fileNameParts['extension'];
+		/*
+		 * Apparently there can be problems regarding css/js-files with query-part.
+		 * Thus, if url rewriting is available, we rewrite the filename. Otherwise
+		 * we got no other chance than to use query-part-cache-busting.
+		 */
+		if (Router::get()->getEnableURLRewrite())
+			return $fileNameParts['dirname'].'/'.$fileNameParts['filename'].'-cb'.PROJECT_VERSION.'.'.$fileNameParts['extension'];
+		else
+			return $fileNameParts['dirname'].'/'.$fileNameParts['filename'].'.'.$fileNameParts['extension'].'?cb='.PROJECT_VERSION;
 	}
 	
 	/**
