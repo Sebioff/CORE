@@ -55,8 +55,8 @@ class App {
 		error_reporting(E_ALL|E_STRICT);
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
-		$backtrace = debug_backtrace();
 		define('DS', DIRECTORY_SEPARATOR);
+		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		// overwrite $_SESSION
@@ -94,11 +94,8 @@ class App {
 		
 		// initialize language scriptlet
 		Language_Scriptlet::get()->init();
-		// TODO this is wrong. translations should only be loaded if needed; for example like the autoloader does it
-		// load framework translations
-		I18N::get()->loadFilesFromFolder(dirname(__FILE__).'/translations', 'core');
-		// load project translations
-		I18N::get()->loadFilesFromFolder(PROJECT_PATH.'/translations', PROJECT_NAME);
+		// initialize I18N
+		I18N::get();
 		
 		// initialize router
 		Router::get()->init();

@@ -31,7 +31,7 @@ abstract class GUI_Control extends GUI_Panel {
 		parent::display();
 		
 		if ($this->focused)
-			Router::get()->getCurrentModule()->addJsAfterContent(sprintf('$("#%s").focus();', $this->getID()));
+			$this->addJS(sprintf('$("#%s").focus();', $this->getID()));
 	}
 	
 	public function __toString() {
