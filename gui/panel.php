@@ -220,10 +220,11 @@ class GUI_Panel {
 	 * Displays a list of errors associated with this panel
 	 */
 	public function displayErrors() {
-		echo '<ul class="core_common_error_list">';
-		if ($this->errors)
-			echo '<li>'.implode('</li><li>', $this->errors).'</li>';
-		echo '</ul>';
+		if ($this->errors) {
+			echo '<ul class="core_common_error_list">';
+				echo '<li>'.implode('</li><li>', $this->errors).'</li>';
+			echo '</ul>';
+		}
 	}
 	
 	/**
@@ -231,7 +232,8 @@ class GUI_Panel {
 	 */
 	public function displayMessages() {
 		$this->displayErrors();
-		echo '<div class="core_common_success">'.$this->successMessage.'</div>';
+		if ($this->successMessage)
+			echo '<div class="core_common_success">'.$this->successMessage.'</div>';
 	}
 	
 	/**
