@@ -81,6 +81,25 @@ class GUI_Validator_HTML extends GUI_Validator {
 		}
 	}
 	
+	/**
+	 * Override actual blacklist with a whitelist
+	 * @param list of elements
+	 */
+	public function setWhitelistElements() {
+		$elements = func_get_args();
+		if (is_array($elements[0]))
+			$elements = $elements[0];
+		$whitelist = array();
+		foreach ($elements as $element) {
+			if (in_array($element, $this->elements)) {
+				$whitelist[] = $element;
+			}
+		}
+		if (!empty($whitelist)) {
+			$this->blacklist = array_diff($this->elements, $whitelist);
+		}
+	}
+	
 	public function getAllowedElements() {
 		return array_diff($this->elements, $this->blacklist);
 	}
