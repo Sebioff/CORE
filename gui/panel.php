@@ -318,8 +318,9 @@ class GUI_Panel {
 	}
 	
 	/**
-	 * You probably don't want to override the constructor if it's not neccessary,
-	 * right? Well, then override this function instead, please.
+	 * This method is the method that you'll probably need most when creating
+	 * new panel classes. It is mainly intended to be used for setting the panels
+	 * template (using setTemplate()) and adding sub-panels (using addPanel()).
 	 */
 	public function init() {
 		// callback

@@ -4,7 +4,6 @@
  * Can be attached to a panel in order to validate it.
  * This way you can easily plug-in validators for common tasks like required
  * fields or fields that contain only digits.
- * Validators consist of
  */
 abstract class GUI_Validator {
 	protected $control = null;

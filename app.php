@@ -162,6 +162,14 @@ class App {
 	}
 	
 	/**
+	 * Returns all available modules.
+	 * @return array of Modules
+	 */
+	public function getModules() {
+		return $this->modules;
+	}
+	
+	/**
 	 * Magic function such as get{name of module}Module
 	 * @return depends on type of magic method; in this case: the module
 	 */

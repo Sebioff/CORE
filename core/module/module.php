@@ -70,6 +70,7 @@ class Module extends Scriptlet {
 		return null;
 	}
 	
+	// TODO privilege checks are ignored here
 	public function getAllSubmodules() {
 		return $this->submodules;
 	}
