@@ -12,7 +12,7 @@ class Router {
 	private static $instance = null;
 	/** contains static routes = routes to files/folders */
 	private $staticRoutes = array();
-	/** mapping of all top-level-routenames to their corresponding module objects **/
+	/** mapping of all top-level-routenames to their corresponding module objects */
 	private $moduleRoutes = array();
 	/** routename of the topmost module */
 	private $route = null;
