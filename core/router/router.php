@@ -138,6 +138,12 @@ class Router {
 		$module->afterInit();
 		if ($module instanceof Module && $module->isInvalid()) {
 			$_POST = array();
+			/* TODO ideally a new instance of the current module should be created
+			 * here which is at the moment not easy doable. With PHP 5.3 there
+			 * will be lazy module instantiation and this can be done. Remove
+			 * cleanup() then.
+			 */
+			$module->cleanup();
 			$module->beforeInit();
 			$module->init();
 			$module->afterInit();

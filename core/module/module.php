@@ -175,6 +175,14 @@ class Module extends Scriptlet {
 	}
 	
 	/**
+	 * Called if a module has been invalidted
+	 */
+	// TODO Remove with PHP 5.3 and lazy module instantiation
+	public function cleanup() {
+		$this->jsAfterContent = '';
+	}
+	
+	/**
 	 * Called as soon as the module is constructed.
 	 * Override this callback if you want to add additional functionality to the
 	 * constructor, without having to override it (-> you don't need to copy all
