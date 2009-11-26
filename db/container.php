@@ -10,10 +10,10 @@
  */
 class DB_Container {
 	private static $containerCache = array();
+	private static $databaseSchemata = array();
 	
 	private $recordClass = '';
 	private $table = '';
-	private $databaseSchema = array();
 	private $insertCallbacks = array();
 	private $updateCallbacks = array();
 	private $deleteCallbacks = array();
@@ -22,7 +22,6 @@ class DB_Container {
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
 		$this->recordClass = $recordClass;
-		$this->loadDatabaseSchema();
 	}
 
 	// CUSTOM METHODS ----------------------------------------------------------
@@ -54,7 +53,6 @@ class DB_Container {
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
-		$databaseSchema = $this->getDatabaseSchema();
 		if (isset(self::$containerCache[$this->getTable()][$query]))
 			return self::$containerCache[$this->getTable()][$query];
 			
@@ -80,7 +78,8 @@ class DB_Container {
 	 * @return DB_Record the record belonging to the given primary key
 	 */
 	public function selectByPK($value, array $options = array()) {
-		$options['conditions'][] = array($this->databaseSchema['primaryKey'].' = ?', $value);
+		$databaseSchema = $this->getDatabaseSchema();
+		$options['conditions'][] = array($databaseSchema['primaryKey'].' = ?', $value);
 		return $this->selectFirst($options);
 	}
 	
@@ -252,30 +251,6 @@ class DB_Container {
 	}
 	
 	/**
-	 * Automatically loads the schema of this containers' table.
-	 * This way, primary keys and foreign keys can be resolved easily.
-	 */
-	private function loadDatabaseSchema() {
-		if($this->databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table))
-			return;
-		
-		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
-		while ($keyColumn = mysql_fetch_assoc($result)) {
-			$keyColumn['COLUMN_NAME'] = Text::underscoreToCamelCase($keyColumn['COLUMN_NAME']);
-			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY') {
-				$this->databaseSchema['primaryKey'] = $keyColumn['COLUMN_NAME'];
-			}
-			else {
-				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['type'] = 'foreignKey';
-				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedTable'] = $keyColumn['REFERENCED_TABLE_NAME'];
-				$this->databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedColumn'] = $keyColumn['REFERENCED_COLUMN_NAME'];
-			}
-		}
-
-		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $this->databaseSchema);
-	}
-	
-	/**
 	 * Magic functions
 	 */
 	public function __call($name, $params) {
@@ -328,19 +303,20 @@ class DB_Container {
 	// callback to a method that creates/returns the container. That way the container
 	// is only instantiated if really needed
 	public function addReferencedContainer(DB_Container $container, $column = null, $referencedColumn = null) {
+		$databaseSchema = &$this->getDatabaseSchema();
 		if ($column === null) {
-			foreach ($this->databaseSchema['constraints'] as &$referencedColumn) {
+			foreach ($databaseSchema['constraints'] as &$referencedColumn) {
 				if ($referencedColumn['referencedTable'] == $container->getTable()) {
 					$referencedColumn['referencedContainer'] = $container;
 				}
 			}
 		}
 		else {
-			$this->databaseSchema['constraints'][$column]['referencedContainer'] = $container;
+			$databaseSchema['constraints'][$column]['referencedContainer'] = $container;
 			if ($referencedColumn !== null) {
-				$this->databaseSchema['constraints'][$column]['type'] = 'foreignKey';
-				$this->databaseSchema['constraints'][$column]['referencedTable'] = $container->getTable();
-				$this->databaseSchema['constraints'][$column]['referencedColumn'] = $referencedColumn;
+				$databaseSchema['constraints'][$column]['type'] = 'foreignKey';
+				$databaseSchema['constraints'][$column]['referencedTable'] = $container->getTable();
+				$databaseSchema['constraints'][$column]['referencedColumn'] = $referencedColumn;
 			}
 		}
 	}
@@ -428,8 +404,35 @@ class DB_Container {
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
-	public function getDatabaseSchema() {
-		return $this->databaseSchema;
+	/**
+	 * Automatically loads the schema of this containers' table.
+	 * This way, primary keys and foreign keys can be resolved easily.
+	 */
+	public function &getDatabaseSchema() {
+		$databaseSchema = &self::$databaseSchemata[$this->getTable()];
+		/*
+		 * We COULD always return the version from the cache, but the database schema
+		 * is pretty often needed, so it's even faster to just keep a copy of it
+		 * in this object.
+		 */
+		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table))
+			return $databaseSchema;
+			
+		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
+		while ($keyColumn = mysql_fetch_assoc($result)) {
+			$keyColumn['COLUMN_NAME'] = Text::underscoreToCamelCase($keyColumn['COLUMN_NAME']);
+			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY') {
+				$databaseSchema['primaryKey'] = $keyColumn['COLUMN_NAME'];
+			}
+			else {
+				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['type'] = 'foreignKey';
+				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedTable'] = $keyColumn['REFERENCED_TABLE_NAME'];
+				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedColumn'] = $keyColumn['REFERENCED_COLUMN_NAME'];
+			}
+		}
+
+		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $databaseSchema);
+		return $databaseSchema;
 	}
 	
 	/**

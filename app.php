@@ -53,11 +53,13 @@ class App {
 	public static function boot() {
 		ob_start();
 		error_reporting(E_ALL|E_STRICT);
+		ini_set('default_charset', 'utf-8');
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		define('DS', DIRECTORY_SEPARATOR);
 		$backtrace = debug_backtrace();
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
+		// setup autoloading (before session_start() or deserialization won't work)
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		// overwrite $_SESSION
 		session_start();
@@ -350,6 +352,13 @@ function dump() {
  */
 function dump_flat() {
 	Core_Dump::dump_flat(func_get_args());
+}
+
+/**
+ * Prints a backtrace
+ */
+function backtrace() {
+	Core_Dump::backtrace();
 }
 
 ?>

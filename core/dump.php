@@ -9,13 +9,9 @@ class Core_Dump {
 	 */
 	public static function dump() {
 		foreach (func_get_args() as $arg) {
-			if ('cli'==PHP_SAPI)
-				var_dump($arg);
-			else {
-				echo '<div class="ob_dump" style="display:block; position:relative;z-index:1000;"><table style="background-color:green;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
-				var_dump($arg);
-				echo '</pre></td></tr></table></div>';
-			}
+			echo '<div class="ob_dump" style="display:block; position:relative;z-index:1000;"><table style="background-color:green;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
+			var_dump($arg);
+			echo '</pre></td></tr></table></div>';
 		}
 
 		ob_flush();
@@ -105,6 +101,20 @@ class Core_Dump {
 
 		ob_flush();
 		ob_start();
+	}
+	
+	public static function backtrace() {
+		$e = new Exception();
+	    $trace = '';
+	    $traceArray = explode("\n", $e->getTraceAsString());
+	    array_shift($traceArray);
+	    array_shift($traceArray);
+	    foreach ($traceArray as $line)
+	      $trace .= substr($line, strpos($line, ' ') + 1)."\n";
+	      ob_flush();
+	      echo '<div style="position:relative;z-index:1000;"><table style="background-color:brown;border:1px solid black;margin-top:5px;"><tr><td style="color:white;"><pre>';
+	      echo $trace;
+	      echo '</pre></td></tr></table></div>';
 	}
 }
 
