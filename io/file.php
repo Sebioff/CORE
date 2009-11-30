@@ -39,9 +39,15 @@ class IO_File {
 		return fclose($this->resource);
 	}
 	
+	public function create() {
+		if ($this->exists())
+			return false;
+		return touch($this->file);
+	}
+	
 	public function delete() {
 		if (!$this->exists())
-			return true;
+			return false;
 		return unlink($this->file);
 	}
 	

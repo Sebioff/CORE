@@ -33,12 +33,13 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * Callback defines:
  * CALLBACK_ERROR			- executed as soon as an error occurs. If not defined the error message and a backtrace will be printed
  * CALLBACK_ONAFTERRESET	- executed after the project has been reset
- * CALLBACK_MAINTENANCE		- if defined, the application switches into maintenance mode (nothing except this callback is executed)
+ * CALLBACK_MAINTENANCE		- if the application is in maintenance mode this callback will be executed if defined
  */
 class App {
 	private static $instance = null;
 	
 	private $modules = array();
+	private $maintenanceModeLockfilePath = '';
 
 	// CONSTRUCTION ------------------------------------------------------------
 	private function __construct() {
@@ -71,15 +72,19 @@ class App {
 		// register error handlers
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
+		$app = self::get();
+		$app->maintenanceModeLockfilePath = PROJECT_PATH.'/config/maintenance.lock';
 		
 		// first boot
 		if (!$GLOBALS['cache']->get('CORE_booted')) {
 			self::systemCheck();
 		}
 		
-		if (defined('CALLBACK_MAINTENANCE')) {
-			call_user_func(CALLBACK_MAINTENANCE);
-			exit;
+		if ($app->isMaintenanceModeEnabled()) {
+			if (defined('CALLBACK_MAINTENANCE'))
+				call_user_func(CALLBACK_MAINTENANCE);
+			else
+				exit;
 		}
 		
 		// load configuration files
@@ -182,6 +187,28 @@ class App {
 		}
 		else
 			throw new Core_Exception('Call to a non existent function or magic method: '.$name);
+	}
+	
+	/**
+	 * @param $enableMaintenanceMode boolean true if maintenance mode should be
+	 * enabled (default), false if maintenance mode should be disabled
+	 */
+	public function enableMaintenanceMode($enableMaintenanceMode = true) {
+		$lockfile = new IO_File($this->maintenanceModeLockfilePath);
+		if ($enableMaintenanceMode) {
+			$lockfile->create();
+		}
+		else {
+			$lockfile->delete();
+		}
+	}
+	
+	/**
+	 * @return boolean true if maintenance mode is enabled, false otherwise
+	 */
+	public function isMaintenanceModeEnabled() {
+		$lockfile = new IO_File($this->maintenanceModeLockfilePath);
+		return $lockfile->exists();
 	}
 	
 	public static function get() {
