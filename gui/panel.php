@@ -66,7 +66,7 @@ class GUI_Panel {
 		$this->beforeDisplay();
 		
 		if ($this->submittable) {
-			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data">', $this->getID(), $_SERVER['REQUEST_URI']);
+			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data" accept-charset="UTF-8">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
 			// fix for IE not submitting button name in post data if form is submitted with enter in forms with only one input
 			echo '<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" name="IESucks" /><![endif]-->';

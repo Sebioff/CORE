@@ -28,7 +28,11 @@ class Core_ErrorHandler {
 		 * it catchable
 		 */
 		if (in_array($errno, $recoverableErrors)) {
-			throw new Core_Exception_PHPError($errorType.': '.$errstr.' in '.$errfile.'('.$errline.') thrown');
+			// quietly consume recoverable errors of 3rdparty-scripts
+			if (strpos($errfile, DS.'3rdparty'.DS) !== false)
+				return true;
+			else
+				throw new Core_Exception_PHPError($errorType.': '.$errstr.' in '.$errfile.'('.$errline.') thrown');
 		}
 		/*
 		 * otherwise there's nothing we can do so we call our error page handling

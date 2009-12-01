@@ -29,7 +29,7 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 		$this->addJS(sprintf('
 			$("#%1$s").ajaxify({
 				"append": "",
-				"contentType": "application/x-www-form-urlencoded",
+				"contentType": "application/x-www-form-urlencoded; charset=utf-8",
 				"dataFilter": function(data, type) {
 					'.(($refreshPanelsIDs) ?
 						'var panelNames = new Array("'.implode('", "', $totalRefreshPanelsIDs).'");'
