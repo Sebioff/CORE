@@ -56,6 +56,9 @@ class DB_Connection {
 			// set active database
 			if (!mysql_select_db($this->getDatabaseName(), $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
+				
+			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'');
+			mysql_query('SET CHARACTER SET \'utf8\'');
 		}
 		
 		$result = mysql_query($query, $this->connection);
