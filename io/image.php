@@ -15,13 +15,13 @@ class IO_Image {
 		$this->imagePath = $image;
 		$this->mimetype = image_type_to_mime_type(exif_imagetype($image));
 		switch ($this->mimetype) {
-			case "image/gif":
+			case 'image/gif':
 				$this->image = imagecreatefromgif($image);
 			break;
-			case "image/jpeg":
+			case 'image/jpeg':
 				$this->image = imagecreatefromjpeg($image);
 			break;
-			case "image/png":
+			case 'image/png':
 				$this->image = imagecreatefrompng($image);
 			break;
 			default:
@@ -54,7 +54,7 @@ class IO_Image {
 				if (($aktX > $newX) || ($newImgY > $newY)) {
 					$newImgX = $newX;
 					$newImgY = $aktY / $aktX * $newX;
-				}      
+				}
 			} else {
 				if ($aktX >= $newX) {
 					$newImgX = $newX;
@@ -121,13 +121,13 @@ class IO_Image {
 			return;
 		
 		switch ($this->mimetype) {
-			case "image/gif":
+			case 'image/gif':
 				imagegif($this->image, $this->imagePath);
 			break;
-			case "image/jpeg":
+			case 'image/jpeg':
 				imagejpeg($this->image, $this->imagePath);
 			break;
-			case "image/png":
+			case 'image/png':
 				imagepng($this->image, $this->imagePath);
 			break;
 		}

@@ -56,7 +56,7 @@ class Media_Captcha extends Scriptlet {
 		imagedestroy($image);
 	}
 	
-	function waveAreaVertical($img, $x, $y, $width, $height, $amplitude = 10, $period = 10){
+	protected function waveAreaVertical($img, $x, $y, $width, $height, $amplitude = 10, $period = 10) {
 		// Make a copy of the image twice the size
 		$height2 = $height * 2;
 		$width2 = $width * 2;
@@ -75,7 +75,7 @@ class Media_Captcha extends Scriptlet {
 		imagedestroy($img2);
 	}
 	
-	function waveAreaHorizontal($img, $x, $y, $width, $height, $amplitude = 10, $period = 10){
+	protected function waveAreaHorizontal($img, $x, $y, $width, $height, $amplitude = 10, $period = 10) {
 		// Make a copy of the image twice the size
 		$height2 = $height * 2;
 		$width2 = $width * 2;

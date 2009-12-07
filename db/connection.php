@@ -58,7 +58,6 @@ class DB_Connection {
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 				
 			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'');
-			mysql_query('SET CHARACTER SET \'utf8\'');
 		}
 		
 		$result = mysql_query($query, $this->connection);
