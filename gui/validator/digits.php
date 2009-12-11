@@ -15,8 +15,13 @@ class GUI_Validator_Digits extends GUI_Validator {
 		$this->maxValue = $maxValue;
 	}
 	
+	public function onSetControl() {
+		if ($this->maxValue < self::INFINITY)
+			$this->control->addValidator(new GUI_Validator_MaxLength(floor(log10($this->maxValue)) + 1));
+	}
+	
 	public function isValid() {
-		return ctype_digit((string)$this->control->getValue()) 
+		return ctype_digit((string)$this->control->getValue())
 				&& $this->control->getValue() >= $this->minValue
 				&& $this->control->getValue() <= $this->maxValue;
 	}
