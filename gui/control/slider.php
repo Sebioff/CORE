@@ -7,7 +7,7 @@ class GUI_Control_Slider extends GUI_Control {
 		
 		$this->setTemplate(dirname(__FILE__).'/slider.tpl');
 		$this->getModule()->addJsRouteReference('core_js', '/jquery/jquery-ui.js');
-		$this->getModule()->addCssRouteReference('jquery_css', '/smoothness/jquery-ui.css');
+		$this->getModule()->addCssRouteReference('core_jquery_css', '/smoothness/jquery-ui.css');
 	}
 	
 	public function afterInit() {

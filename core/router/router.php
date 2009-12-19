@@ -28,7 +28,7 @@ class Router {
 		$this->addScriptletRoute('core', new CoreRoutes_Core('core'));
 		$this->addStaticRoute('core_css', dirname(__FILE__).'/../../www/css');
 		$this->addStaticRoute('core_js', dirname(__FILE__).'/../../www/js');
-		$this->addStaticRoute('jquery_css', dirname(__FILE__).'/../../www/js/jquery/css');
+		$this->addStaticRoute('core_jquery_css', dirname(__FILE__).'/../../www/js/jquery/css');
 	}
 	
 	/**
