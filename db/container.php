@@ -95,6 +95,9 @@ class DB_Container {
 	/**
 	 * Saves an record into the database
 	 * If the record hasn't been saved before it is inserted, otherwise it is updated
+	 *
+	 * TODO at the moment, ALL properties of the record are saved. research if it
+	 * would be faster to only save "dirty" properties
 	 */
 	public function save(DB_Record $record) {
 		$properties = array();

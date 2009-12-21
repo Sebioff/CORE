@@ -64,9 +64,9 @@ class App {
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		// overwrite $_SESSION
 		session_start();
-		if (!isset($_SESSION[PROJECT_NAME]))
-			$_SESSION[PROJECT_NAME] = array();
-		$GLOBALS['_SESSION'] = &$_SESSION[PROJECT_NAME];
+		if (!isset($_SESSION[PROJECT_PATH]))
+			$_SESSION[PROJECT_PATH] = array();
+		$GLOBALS['_SESSION'] = &$_SESSION[PROJECT_PATH];
 		$GLOBALS['cache'] = new Cache_Global_Session();
 		App_Autoloader::loadClassesByURL();
 		// register error handlers
