@@ -227,7 +227,7 @@ class App {
 			if (!extension_loaded($extension))
 				throw new Core_Exception('Please verify your PHP configuration: extension "'.$extension.'" should be loaded.');
 		
-		foreach (array(/*'register_globals' => 0, */'magic_quotes_runtime' => 0, 'short_open_tag' => 1) as $option => $value)
+		foreach (array(/*'register_globals' => 0, */'magic_quotes_runtime' => 0, 'magic_quotes_gpc' => 0, 'short_open_tag' => 1) as $option => $value)
 			if ($value != ini_get($option))
 				throw new Core_Exception('Please verify your PHP configuration: '.$option.' should be "'.$value.'", but is "'.ini_get($option).'".');
 	}
