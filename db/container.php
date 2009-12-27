@@ -53,8 +53,8 @@ class DB_Container {
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		$query .= $this->buildQueryString($options);
-		if (isset(self::$containerCache[$this->getTable()][$query]))
-			return self::$containerCache[$this->getTable()][$query];
+		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
+			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
 			
 		$result = DB_Connection::get()->query($query);
 
@@ -69,7 +69,7 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
-		self::$containerCache[$this->getTable()][$query] = $records;
+		self::$containerCache[$this->getTable()][$this->getRecordClass()][$query] = $records;
 		
 		return $records;
 	}
@@ -418,8 +418,9 @@ class DB_Container {
 		 * is pretty often needed, so it's even faster to just keep a copy of it
 		 * in this object.
 		 */
-		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table))
+		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table)) {
 			return $databaseSchema;
+		}
 			
 		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
 		while ($keyColumn = mysql_fetch_assoc($result)) {
@@ -443,6 +444,14 @@ class DB_Container {
 	 */
 	public function getTable() {
 		return $this->table;
+	}
+	
+	/**
+	 * @return string the name of the record class from which this container returns
+	 * objects
+	 */
+	public function getRecordClass() {
+		return $this->recordClass;
 	}
 }
 
