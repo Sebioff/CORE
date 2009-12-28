@@ -8,6 +8,7 @@
 class Router {
 	const REQUESTMODE_GET = 0;
 	const REQUESTMODE_AJAX = 1;
+	const REQUESTMODE_CLI = 2;
 	
 	private static $instance = null;
 	/** contains static routes = routes to files/folders */
@@ -71,6 +72,8 @@ class Router {
 		
 		if (isset($_POST['core_ajax']))
 			$this->requestMode = self::REQUESTMODE_AJAX;
+		if (PHP_SAPI == 'cli')
+			$this->requestMode = self::REQUESTMODE_CLI;
 		
 		$languageScriptlet = Language_Scriptlet::get();
 		

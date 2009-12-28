@@ -58,6 +58,7 @@ class App {
 		else {
 			$_SERVER['REQUEST_URI'] = 'http://localhost/'.$_SERVER['argv'][1];
 			$_SERVER['SERVER_NAME'] = '';
+			// TODO fill in the actual ip address with PHP 5.3 (-> gethostbyname(gethostname()))
 			$_SERVER['SERVER_ADDR'] = '127.0.0.1';
 			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 			$_SERVER['HTTP_ACCEPT_ENCODING'] = '';
