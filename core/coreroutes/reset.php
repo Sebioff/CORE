@@ -13,7 +13,7 @@ class CoreRoutes_Reset extends Module {
 		DB_Connection::get()->deleteTables();
 		
 		// remove migrations log
-		$file = new IO_File(Core_MigrationsLoader::MIGRATION_LOG_FILE);
+		$file = new IO_File(PROJECT_PATH.Core_MigrationsLoader::MIGRATION_LOG_FILE);
 		$file->delete();
 		
 		// clear global cache
