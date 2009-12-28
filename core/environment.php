@@ -17,6 +17,10 @@ class Environment {
 		if (defined('PROJECT_ENVIRONMENT'))
 			return PROJECT_ENVIRONMENT;
 			
+		// TODO remove with PHP 5.3 if SERVER_ADDR contains correct ip adress in cli mode (see App::boot())
+		if (PHP_SAPI == 'cli')
+			return self::LIVE;
+			
 		if (in_array($_SERVER['SERVER_ADDR'], array('::1', '127.0.0.1')))
 			return self::DEVELOPMENT;
 		else
