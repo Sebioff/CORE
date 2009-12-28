@@ -17,7 +17,7 @@ class Environment {
 		if (defined('PROJECT_ENVIRONMENT'))
 			return PROJECT_ENVIRONMENT;
 			
-		if (isset($_SERVER['SERVER_ADDR']) && in_array($_SERVER['SERVER_ADDR'], array('::1', '127.0.0.1')))
+		if (in_array($_SERVER['SERVER_ADDR'], array('::1', '127.0.0.1')))
 			return self::DEVELOPMENT;
 		else
 			return self::LIVE;

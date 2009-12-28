@@ -51,20 +51,24 @@ class App {
 	 * Sets up everything neccessary, e.g. error/exception-handlers.
 	 * Needs to be called before anything else can be done.
 	 */
-	public static function boot($projectPath = '') {
-		ob_start();
+	public static function boot() {
+		if (PHP_SAPI != 'cli') {
+			ob_start();
+		}
+		else {
+			$_SERVER['REQUEST_URI'] = 'http://localhost/'.$_SERVER['argv'][1];
+			$_SERVER['SERVER_NAME'] = '';
+			$_SERVER['SERVER_ADDR'] = '127.0.0.1';
+			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+			$_SERVER['HTTP_ACCEPT_ENCODING'] = '';
+		}
 		error_reporting(E_ALL|E_STRICT);
 		ini_set('default_charset', 'utf-8');
 		header('Content-type: text/html; charset=utf-8');
 		date_default_timezone_set('Europe/Berlin');
 		define('DS', DIRECTORY_SEPARATOR);
-		if (!$projectPath) {
-			$backtrace = debug_backtrace();
-			define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
-		}
-		else {
-			define('PROJECT_PATH', realpath($projectPath));
-		}
+		$backtrace = debug_backtrace();
+		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		// setup autoloading (before session_start() or deserialization won't work)
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
 		// overwrite $_SESSION
