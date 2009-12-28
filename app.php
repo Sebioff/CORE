@@ -254,7 +254,7 @@ class App_Autoloader {
 		$path = null;
 		
 		// is path cached?
-		if ($path = $GLOBALS['cache']->get($className)) {
+		if (isset($GLOBALS['cache']) && $path = $GLOBALS['cache']->get($className)) {
 			if (file_exists($path)) {
 				// cache all class paths belonging to this url
 				$classPaths = $GLOBALS['cache']->get('classPaths'.$_SERVER['REQUEST_URI']);
@@ -355,7 +355,8 @@ class App_Autoloader {
 		if (file_exists($path)) {
 			require_once $path;
 			if (class_exists($className, false) || interface_exists($className, false)) {
-				$GLOBALS['cache']->set($className, $path);
+				if (isset($GLOBALS['cache']))
+					$GLOBALS['cache']->set($className, $path);
 				return true;
 			}
 		}

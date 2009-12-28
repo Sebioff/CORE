@@ -9,6 +9,7 @@
  * @method array countByPROPERTY()
  */
 class DB_Container {
+	private static $globalReferencedContainers = array();
 	private static $containerCache = array();
 	private static $databaseSchemata = array();
 	
@@ -325,6 +326,18 @@ class DB_Container {
 	}
 	
 	/**
+	 * Defines that the given container should be used to resolve ALL references
+	 * of all other containers to the table the given container encapsulates with
+	 * the given container. Can be overriden by DB_Container::addReferencedContainer()
+	 * for single containers.
+	 * @param $container the container which is to be used to resolve all references
+	 * to the table of the container
+	 */
+	public static function addReferencedContainerGlobal(DB_Container $container) {
+		self::$globalReferencedContainers[$container->getTable()] = $container;
+	}
+	
+	/**
 	 * Adds a callback that is executed whenever a new record is added to this
 	 * container.
 	 * The callback receives the inserted DB_Record as first parameter.
@@ -432,6 +445,8 @@ class DB_Container {
 				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['type'] = 'foreignKey';
 				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedTable'] = $keyColumn['REFERENCED_TABLE_NAME'];
 				$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedColumn'] = $keyColumn['REFERENCED_COLUMN_NAME'];
+				if (isset(self::$globalReferencedContainers[$keyColumn['REFERENCED_TABLE_NAME']]))
+					$databaseSchema['constraints'][$keyColumn['COLUMN_NAME']]['referencedContainer'] = self::$globalReferencedContainers[$keyColumn['REFERENCED_TABLE_NAME']];
 			}
 		}
 
