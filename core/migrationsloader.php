@@ -6,7 +6,7 @@
  * structure + content)
  */
 class Core_MigrationsLoader {
-	const MIGRATION_LOG_FILE = '../config/log/migrations.log.xml';
+	const MIGRATION_LOG_FILE = '/config/log/migrations.log.xml';
 	
 	/**
 	 * Loads all migration files from the migration folder (in the order they where
@@ -19,8 +19,8 @@ class Core_MigrationsLoader {
 		$fileXPathParts = explode('/', $relativeMigrationFolder);
 		
 		// load migration logfile or create new one
-		if (file_exists(self::MIGRATION_LOG_FILE))
-			$xml = simplexml_load_file(self::MIGRATION_LOG_FILE);
+		if (file_exists(PROJECT_PATH.self::MIGRATION_LOG_FILE))
+			$xml = simplexml_load_file(PROJECT_PATH.self::MIGRATION_LOG_FILE);
 		else {
 			$baseMigrationLog = '<?xml version=\'1.0\'?><content></content>';
 			$xml = new SimpleXMLElement($baseMigrationLog);
@@ -59,7 +59,7 @@ class Core_MigrationsLoader {
 		$doc->preserveWhiteSpace = false;
 		$doc->loadXML($xml->asXML());
 		$doc->formatOutput = true;
-		$doc->save(self::MIGRATION_LOG_FILE);
+		$doc->save(PROJECT_PATH.self::MIGRATION_LOG_FILE);
 	}
 	
 	/**
