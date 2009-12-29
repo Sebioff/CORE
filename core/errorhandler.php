@@ -44,6 +44,24 @@ class Core_ErrorHandler {
 			Core_BacktracePrinter::handle($backtrace, $message, $errorType);
 		}
 	}
+	
+	/**
+	 * Executed on shutdown - thus it can also check for fatal errors etc. for which
+	 * PHP doesn't execute the error handler.
+	 */
+	public static function onShutdown() {
+	    if ($error = error_get_last()){
+	    	switch($error['type']){
+				case E_ERROR:
+				case E_CORE_ERROR:
+				case E_COMPILE_ERROR:
+				case E_USER_ERROR:
+					$message = $error['message'].' in:<br>'.$error['file'].'('.$error['line'].')';
+					Core_BacktracePrinter::handle(array(), $message, 'Fatal error');
+				break;
+			}
+		}
+	}
 }
 
 ?>

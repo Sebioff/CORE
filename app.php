@@ -82,6 +82,7 @@ class App {
 		// register error handlers
 		set_error_handler(array('Core_ErrorHandler', 'handleError'));
 		set_exception_handler(array('Core_ExceptionHandler', 'handleException'));
+		register_shutdown_function(array('Core_ErrorHandler', 'onShutdown'));
 		$app = self::get();
 		$app->maintenanceModeLockfilePath = PROJECT_PATH.'/config/maintenance.lock';
 		
