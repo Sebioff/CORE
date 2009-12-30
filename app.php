@@ -62,6 +62,7 @@ class App {
 			$_SERVER['SERVER_ADDR'] = '127.0.0.1';
 			$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 			$_SERVER['HTTP_ACCEPT_ENCODING'] = '';
+			$_SERVER['HTTP_USER_AGENT'] = 'CLI';
 		}
 		error_reporting(E_ALL|E_STRICT);
 		ini_set('default_charset', 'utf-8');
