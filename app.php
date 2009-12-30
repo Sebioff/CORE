@@ -156,7 +156,6 @@ class App {
 
 	/**
 	 * Registers a module.
-	 * @param $name_ the name of the new module
 	 * @param $module_ the module
 	 */
 	public function addModule(Scriptlet $module) {

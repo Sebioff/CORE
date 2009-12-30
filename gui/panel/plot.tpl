@@ -1,1 +1,0 @@
-<img src="<?= dirname(Router::get()->transformPathToHTMLPath(__FILE__)); ?>/plotimg.php?data=<?= $this->params->data; ?>&amp;width=<?= $this->params->width; ?>&amp;height=<?= $this->params->height; ?>" alt="plot" />
