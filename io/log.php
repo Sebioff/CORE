@@ -4,6 +4,7 @@
  */
 class IO_Log {
 	const LOGFILE_PREFIX = 'log';
+	const LOGFILE_EXTENSION = 'log';
 	const BENCHFILE_PREFIX = 'bench';
 	
 	private static $instance = null;
@@ -104,10 +105,14 @@ class IO_Log {
 	}
 	
 	private function writeToFile($msg, $fileNamePrefix = self::LOGFILE_PREFIX) {
-		$logFileName = PROJECT_PATH.'/config/log/'.$fileNamePrefix.'_'.date('Y-m-d').'.log';
+		$logFileName = self::getLogfilePath().'/'.$fileNamePrefix.'_'.date('Y-m-d').'.'.self::LOGFILE_EXTENSION;
 		if (file_put_contents($logFileName, $msg.System::getNewLine(), FILE_APPEND | LOCK_EX) === false) {
 			throw new Core_Exception('Log file \''.$logFileName.'\' could not be written!');
 		}
+	}
+	
+	public static function getLogfilePath() {
+		return PROJECT_PATH.'/config/log';
 	}
 }
 
