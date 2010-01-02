@@ -27,6 +27,16 @@ abstract class System {
 				return "\n";
 		}
 	}
+	
+	/**
+	 * @return string path to a directory that can be used to store temporary files.
+	 */
+	public static function getTemporaryDirectory() {
+		if (defined('CORE_TEMPORARY_DIRECTORY'))
+			return CORE_TEMPORARY_DIRECTORY;
+		else
+			sys_get_temp_dir();
+	}
 }
 
 ?>

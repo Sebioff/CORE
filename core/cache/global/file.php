@@ -14,7 +14,7 @@ class Cache_Global_File extends Phpguru_DataCache implements Cache {
 	public function __construct() {
 		self::setPrefix('core_cache_');
 		if (System::getOS() != System::OS_LINUX)
-			self::setStore(PROJECT_PATH.'/config/tmp/');
+			self::setStore(System::getTemporaryDirectory());
 		if (!file_exists(self::$store))
 			trigger_error('Cache directory doesn\'t exist: '.self::$store, E_USER_ERROR);
 	}
