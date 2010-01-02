@@ -13,7 +13,7 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 	
 	protected function beforeDisplay() {
 		$time = microtime(true);
-		$filename = dirname(__FILE__).'/'.$time;
+		$filename = ini_get('upload_tmp_dir').'/'.$time;
 		$this->image->stroke($filename);
 		$this->setURL(App::get()->getModule('plotimage')->getUrl(array('time' => $time)));
 		
