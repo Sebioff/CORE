@@ -13,20 +13,20 @@ class GUI_Control_SecureSubmitButton extends GUI_Control_SubmitButton {
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
-	public function init() {
-		parent::init();
+	public function afterInit() {
+		parent::afterInit();
 		
-		if (!isset($_SESSION[get_class($this)][$this->getName()]))
-			$_SESSION[get_class($this)][$this->getName()] = md5(time().$this->getName().$this->getValue());
-		$this->addPanel(new GUI_Control_HiddenBox('token', $_SESSION[get_class($this)][$this->getName()]));
+		if (!isset($_SESSION[get_class($this)][$this->getID()]))
+			$_SESSION[get_class($this)][$this->getID()] = md5(time().$this->getID().$this->getValue());
+		$this->addPanel(new GUI_Control_HiddenBox('token', $_SESSION[get_class($this)][$this->getID()]));
 	}
 	
 	protected function validate() {
 		$errors = parent::validate();
 
-		if (!isset($_SESSION[get_class($this)][$this->getName()]) || $_SESSION[get_class($this)][$this->getName()] != $this->token->getValue())
+		if (!isset($_SESSION[get_class($this)][$this->getID()]) || $_SESSION[get_class($this)][$this->getID()] != $this->token->getValue())
 			$errors[] = 'Eventuell nicht richtig per Browser versendet';
-		
+			
 		return $errors;
 	}
 }

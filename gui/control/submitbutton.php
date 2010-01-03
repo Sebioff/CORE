@@ -33,7 +33,7 @@ class GUI_Control_SubmitButton extends GUI_Control_Submittable {
 	}
 	
 	protected function executeCallbacks() {
-		if (!isset($_POST[$this->getID()]))
+		if (!$this->hasBeenSubmitted())
 			return;
 		
 		foreach ($this->callbacks as $callback) {

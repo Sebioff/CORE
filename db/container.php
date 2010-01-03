@@ -335,6 +335,16 @@ class DB_Container {
 	 */
 	public static function addReferencedContainerGlobal(DB_Container $container) {
 		self::$globalReferencedContainers[$container->getTable()] = $container;
+		
+		// handle self-references
+		$databaseSchema = &$container->getDatabaseSchema();
+		if (isset($databaseSchema['constraints'])) {
+			foreach ($databaseSchema['constraints'] as &$properties) {
+				if ($properties['referencedTable'] == $container->getTable()) {
+					$properties['referencedContainer'] = $container;
+				}
+			}
+		}
 	}
 	
 	/**
