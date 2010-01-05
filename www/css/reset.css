@@ -1,5 +1,5 @@
 /*
- *  Updated:  15.03.2009
+ *  Updated:  05.01.2010
  */
 
 body 
@@ -27,6 +27,7 @@ a
 
 h1, h2, h3, h4, h5, h6
 {
+  font-size:100%;
   font-weight:normal;
 }
 
