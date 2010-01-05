@@ -1,4 +1,5 @@
 <?php
+
 $path = base64_decode(str_rot13($_GET['q']));
 $check = $_GET['c'];
 $mime = base64_decode(str_rot13($_GET['m']));
@@ -16,5 +17,9 @@ header('Expires: 0');
 header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 header('Pragma: public');
 header('Content-Length: '.filesize($path));
-readfile($path);
+if (in_array('mod_xsendfile', apache_get_modules()))
+	header('X-Sendfile: '.basename($path));
+else
+	readfile($path);
+	
 ?>
