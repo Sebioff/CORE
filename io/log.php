@@ -88,10 +88,14 @@ class IO_Log {
 	
 	private function log($msg, $level = 'INFO', $line = -1) {
 		$debug = debug_backtrace();
-		$line = ($line > 0) ? $line : $debug[1]['line'];
+		foreach ($debug as $step) {
+			if (in_array($step['function'], array('info', 'error', 'warning')))
+				break;
+		}
+		$line = ($line > 0) ? $line : $step['line'];
 		$pfad = str_replace(
 			array('\\', $_SERVER['DOCUMENT_ROOT'].'/'),
-			array('/', ''), $debug[1]['file']
+			array('/', ''), $step['file']
 		);
 		$printStr = date('H:i:s').' **'.$level."**\t".$pfad.':'.$line."\t".$msg;
 		$this->writeToFile($printStr);
