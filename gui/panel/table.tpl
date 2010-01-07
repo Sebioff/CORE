@@ -12,7 +12,9 @@
 				<tr>
 					<? foreach ($row as $column): ?>
 						<th>
-							<? if (is_numeric($column)): ?>
+							<? if ($column instanceof GUI_Panel): ?>
+								<? $field = $column; ?>
+							<? elseif (is_numeric($column)): ?>
 								<? $field = new GUI_Panel_Number($this->getID().'-field'.++$i, $column); ?>
 							<? else: ?>
 								<? $field = new GUI_Panel_Text($this->getID().'-field'.++$i, $column); ?>
@@ -30,7 +32,9 @@
 				<tr>
 					<? foreach ($row as $column): ?>
 						<td>
-							<? if (is_numeric($column)): ?>
+							<? if ($column instanceof GUI_Panel): ?>
+								<? $field = $column; ?>
+							<? elseif (is_numeric($column)): ?>
 								<? $field = new GUI_Panel_Number($this->getID().'-field'.++$i, $column); ?>
 							<? else: ?>
 								<? $field = new GUI_Panel_Text($this->getID().'-field'.++$i, $column); ?>
@@ -48,7 +52,9 @@
 				<tr>
 					<? foreach ($row as $column): ?>
 						<td>
-							<? if (is_numeric($column)): ?>
+							<? if ($column instanceof GUI_Panel): ?>
+								<? $field = $column; ?>
+							<? elseif (is_numeric($column)): ?>
 								<? $field = new GUI_Panel_Number($this->getID().'-field'.++$i, $column); ?>
 							<? else: ?>
 								<? $field = new GUI_Panel_Text($this->getID().'-field'.++$i, $column); ?>
