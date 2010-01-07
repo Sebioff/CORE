@@ -50,12 +50,6 @@ class GUI_Panel {
 	public function render() {
 		ob_start();
 		require $this->template;
-		/**
-		 * When working with ajax we only want to execute js belonging to requested
-		 * panels, so js belonging to this panel is only added to the page if
-		 * the panel is being displayed. Otherwise it is instantly added to the
-		 * page (see GUI_Panel::addJS()).
-		 */
 		if ($this->getJS()) {
 			$this->getModule()->addJsAfterContent($this->getJS());
 		}
@@ -450,10 +444,7 @@ class GUI_Panel {
 	}
 	
 	public function addJS($js) {
-		if (Router::get()->getRequestMode() == Router::REQUESTMODE_AJAX)
-			$this->js .= $js;
-		else
-			$this->getModule()->addJsAfterContent($js);
+		$this->js .= $js;
 	}
 	
 	public function getJS() {

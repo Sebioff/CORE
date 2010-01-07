@@ -134,9 +134,6 @@ class DB_Container {
 			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
 			$this->update($query, $record);
 		}
-		
-		// clear cache
-		self::$containerCache[$this->getTable()] = array();
 	}
 	
 	/**
@@ -147,9 +144,6 @@ class DB_Container {
 			$this->deleteByOptions($args);
 		else
 			$this->deleteByRecord($args);
-			
-		// clear cache
-		self::$containerCache[$this->getTable()] = array();
 	}
 	
 	/**
@@ -181,9 +175,14 @@ class DB_Container {
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($databaseSchema['primaryKey']))
 			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
+		
+		// clear cache
+		self::$containerCache[$this->getTable()] = array();
+		
 		// execute insertCallbacks
 		foreach ($this->insertCallbacks as $insertCallback)
 			call_user_func($insertCallback, $record);
+		
 		return $result;
 	}
 	
@@ -193,9 +192,14 @@ class DB_Container {
 	 */
 	public function update($query, DB_Record $record = null) {
 		$result = DB_Connection::get()->query($query);
+		
+		// clear cache
+		self::$containerCache[$this->getTable()] = array();
+		
 		// execute updateCallbacks
 		foreach ($this->updateCallbacks as $updateCallback)
 			call_user_func($updateCallback, $record);
+		
 		return $result;
 	}
 	
@@ -205,9 +209,14 @@ class DB_Container {
 	 */
 	public function deleteByQuery($query, DB_Record $record = null) {
 		$result = DB_Connection::get()->query($query);
+		
+		// clear cache
+		self::$containerCache[$this->getTable()] = array();
+		
 		// execute deleteCallbacks
 		foreach ($this->deleteCallbacks as $deleteCallback)
 			call_user_func($deleteCallback, $record);
+		
 		return $result;
 	}
 	
