@@ -22,7 +22,29 @@ class GUI_Panel_Table extends GUI_Panel {
 	public function afterInit() {
 		if ($this->enabledSortable()) {
 			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
-			$this->addJS('$().ready(function() { $("#'.$this->getID().'").tablesorter( { '.$this->getSorterOptions().'	} )	} );');
+			$this->addJS('
+				$().ready(
+					function() {
+						$("#'.$this->getID().'").tablesorter(
+							{
+								'.$this->getSorterOptions().'
+							}
+						)
+					}
+				);
+				$.tablesorter.addParser(
+					{
+						id: "separatedDigit",
+						is: function(s) {
+							return false;
+						},
+						format: function(s) {
+							return jQuery.tablesorter.formatFloat(s.match(/>(.+)<\//)[1].replace(/\./g, ""));
+						}, 
+						type: "numeric"
+					}
+				);
+			');
 			$this->addClasses('core_gui_table_sortable');
 		}
 	}
@@ -84,6 +106,10 @@ class GUI_Panel_Table extends GUI_Panel {
 	
 	private function getSorterOptions() {
 		return implode(', ', $this->sorterOptions);
+	}
+	
+	public function getColumnCount() {
+		return $this->numberOfColumns;
 	}
 }
 
