@@ -48,7 +48,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 		$pageCount = ceil($this->getContainer()->count() / $this->getItemsPerPage());
 		if ($pageCount <= 0)
 			$pageCount = 1;
-		return $pageCount;
+		return (int)$pageCount;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -59,7 +59,6 @@ class GUI_Panel_PageView extends GUI_Panel {
 	public function getItemsPerPage() {
 		return $this->itemsPerPage;
 	}
-	
 	/**
 	 * @return DB_Container
 	 */
@@ -85,14 +84,29 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 	
 	public function init() {
 		parent::init();
-		
-		for ($i = 1; $i <= $this->getPageView()->getPageCount(); $i++) {
-			$params = $this->getModule()->getParams();
-			$params[$this->getPageView()->getName().'-page'] = $i;
-			$url = $this->getModule()->getUrl($params);
-			$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
-			if ($i == $this->getPageView()->getPage())
-				$pageLink->addClasses('current_page');
+
+		$pageCount = $this->getPageView()->getPageCount();
+		$actualPage = $this->getPageView()->getPage();
+		$lastDisplayed = 0;
+		for ($i = 1; $i <= $pageCount; $i++) {
+			if ($i == $lastDisplayed + 2) {
+				$this->addPanel(new GUI_Panel_Text('dots'.$i, '...'));
+			}
+			switch (true) {
+				//display first 3 pages
+				case ($i <= 3):
+				//display actual page +- 1
+				case ($i >= $actualPage - 1 && $i <= $actualPage + 1):
+				//display last 3 pages
+				case ($i > $pageCount - 3):
+				$params = $this->getModule()->getParams();
+				$params[$this->getPageView()->getName().'-page'] = $i;
+				$url = $this->getModule()->getUrl($params);
+				$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
+				if ($i == $actualPage)
+					$pageLink->addClasses('current_page');
+				$lastDisplayed = $i;
+			}
 		}
 	}
 	
