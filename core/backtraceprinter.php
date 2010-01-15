@@ -38,7 +38,33 @@ class Core_BacktracePrinter {
 	 * Does the actual printing
 	 */
 	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
-		require_once('backtraceprinter.tpl');
+		switch (Router::get()->getRequestMode()) {
+			case Router::REQUESTMODE_AJAX:
+				header("HTTP/1.0 500 Internal Server Error");
+			case Router::REQUESTMODE_CLI:
+				echo self::backtraceToString($backtrace, $customMessage, $errorType);
+			break;
+			default:
+				require_once('backtraceprinter.tpl');
+			break;
+		}
+	}
+	
+	private static function backtraceToString(array $backtrace, $customMessage = '', $errorType = '') {
+		$nr = 0;
+		$traceCount = count($backtrace);
+		$customMessage = str_replace('<br>', "\n", $customMessage);
+		$string = $errorType.'! '.$customMessage."\n\n";
+		foreach ($backtrace as $backtraceMessage) {
+			$string .= '#'.($traceCount-$nr)."\t";
+			$string .= (isset($backtraceMessage['class'])?$backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function']:$backtraceMessage['function']).'('.(isset($backtraceMessage['args']) ? implode(', ', $backtraceMessage['args']) : '').')';
+			if (isset($backtraceMessage['file']))
+				$string .= ' in '.$backtraceMessage['file'].'('.$backtraceMessage['line'].')';
+			$string .= "\n";
+			$nr++;
+		}
+		
+		return $string;
 	}
 }
 

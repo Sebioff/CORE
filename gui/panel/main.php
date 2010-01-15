@@ -54,7 +54,6 @@ class GUI_Panel_Main extends GUI_Panel {
 				echo $currentPanel->display();
 			}
 		}
-		//echo $this->getJsAfterContent();
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

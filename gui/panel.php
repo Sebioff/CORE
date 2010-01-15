@@ -444,7 +444,7 @@ class GUI_Panel {
 	}
 	
 	public function addJS($js) {
-		$this->js .= str_replace(array("\r", "\n", "\t"), '', $js);
+		$this->js .= $js;
 	}
 	
 	public function getJS() {

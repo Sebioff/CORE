@@ -53,10 +53,8 @@ class App {
 	 * Needs to be called before anything else can be done.
 	 */
 	public static function boot() {
-		if (PHP_SAPI != 'cli') {
-			ob_start();
-		}
-		else {
+		ob_start();
+		if (PHP_SAPI == 'cli') {
 			$_SERVER['REQUEST_URI'] = 'http://localhost/'.$_SERVER['argv'][1];
 			$_SERVER['SERVER_NAME'] = '';
 			// TODO fill in the actual ip address with PHP 5.3 (-> gethostbyname(gethostname()))

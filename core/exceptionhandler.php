@@ -30,7 +30,7 @@ class Core_ExceptionHandler {
 			}
 			// on LIVE there's nothing we can do anymore at this point
 			else {
-				echo 'An error occured in the method that should display error messages.';
+				echo 'A fatal error occured. Please notify the admin of this server.';
 			}
 		}
 	}

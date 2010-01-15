@@ -42,7 +42,10 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 					"core_ajax": "1",
 					"refreshPanels": "%2$s"
 				},
-				"buttons": "#%3$s"
+				"buttons": "#%3$s",
+				"error": function(xhr) {
+					alert(xhr.responseText);
+				}
 			});
 		', $formPanel->getID(), $totalRefreshPanelsString, $this->getID()));
 	}
