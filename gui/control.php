@@ -28,10 +28,10 @@ abstract class GUI_Control extends GUI_Panel {
 	
 	// OVERRIDES ---------------------------------------------------------------
 	public function display() {
-		parent::display();
-		
 		if ($this->focused)
 			$this->addJS(sprintf('$("#%s").focus();', $this->getID()));
+
+		parent::display();
 	}
 	
 	public function __toString() {
@@ -101,8 +101,8 @@ abstract class GUI_Control extends GUI_Panel {
 	/**
 	 * Sets the focus on this control.
 	 */
-	public function setFocus() {
-		$this->focused = true;
+	public function setFocus($focused = true) {
+		$this->focused = $focused;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
