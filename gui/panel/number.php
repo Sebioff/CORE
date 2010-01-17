@@ -22,7 +22,7 @@ class GUI_Panel_Number extends GUI_Panel_Text {
 	}
 	
 	public static function formatNumber($number) {
-		return number_format($number, is_float($number) ? self::DECIMALS : 0, self::DECIMALS_SEPARATOR, self::THOUSANDS_SEPARATOR);
+		return number_format($number, (is_float($number) && round($number, self::DECIMALS) != floor($number)) ? self::DECIMALS : 0, self::DECIMALS_SEPARATOR, self::THOUSANDS_SEPARATOR);
 	}
 }
 
