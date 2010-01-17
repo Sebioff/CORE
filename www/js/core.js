@@ -53,6 +53,6 @@ $().ready( function() {
 			$("#" + panelName).replaceWith(panels[panelName]);
 		}
 		// execute loaded js
-		$("body").append($(panelData).find("#ajax_js").html());
+		$("body").append("<script type=\"text/javascript\">" + $(panelData).find("#ajax_js").text() + "</script>");
 	}
 })(jQuery);
