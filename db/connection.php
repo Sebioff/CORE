@@ -12,7 +12,7 @@ class DB_Connection {
 
 	private $connectionOptions = null;
 	private $connection = null;
-	private $transaction = false;
+	private $transactionLevel = 0;
 	
 	/**
 	 * NOTE: you should only create new objects of this class if you really need
@@ -94,26 +94,50 @@ class DB_Connection {
 	 * Starts a transaction (set of atomar database operations)
 	 */
 	public function beginTransaction() {
-		if (!$this->transaction) {
+		if ($this->transactionLevel == 0) {
 			$this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
-			$this->transaction = true;
+			$this->query('START TRANSACTION');
 		}
-		$this->query('START TRANSACTION');
+		else {
+			$this->query('SAVEPOINT CORE'.$this->transactionLevel);
+		}
+		$this->transactionLevel++;
 	}
 	
 	/**
 	 * Commits all database operations started since the last beginTransaction()
 	 */
 	public function commit() {
-		$this->transaction = false;
-		return $this->query('COMMIT');
+		if ($this->transactionLevel < 1)
+			throw new Core_Exception('There is no open transaction that could be committed.');
+		
+		$result = false;
+		$this->transactionLevel--;
+		if ($this->transactionLevel == 0) {
+			$result = $this->query('COMMIT');
+		}
+		else {
+			$result = $this->query('RELEASE SAVEPOINT CORE'.$this->transactionLevel);
+		}
+		return $result;
 	}
 	
 	/**
 	 * Drops all database operations started since the last beginTransaction()
 	 */
 	public function rollback() {
-		return $this->query('ROLLBACK');
+		if ($this->transactionLevel < 1)
+			throw new Core_Exception('There is no open transaction that could be rolled back.');
+		
+		$result = false;
+		$this->transactionLevel--;
+		if ($this->transactionLevel == 0) {
+			$result = $this->query('ROLLBACK');
+		}
+		else {
+			$result = $this->query('ROLLBACK TO SAVEPOINT CORE'.$this->transactionLevel);
+		}
+		return $result;
 	}
 }
 

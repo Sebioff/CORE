@@ -37,11 +37,11 @@ class GUI_Validator_Digits extends GUI_Validator {
 		if ($this->minValue > 0 || $this->maxValue < self::INFINITY) {
 			$errorMessage .= ' und Zahl muss';
 			if ($this->minValue > 0 && $this->maxValue < self::INFINITY)
-		 		$errorMessage .= ' zwischen '.$this->minValue.' und '.$this->maxValue.' liegen';
+		 		$errorMessage .= ' innerhalb von '.$this->minValue.' und '.$this->maxValue.' liegen';
 		 	else if ($this->minValue > 0)
-		 		$errorMessage .= ' größer als '.$this->minValue.' sein';
+		 		$errorMessage .= ' mindestens '.$this->minValue.' sein';
 		 	else if ($this->maxValue < self::INFINITY)
-		 		$errorMessage .= ' kleiner als '.$this->maxValue.' sein';
+		 		$errorMessage .= ' maximal '.$this->maxValue.' sein';
 		}
 		
 		return $errorMessage;
