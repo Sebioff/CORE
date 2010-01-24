@@ -7,6 +7,7 @@ class DB_Record {
 	private $properties = array();
 	private $resolvedProperties = array();
 	private $virtualProperties = array();
+	private $modifiedProperties = array();
 	private $container = null;
 	
 	/**
@@ -22,17 +23,32 @@ class DB_Record {
 	public function __set($property, $value) {
 		if ($value === 'NULL')
 			$value = null;
+		
 		// we don't want to allow having other objects than records set
 		// (records get transformed automatically, normal objects don't always)
-		if (is_object($value) && !($value instanceof DB_Record))
-			$value = $value->__toString();
+		if (is_object($value)) {
+			if ($value instanceof DB_Record) {
+				$this->resolvedProperties[$property] = $value;
+				$value = $value->getPK();
+			}
+			else {
+				$value = $value->__toString();
+			}
+		}
+		
+		// mark property as modified
+		if (isset($this->properties[$property]) && !array_key_exists($property, $this->modifiedProperties) && $value != $this->properties[$property]) {
+			$this->modifiedProperties[$property] = $this->properties[$property];
+		}
+		
+		// update property value
 		$this->properties[$property] = $value;
 	}
 	
 	public function __get($property) {
 		if (isset($this->properties[$property])) {
 			// handle foreign keys
-			if ($this->hasForeignKey($property) && $this->properties[$property] != null) {
+			if ($this->hasForeignKey($property)) {
 				// property not resolved yet? -> resolve
 				if (!isset($this->resolvedProperties[$property])) {
 					$databaseSchema = $this->container->getDatabaseSchema();
@@ -151,6 +167,14 @@ class DB_Record {
 	
 	public function setContainer(DB_Container $container) {
 		$this->container = $container;
+	}
+	
+	/**
+	 * @return array containing all properties that have been modified since the
+	 * record has been read from the database ($popertyName => $originalValue)
+	 */
+	public function getModifiedProperties() {
+		return $this->modifiedProperties;
 	}
 }
 

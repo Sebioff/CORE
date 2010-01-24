@@ -103,20 +103,22 @@ class DB_Container {
 	public function save(DB_Record $record) {
 		$properties = array();
 		$values = array();
-		foreach ($record->getAllProperties() as $property => $value) {
-			$properties[] = Text::camelCaseToUnderscore($property);
-			if (is_object($value) && $value instanceof DB_Record)
-				$value = $value->getPK();
-			$values[] = self::escape($value);
-		}
 		if (!$record->getPK()) {
 			// insert
+			foreach ($record->getAllProperties() as $property => $value) {
+				$properties[] = Text::camelCaseToUnderscore($property);
+				$values[] = self::escape($value);
+			}
 			$query = 'INSERT INTO `'.$this->table.'`';
 			$query .= ' (`'.implode('`, `', $properties).'`) VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
 			$this->insert($query, $record);
 		}
 		else {
+			foreach ($record->getModifiedProperties() as $property => $oldValue) {
+				$properties[] = Text::camelCaseToUnderscore($property);
+				$values[] = self::escape($record->get($property));
+			}
 			if (empty($properties))
 				return;
 			// update
