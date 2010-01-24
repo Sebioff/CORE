@@ -99,14 +99,26 @@ class GUI_Panel_PageView_Pages extends GUI_Panel {
 				case ($i >= $actualPage - 1 && $i <= $actualPage + 1):
 				//display last 3 pages
 				case ($i > $pageCount - 3):
-				$params = $this->getModule()->getParams();
-				$params[$this->getPageView()->getName().'-page'] = $i;
-				$url = $this->getModule()->getUrl($params);
-				$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
-				if ($i == $actualPage)
-					$pageLink->addClasses('current_page');
-				$lastDisplayed = $i;
+					$params = $this->getModule()->getParams();
+					$params[$this->getPageView()->getName().'-page'] = $i;
+					$url = $this->getModule()->getUrl($params);
+					$this->addPanel($pageLink = new GUI_Control_Link($i, $i, $url));
+					if ($i == $actualPage)
+						$pageLink->addClasses('current_page');
+					$lastDisplayed = $i;
 			}
+		}
+	}
+	
+	public function afterInit() {
+		parent::afterInit();
+		
+		$this->walkRecursive(array($this, 'addAnchor'));
+	}
+	
+	protected function addAnchor($panel) {
+		if ($panel instanceof GUI_Control_Link) {
+			$panel->setUrl($panel->getUrl().'#'.$this->getParent()->getID());
 		}
 	}
 	

@@ -300,7 +300,6 @@ class GUI_Panel {
 	public function walkRecursive($callback) {
 		call_user_func($callback, $this);
 		foreach ($this->panels as $panel) {
-			call_user_func($callback, $panel);
 			$panel->walkRecursive($callback);
 		}
 	}
