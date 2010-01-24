@@ -47,8 +47,12 @@ class DB_Record {
 	
 	public function __get($property) {
 		if (isset($this->properties[$property])) {
-			// handle foreign keys
-			if ($this->hasForeignKey($property)) {
+			// resolved property?
+			if (isset($this->resolvedProperties[$property])) {
+				return $this->resolvedProperties[$property];
+			}
+			// unresolved property that needs to be resolved?
+			elseif ($this->hasForeignKey($property)) {
 				// property not resolved yet? -> resolve
 				if (!isset($this->resolvedProperties[$property])) {
 					$databaseSchema = $this->container->getDatabaseSchema();
@@ -65,8 +69,9 @@ class DB_Record {
 				return $this->resolvedProperties[$property];
 			}
 			// no foreign keys, just a plain old normal property
-			else
+			else {
 				return $this->properties[$property];
+			}
 		}
 		// property not defined - let's check if it's a virtual property...
 		elseif ($this->hasVirtualProperty($property))
