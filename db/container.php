@@ -152,7 +152,7 @@ class DB_Container {
 				$lockOptions = array();
 				foreach ($optimisticallyLockedProperties as $lockedPropertyDBName => $propertyValue)
 					$lockOptions['conditions'][] = array($lockedPropertyDBName.' = ?', $propertyValue);
-				if ($this->count($lockOptions) == 0)
+				if (mysql_affected_rows() <= 0 && $this->count($lockOptions) == 0)
 					throw new Core_Exception('Concurrent version modification.');
 				
 				// record is now up to date
