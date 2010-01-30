@@ -19,6 +19,7 @@ class DB_Container {
 	private $updateCallbacks = array();
 	private $deleteCallbacks = array();
 	private $filters = array();
+	private $optimisticallyLockedProperties = null;
 
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
@@ -115,13 +116,23 @@ class DB_Container {
 			$this->insert($query, $record);
 		}
 		else {
+			// update
+			$options = array();
+			$optimisticallyLockedProperties = array();
 			foreach ($record->getModifiedProperties() as $property => $oldValue) {
-				$properties[] = Text::camelCaseToUnderscore($property);
-				$values[] = self::escape($record->get($property));
+				$propertyDBName = Text::camelCaseToUnderscore($property);
+				$propertyValue = self::escape($record->get($property));
+				$properties[] = $propertyDBName;
+				$values[] = $propertyValue;
+				if ($this->optimisticallyLockedProperties !== null && (empty($this->optimisticallyLockedProperties) || in_array($property, $this->optimisticallyLockedProperties))) {
+					$options['conditions'][] = array($propertyDBName.' = ?', $oldValue);
+					$optimisticallyLockedProperties[$propertyDBName] = $propertyValue;
+				}
 			}
+			
 			if (empty($properties))
 				return;
-			// update
+				
 			$query = 'UPDATE `'.$this->table.'` SET ';
 			$propertiesCount = count($properties);
 			$updates = array();
@@ -133,8 +144,21 @@ class DB_Container {
 			}
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
-			$query .= ' WHERE '.$databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
+			$options['conditions'][] = array($databaseSchema['primaryKey'].' = ?', $record->getPK());
+			$query .= $this->buildQueryString($options);
 			$this->update($query, $record);
+			// count
+			if (!empty($optimisticallyLockedProperties)) {
+				$lockOptions = array();
+				foreach ($optimisticallyLockedProperties as $lockedPropertyDBName => $propertyValue)
+					$lockOptions['conditions'][] = array($lockedPropertyDBName.' = ?', $propertyValue);
+				if ($this->count($lockOptions) == 0)
+					throw new Core_Exception('Concurrent version modification.');
+				
+				// record is now up to date
+				$modifiedProperties = &$record->getModifiedProperties();
+				$modifiedProperties = array();
+			}
 		}
 	}
 	
@@ -488,6 +512,14 @@ class DB_Container {
 	 */
 	public function getRecordClass() {
 		return $this->recordClass;
+	}
+	
+	/**
+	 * @param $properties array of properties that should be locked optimistically
+	 * or an empty array if all properties should use optimistic locking
+	 */
+	public function enableOptimisticLockingForProperties($properties = array()) {
+		$this->optimisticallyLockedProperties = $properties;
 	}
 }
 

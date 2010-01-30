@@ -37,7 +37,7 @@ class DB_Record {
 		}
 		
 		// mark property as modified
-		if (isset($this->properties[$property]) && !array_key_exists($property, $this->modifiedProperties) && $value != $this->properties[$property]) {
+		if (array_key_exists($property, $this->properties) && !array_key_exists($property, $this->modifiedProperties) && $value != $this->properties[$property]) {
 			$this->modifiedProperties[$property] = $this->properties[$property];
 		}
 		
@@ -178,7 +178,7 @@ class DB_Record {
 	 * @return array containing all properties that have been modified since the
 	 * record has been read from the database ($popertyName => $originalValue)
 	 */
-	public function getModifiedProperties() {
+	public function &getModifiedProperties() {
 		return $this->modifiedProperties;
 	}
 }
