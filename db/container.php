@@ -118,6 +118,7 @@ class DB_Container {
 		else {
 			// update
 			$options = array();
+			$usesOptimisticLocking = false;
 			foreach ($record->getModifiedProperties() as $property => $oldValue) {
 				$propertyDBName = Text::camelCaseToUnderscore($property);
 				$propertyValue = self::escape($record->get($property));
@@ -125,6 +126,7 @@ class DB_Container {
 				$values[] = $propertyValue;
 				if ($this->optimisticallyLockedProperties !== null && (empty($this->optimisticallyLockedProperties) || in_array($property, $this->optimisticallyLockedProperties))) {
 					$options['conditions'][] = array($propertyDBName.' = ?', $oldValue);
+					$usesOptimisticLocking = true;
 				}
 			}
 			
@@ -146,7 +148,7 @@ class DB_Container {
 			$query .= $this->buildQueryString($options);
 			$this->update($query, $record);
 			// count
-			if (!empty($optimisticallyLockedProperties)) {
+			if ($usesOptimisticLocking) {
 				if (mysql_affected_rows() <= 0)
 					throw new Core_Exception('Concurrent version modification.');
 				
