@@ -2,12 +2,14 @@
 
 class CMS_Navigation_Node {
 	private $title = '';
+	private $cssClasses = array();
 	private $module = null;
 	private $nodes = array();
 	
-	public function __construct(Module $module, $title) {
+	public function __construct(Module $module, $title, $cssClasses = array()) {
 		$this->title = $title;
 		$this->module = $module;
+		$this->cssClasses = $cssClasses;
 	}
 	
 	public function render() {
@@ -17,7 +19,8 @@ class CMS_Navigation_Node {
 			$i = 0;
 			$nodeCount = count($this->nodes);
 			foreach ($this->nodes as $node) {
-				$classes = array('core_navigation_node');
+				$classes = $this->getCssClasses();
+				$classes[] = 'core_navigation_node';
 				if ($nodeCount > 1 && $i == 0)
 					$classes[] = 'core_navigation_node_first';
 				if ($nodeCount > 1 && $i == $nodeCount - 1)
@@ -79,6 +82,10 @@ class CMS_Navigation_Node {
 	
 	public function setTitle($title) {
 		$this->title = $title;
+	}
+	
+	public function getCssClasses() {
+		return $this->cssClasses;
 	}
 	
 	/**

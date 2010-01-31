@@ -514,6 +514,8 @@ class DB_Container {
 	/**
 	 * @param $properties array of properties that should be locked optimistically
 	 * or an empty array if all properties should use optimistic locking
+	 * NOTE: don't use optimistic locking on properties that can't be compared
+	 * properly (e.g. floats, doubles, ...)!
 	 */
 	public function enableOptimisticLockingForProperties($properties = array()) {
 		$this->optimisticallyLockedProperties = $properties;

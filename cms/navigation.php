@@ -12,8 +12,8 @@ class CMS_Navigation {
 	 * @param $module
 	 * @return CMS_Navigation_Node the newly added navigation node
 	 */
-	public function addModuleNode(Module $module, $nodeTitle) {
-		$node = new CMS_Navigation_Node($module, $nodeTitle);
+	public function addModuleNode(Module $module, $nodeTitle, $cssClasses = array()) {
+		$node = new CMS_Navigation_Node($module, $nodeTitle, $cssClasses);
 		$this->nodes[] = $node;
 		return $node;
 	}
@@ -23,7 +23,8 @@ class CMS_Navigation {
 		$i = 0;
 		$nodeCount = count($this->nodes);
 		foreach ($this->nodes as $node) {
-			$classes = array('core_navigation_node');
+			$classes = $node->getCssClasses();
+			$classes[] = 'core_navigation_node';
 			if ($nodeCount > 1 && $i == 0)
 					$classes[] = 'core_navigation_node_first';
 			if ($nodeCount > 1 && $i == $nodeCount - 1)
