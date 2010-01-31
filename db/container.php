@@ -118,7 +118,6 @@ class DB_Container {
 		else {
 			// update
 			$options = array();
-			$optimisticallyLockedProperties = array();
 			foreach ($record->getModifiedProperties() as $property => $oldValue) {
 				$propertyDBName = Text::camelCaseToUnderscore($property);
 				$propertyValue = self::escape($record->get($property));
@@ -126,7 +125,6 @@ class DB_Container {
 				$values[] = $propertyValue;
 				if ($this->optimisticallyLockedProperties !== null && (empty($this->optimisticallyLockedProperties) || in_array($property, $this->optimisticallyLockedProperties))) {
 					$options['conditions'][] = array($propertyDBName.' = ?', $oldValue);
-					$optimisticallyLockedProperties[$propertyDBName] = $propertyValue;
 				}
 			}
 			
@@ -149,10 +147,7 @@ class DB_Container {
 			$this->update($query, $record);
 			// count
 			if (!empty($optimisticallyLockedProperties)) {
-				$lockOptions = array();
-				foreach ($optimisticallyLockedProperties as $lockedPropertyDBName => $propertyValue)
-					$lockOptions['conditions'][] = array($lockedPropertyDBName.' = ?', $propertyValue);
-				if (mysql_affected_rows() <= 0 && $this->count($lockOptions) == 0)
+				if (mysql_affected_rows() <= 0)
 					throw new Core_Exception('Concurrent version modification.');
 				
 				// record is now up to date
