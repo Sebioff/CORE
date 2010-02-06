@@ -44,6 +44,7 @@ class DB_Container {
 	 * @param $options an options-array which might contain the following elements:
 	 * $options['properties'] = the properties that should be selected
 	 * $options['conditions'] = array of conditions
+	 * $options['group'] = group by
 	 * $options['order'] = order
 	 * $options['limit'] = limit
 	 * $options['offset'] = offset
@@ -90,16 +91,13 @@ class DB_Container {
 	 * given options array
 	 */
 	public function count(array $options = array()) {
-		$options['properties'] = 'COUNT(*)';
-		return (int)$this->selectFirst($options)->{Text::underscoreToCamelCase('COUNT(*)')};
+		$options['properties'] = 'COUNT(*) AS core_count_result';
+		return (int)$this->selectFirst($options)->coreCountResult;
 	}
 	
 	/**
 	 * Saves an record into the database
 	 * If the record hasn't been saved before it is inserted, otherwise it is updated
-	 *
-	 * TODO at the moment, ALL properties of the record are saved. research if it
-	 * would be faster to only save "dirty" properties
 	 */
 	public function save(DB_Record $record) {
 		$properties = array();
