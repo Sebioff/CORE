@@ -31,16 +31,19 @@ class GUI_Control_Captcha extends GUI_Control {
 		$captchaValue = $this->getValue();
 		$inputValue = Text::toUpperCase($this->input->getValue());
 		$correct = true;
-		for ($i = 0; $i < 4; $i++) {
-			if ($inputValue[$i] != $captchaValue[$i]) {
-				$correct = false;
-				break;
+		
+		if (Text::length($inputValue) != 4) {
+			$correct = false;
+		}
+		else {
+			for ($i = 0; $i < 4; $i++) {
+				if ($inputValue[$i] != $captchaValue[$i]) {
+					$correct = false;
+					break;
+				}
 			}
 		}
 		
-		if (Text::length($inputValue) != 4)
-			$correct = false;
-
 		if (!$correct)
 			$this->errors[] = 'Falsche Eingabe';
 
