@@ -111,7 +111,7 @@ class DB_Container {
 			$query = 'INSERT INTO `'.$this->table.'`';
 			$query .= ' (`'.implode('`, `', $properties).'`) VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
-			$this->insert($query, $record);
+			$this->insertByQuery($query, $record);
 		}
 		else {
 			// update
@@ -190,7 +190,7 @@ class DB_Container {
 	 * Executes an insert query.
 	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
 	 */
-	public function insert($query, DB_Record $record) {
+	protected function insertByQuery($query, DB_Record $record) {
 		$result = DB_Connection::get()->query($query);
 		$record->setContainer($this);
 		$databaseSchema = $this->getDatabaseSchema();
@@ -205,6 +205,16 @@ class DB_Container {
 			call_user_func($insertCallback, $record);
 		
 		return $result;
+	}
+	
+	/**
+	 * Updates the entries specified by the $options array
+	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
+	 */
+	public function updateByOptions(array $options) {
+		$query = 'UPDATE `'.$this->table.'` SET '.$options['properties'];
+		$query .= $this->buildQueryString($options);
+		$this->update($query);
 	}
 	
 	/**
