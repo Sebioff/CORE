@@ -11,6 +11,8 @@ class GUI_Panel_Table extends GUI_Panel {
 	private $enableSortable = false;
 	private $sorterOptions = array();
 	
+	private static $firstTableOnPage = true;
+	
 	public function __construct($name, $title = '') {
 		parent::__construct($name, $title);
 		
@@ -24,6 +26,25 @@ class GUI_Panel_Table extends GUI_Panel {
 		
 		if ($this->enabledSortable()) {
 			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
+			
+			if (self::$firstTableOnPage) {
+				$this->addJS('
+					$.tablesorter.addParser(
+						{
+							id: "separatedDigit",
+							is: function(s) {
+								return false;
+							},
+							format: function(s) {
+								return jQuery.tablesorter.formatFloat(s.replace(/\./g, ""));
+							},
+							type: "numeric"
+						}
+					);
+				');
+				self::$firstTableOnPage = false;
+			}
+			
 			$this->addJS('
 				$("#'.$this->getID().'").tablesorter(
 					{
@@ -33,25 +54,6 @@ class GUI_Panel_Table extends GUI_Panel {
 			');
 			$this->addClasses('core_gui_table_sortable');
 		}
-	}
-	
-	public function init() {
-		parent::init();
-		
-		$this->addJS('
-			$.tablesorter.addParser(
-				{
-					id: "separatedDigit",
-					is: function(s) {
-						return false;
-					},
-					format: function(s) {
-						return jQuery.tablesorter.formatFloat(s.replace(/\./g, ""));
-					}, 
-					type: "numeric"
-				}
-			);
-		');
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

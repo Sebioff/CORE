@@ -40,7 +40,7 @@ class Core_BacktracePrinter {
 	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
 		switch (Router::get()->getRequestMode()) {
 			case Router::REQUESTMODE_AJAX:
-				header("HTTP/1.0 500 Internal Server Error");
+				header('HTTP/1.0 500 Internal Server Error');
 			case Router::REQUESTMODE_CLI:
 				echo self::backtraceToString($backtrace, $customMessage, $errorType);
 			break;

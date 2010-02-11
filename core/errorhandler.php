@@ -50,8 +50,8 @@ class Core_ErrorHandler {
 	 * PHP doesn't execute the error handler.
 	 */
 	public static function onShutdown() {
-	    if ($error = error_get_last()){
-	    	switch($error['type']){
+	    if ($error = error_get_last()) {
+	    	switch ($error['type']) {
 				case E_ERROR:
 				case E_CORE_ERROR:
 				case E_COMPILE_ERROR:

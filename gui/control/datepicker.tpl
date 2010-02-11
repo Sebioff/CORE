@@ -1,0 +1,1 @@
+<input type="text" name="<?= $this->getID() ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?> />
