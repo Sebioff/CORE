@@ -138,9 +138,9 @@ class App {
 			 * dumps shouldn't be needed anyway)
 			 */
 			// output gzip'ed content
-			if ((strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false
+			if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && function_exists('gzencode')
+				&& (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false
 				|| strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate') !== false)
-				&& function_exists('gzencode')
 			) {
 				header('Content-Encoding: gzip');
 				header('Vary: Accept-Encoding');
