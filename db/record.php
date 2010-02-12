@@ -46,26 +46,25 @@ class DB_Record {
 	}
 	
 	public function __get($property) {
-		if (isset($this->properties[$property])) {
+		if (array_key_exists($property, $this->properties)) {
 			// resolved property?
-			if (isset($this->resolvedProperties[$property])) {
+			if (array_key_exists($property, $this->resolvedProperties)) {
 				return $this->resolvedProperties[$property];
 			}
 			// unresolved property that needs to be resolved?
 			elseif ($this->hasForeignKey($property)) {
-				// property not resolved yet? -> resolve
-				if (!isset($this->resolvedProperties[$property])) {
-					$databaseSchema = $this->container->getDatabaseSchema();
-					$reference = $databaseSchema['constraints'][$property];
-	
-					if (isset($reference['referencedContainer'])) {
-						$container = $reference['referencedContainer'];
-					}
-					else {
-						$container = new DB_Container($reference['referencedTable']);
-					}
-					$this->resolvedProperties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
+				// resolve property
+				$databaseSchema = $this->container->getDatabaseSchema();
+				$reference = $databaseSchema['constraints'][$property];
+
+				if (isset($reference['referencedContainer'])) {
+					$container = $reference['referencedContainer'];
 				}
+				else {
+					$container = new DB_Container($reference['referencedTable']);
+				}
+				$this->resolvedProperties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
+				
 				return $this->resolvedProperties[$property];
 			}
 			// no foreign keys, just a plain old normal property
