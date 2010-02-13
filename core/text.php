@@ -39,6 +39,10 @@ abstract class Text {
 	public static function length($string) {
 		return mb_strlen($string, 'UTF-8');
 	}
+	
+	public static function format($string) {
+		return nl2br($string);
+	}
 }
 
 ?>
