@@ -6,7 +6,7 @@
 class GUI_Validator_Mandatory extends GUI_Validator {
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function isValid() {
-		return (Text::length($this->control->getValue()) > 0);
+		return (Text::length(trim($this->control->getValue())) > 0);
 	}
 	
 	public function getError() {
