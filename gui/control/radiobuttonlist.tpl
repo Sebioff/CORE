@@ -1,6 +1,5 @@
-<?= $this->getTitle(); ?>
-<br class="clear" />
-<? foreach ($this->getItems() as $radio): ?>
-	<? $radio->display(); ?>
-	<br class="clear" />
-<? endforeach; ?>
+<ul id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>>
+	<? foreach ($this->getItems() as $radio): ?>
+		<li><? $radio->display(); ?></li>
+	<? endforeach; ?>
+</ul>
