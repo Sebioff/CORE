@@ -256,7 +256,8 @@ class DB_Container {
 	 */
 	protected function buildQueryString(array $options) {
 		if (!empty($this->filters)) {
-			$options = self::mergeOptions($options, $this->filters);
+			foreach ($this->filters as $filter)
+				$options = self::mergeOptions($options, $filter);
 		}
 		
 		$query = '';
@@ -421,7 +422,7 @@ class DB_Container {
 	 */
 	public function getFilteredContainer(array $filterOptions) {
 		$clone = clone $this;
-		$clone->filters = $filterOptions;
+		$clone->filters[] = $filterOptions;
 		return $clone;
 	}
 	
