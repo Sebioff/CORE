@@ -19,6 +19,10 @@ class GUI_Panel_Plot_Pie extends GUI_Panel_Plot {
 	}
 	
 	public function setDataNames(array $names) {
+		foreach ($names as $key => $val) {
+			if (Text::length($val) > 10)
+				$names[$key] = substr($val, 0, 10);
+		}
 		$this->names = $names;
 	}
 	
