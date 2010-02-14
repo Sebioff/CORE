@@ -16,7 +16,10 @@ class Media_Captcha extends Scriptlet {
 	}
 	
 	public function getValue() {
-		return $_SESSION['captcha'];
+		if (isset($_SESSION['captcha']))
+			return $_SESSION['captcha'];
+		else
+			return null;
 	}
 	
 	public function display() {
