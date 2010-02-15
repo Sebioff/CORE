@@ -13,7 +13,15 @@ class Security_AllPrivileges extends Security {
 		return true;
 	}
 	
-	/** 
+	/*
+	 * TODO this is not neccessarily the intended behaviour!
+	 * Needs rethinking.
+	 */
+	public function isInGroup(DB_Record $user, $groupIdentifier) {
+		return true;
+	}
+	
+	/**
 	 * @return String prefix to be used for needed database tables
 	 */
 	protected function getTablePrefix() {
