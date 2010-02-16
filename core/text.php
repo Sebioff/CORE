@@ -41,7 +41,11 @@ abstract class Text {
 	}
 	
 	public static function format($string) {
-		return nl2br($string);
+		$search = array();
+		$search[] = '=http://([a-z0-9\.\-_/#]+)=ism';
+		$replace = array();
+		$replace[] = '<a href="http://$1" class="core_gui_link">http://$1</a>';
+		return nl2br(preg_replace($search, $replace, $string));
 	}
 }
 
