@@ -59,7 +59,19 @@ class GUI_Panel {
 	public function display() {
 		$this->beforeDisplay();
 		
-		if ($this->submittable) {
+		// check if this is a top-level form
+		if ($this->isSubmittable()) {
+			$parent = $this->getParent();
+			while ($parent != null) {
+				if ($parent->isSubmittable()) {
+					$this->submittable = false;
+					break;
+				}
+				$parent = $parent->getParent();
+			}
+		}
+		
+		if ($this->isSubmittable()) {
 			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data" accept-charset="UTF-8">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
 			// fix for IE not submitting button name in post data if form is submitted with enter in forms with only one input
@@ -68,7 +80,7 @@ class GUI_Panel {
 		
 		echo $this->render();
 		
-		if ($this->submittable) {
+		if ($this->isSubmittable()) {
 			$this->addPanel($hasBeenSubmittedBox = new GUI_Control_HiddenBox('hasbeensubmitted', 1));
 			$hasBeenSubmittedBox->display();
 			echo '</fieldset>', '</form>';
@@ -147,7 +159,7 @@ class GUI_Panel {
 			$this->panels[$panel->getName()] = $panel;
 		else
 			$this->panels = array($panel->getName() => $panel) + $this->panels;
-		if ($panel instanceof GUI_Control_Submitbutton) {
+		if ($panel instanceof GUI_Control_Submittable) {
 			$this->submittable = true;
 		}
 	}
@@ -334,7 +346,7 @@ class GUI_Panel {
 		foreach ($this->panels as $panel)
 			$panel->afterInit();
 
-		if ($this->submittable) {
+		if ($this->isSubmittable()) {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();
 				$module->addJsRouteReference('core_js', 'jquery/jquery.validate.js');
