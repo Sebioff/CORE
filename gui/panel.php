@@ -159,7 +159,7 @@ class GUI_Panel {
 			$this->panels[$panel->getName()] = $panel;
 		else
 			$this->panels = array($panel->getName() => $panel) + $this->panels;
-		if ($panel instanceof GUI_Control_Submittable) {
+		if ($panel instanceof GUI_Control_SubmitButton) {
 			$this->submittable = true;
 		}
 	}
