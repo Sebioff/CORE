@@ -1,6 +1,6 @@
 <?php
 
-class GUI_Control_Label extends GUI_Control {
+class GUI_Panel_Label extends GUI_Panel {
 	// CONSTRUCTORS ------------------------------------------------------------
 	public function __construct($name, GUI_Control $control, $caption = '') {
 		if(!$caption)
@@ -8,6 +8,7 @@ class GUI_Control_Label extends GUI_Control {
 		parent::__construct($name, $caption);
 		
 		$this->setTemplate(dirname(__FILE__).'/label.tpl');
+		$this->addClasses('core_gui_label');
 		
 		$this->params->control = $control;
 	}

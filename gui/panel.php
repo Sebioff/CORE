@@ -114,10 +114,8 @@ class GUI_Panel {
 		if ($this->$panelName->hasErrors())
 			$additionalCSSClasses[] = 'core_common_error_label';
 		
-		echo sprintf('<label for="%s"', $this->$panelName->getID());
-		if ($additionalCSSClasses)
-			echo sprintf(' class="%s"', implode(' ', $additionalCSSClasses));
-		echo '>';
+		$additionalCSSClasses[] = 'core_gui_label';
+		echo sprintf('<label for="%s" class="%s">', $this->$panelName->getID(), implode(' ', $additionalCSSClasses));
 		echo $this->$panelName->getTitle();
 		if ($this->$panelName instanceof GUI_Control && $this->$panelName->hasValidator('GUI_Validator_Mandatory'))
 			echo '<span class="core_common_mandatory_asterisk"> *</span>';
@@ -271,7 +269,7 @@ class GUI_Panel {
 	 */
 	public function addError($message, GUI_Panel $panel = null) {
 		if ($panel) {
-			$errorLabel = new GUI_Control_Label('error', $panel);
+			$errorLabel = new GUI_Panel_Label('error', $panel);
 			$this->errors[] = $errorLabel->render().': '.$message;
 			$panel->addClasses('core_common_error');
 		}
