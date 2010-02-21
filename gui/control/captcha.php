@@ -13,9 +13,10 @@ class GUI_Control_Captcha extends GUI_Control {
 		parent::init();
 
 		$this->setTemplate(dirname(__FILE__).'/captcha.tpl');
-		$this->addPanel(new GUI_Panel_Image('image', Media_Captcha::get()->getUrl(), 'Captcha'));
+		$this->addPanel(new GUI_Panel_Image('image', Media_Captcha::get()->getUrl().'?cb='.time(), 'Captcha'));
 		$this->addPanel($input = new GUI_Control_TextBox('input'));
 		$input->addValidator(new GUI_Validator_Mandatory());
+		$input->addValidator(new GUI_Validator_MaxLength(4));
 		$this->addPanel(new GUI_Control_Link('reload', 'Neu laden', $this->getModule()->getUrl(), 'Neu laden'));
 	}
 	
