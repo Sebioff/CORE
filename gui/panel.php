@@ -59,18 +59,6 @@ class GUI_Panel {
 	public function display() {
 		$this->beforeDisplay();
 		
-		// check if this is a top-level form
-		if ($this->isSubmittable()) {
-			$parent = $this->getParent();
-			while ($parent != null) {
-				if ($parent->isSubmittable()) {
-					$this->submittable = false;
-					break;
-				}
-				$parent = $parent->getParent();
-			}
-		}
-		
 		if ($this->isSubmittable()) {
 			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data" accept-charset="UTF-8">', $this->getID(), $_SERVER['REQUEST_URI']);
 			echo '<fieldset>';
@@ -345,6 +333,18 @@ class GUI_Panel {
 	public function afterInit() {
 		foreach ($this->panels as $panel)
 			$panel->afterInit();
+			
+		// check if this is a top-level form
+		if ($this->isSubmittable()) {
+			$parent = $this->getParent();
+			while ($parent != null) {
+				if ($parent->isSubmittable()) {
+					$this->submittable = false;
+					break;
+				}
+				$parent = $parent->getParent();
+			}
+		}
 
 		if ($this->isSubmittable()) {
 			if ($validators = $this->getJsValidators()) {
