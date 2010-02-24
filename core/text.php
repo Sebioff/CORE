@@ -41,10 +41,20 @@ abstract class Text {
 	}
 	
 	public static function format($string) {
+		$sym = '(?:[,;.:"\'!?()\[\]{}-]|&amp;|&quot;|&#039;|&[gl]t;)*';
+		$beg = '((?:^|>|\s)'.$sym.'?)';
+		$end = '('.$sym.'(?:\s|<|$))';
 		$search = array();
-		$search[] = '=http://([a-z0-9\./#?\=_-]+)=ism';
+		$search[] = '/'.$beg.'((?:https?|ftp|news|telnet|ed2k):[\S]+)'.$end.'/Ui';
+		$search[] = '/'.$beg.'(www\.[\S]+)'.$end.'/Ui';
+		$search[] = '/'.$beg.'(ftp\.[\S]+)'.$end.'/Ui';
+		$search[] = '/'.$beg.'([^\s\/]+@[a-z0-9.-]+\.[a-z]{2,6})'.$end.'/Ui';
 		$replace = array();
-		$replace[] = '<a href="http://$1" class="core_gui_link">http://$1</a>';
+		$replace[] = '\\1<a href="\\2" target="_blank">\\2</a>\\3';
+		$replace[] = '\\1<a href="\\2" target="_blank">\\2</a>\\3';
+		$replace[] = '\\1<a href="http://\\2" target="_blank">\\2</a>\\3';
+		$replace[] = '\\1<a href="ftp://\\2" target="_blank">\\2</a>\\3';
+		$replace[] = '\\1<a href="mailto:\\2" target="_blank" onClick="return mailto(this.href)">\\2</a>\\3';
 		return nl2br(preg_replace($search, $replace, $string));
 	}
 }
