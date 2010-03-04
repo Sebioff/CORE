@@ -11,6 +11,9 @@ class GUI_Panel_List extends GUI_Panel {
 	
 	public function addItem($item) {
 		$this->items[] = $item;
+		//just du call the init-methods and so on...
+		if ($item instanceof GUI_Panel)
+			$this->addPanel($item);
 	}
 	
 	public function getItems() {
