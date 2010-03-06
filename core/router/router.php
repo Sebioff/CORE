@@ -106,23 +106,25 @@ class Router {
 		$this->generateParams();
 		
 		// provide PROJECT_ROOTURI
-		$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ? 'https' : 'http';
-		$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
-		// PROJECT_ROOTURI depends on whether url-rewriting is available or not
-		if ($this->getEnableURLRewrite()) {
-			$scriptPathParts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
-			$urlParts = explode('/', trim($path, '/'));
-			foreach ($scriptPathParts as $scriptPathPart) {
-				if (in_array($scriptPathPart, $urlParts))
-					$rootURI .= '/'.$scriptPathPart;
-				else
-					break;
+		if (!defined('PROJECT_ROOTURI')) {
+			$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ? 'https' : 'http';
+			$rootURI = $protocol.'://'.$_SERVER['SERVER_NAME'];
+			// PROJECT_ROOTURI depends on whether url-rewriting is available or not
+			if ($this->getEnableURLRewrite()) {
+				$scriptPathParts = explode('/', trim($_SERVER['PHP_SELF'], '/'));
+				$urlParts = explode('/', trim($path, '/'));
+				foreach ($scriptPathParts as $scriptPathPart) {
+					if (in_array($scriptPathPart, $urlParts))
+						$rootURI .= '/'.$scriptPathPart;
+					else
+						break;
+				}
 			}
+			else {
+				$rootURI .= $_SERVER['PHP_SELF'].'?route=';
+			}
+			define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		}
-		else {
-			$rootURI .= $_SERVER['PHP_SELF'].'?route=';
-		}
-		define('PROJECT_ROOTURI', rtrim($rootURI, '/'));
 		
 		// redirect to correct language version if there is more than one available
 		if (!$languageIdentifierSet && count($languageScriptlet->getAvailableLanguages()) > 1 && !($this->moduleRoutes[$this->route] instanceof CoreRoutes_Core))

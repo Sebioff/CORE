@@ -21,7 +21,7 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  *
  * Available defines:
  * PROJECT_PATH				- path to the projects main folder
- * PROJECT_ROOTURI			- root uri of the project
+ * PROJECT_ROOTURI			- root uri of the project (might be wrong in CLI mode, can be overwritten in config)
  * DS						- shortcut for DIRECTORY_SEPARATOR
  *
  * Optional defines:

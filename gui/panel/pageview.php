@@ -19,12 +19,11 @@ class GUI_Panel_PageView extends GUI_Panel {
 		$this->addPanel(new GUI_Panel_PageView_Pages($this));
 	}
 	
-	public function getOptions($userOptions = array()) {
+	public function getOptions() {
 		$options = array();
 		$options['limit'] = $this->getItemsPerPage();
 		$options['offset'] = ($this->getPage() - 1) * $this->getItemsPerPage();
-		
-		return array_merge($options, $userOptions);
+		return $options;
 	}
 	
 	/**

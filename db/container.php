@@ -431,7 +431,7 @@ class DB_Container {
 	 * will override options set in $minorOptions if they conflict.
 	 */
 	public static function mergeOptions(array $minorOptions, array $majorOptions) {
-		// multidimensional arrays have to be merged manually, otherwhise the array
+		// multidimensional arrays have to be merged manually, otherwise the array
 		// of the $majorOptions would totally overwrite the array of the $minorOptions
 		if (isset($minorOptions['conditions'])) {
 			if (isset($majorOptions['conditions']))
