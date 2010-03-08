@@ -20,6 +20,7 @@ class DB_Container {
 	private $deleteCallbacks = array();
 	private $filters = array();
 	private $optimisticallyLockedProperties = null;
+	private $connection = null;
 
 	public function __construct($table, $recordClass = 'DB_Record') {
 		$this->table = $table;
@@ -59,7 +60,7 @@ class DB_Container {
 		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
 			
-		$result = DB_Connection::get()->query($query);
+		$result = $this->getConnection()->query($query);
 
 		// create records from query result
 		while ($row = mysql_fetch_assoc($result)) {
@@ -82,7 +83,7 @@ class DB_Container {
 	 */
 	public function selectByPK($value, array $options = array()) {
 		$databaseSchema = $this->getDatabaseSchema();
-		$options['conditions'][] = array($databaseSchema['primaryKey'].' = ?', $value);
+		$options['conditions'][] = array('`'.$databaseSchema['primaryKey'].'` = ?', $value);
 		return $this->selectFirst($options);
 	}
 	
@@ -123,7 +124,7 @@ class DB_Container {
 				$properties[] = $propertyDBName;
 				$values[] = $propertyValue;
 				if ($this->optimisticallyLockedProperties !== null && (empty($this->optimisticallyLockedProperties) || in_array($property, $this->optimisticallyLockedProperties))) {
-					$options['conditions'][] = array($propertyDBName.' = ?', $oldValue);
+					$options['conditions'][] = array('`'.$propertyDBName.'` = ?', $oldValue);
 					$usesOptimisticLocking = true;
 				}
 			}
@@ -142,7 +143,7 @@ class DB_Container {
 			}
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
-			$options['conditions'][] = array($databaseSchema['primaryKey'].' = ?', $record->getPK());
+			$options['conditions'][] = array('`'.$databaseSchema['primaryKey'].'` = ?', $record->getPK());
 			$query .= $this->buildQueryString($options);
 			$this->update($query, $record);
 			// count
@@ -182,7 +183,7 @@ class DB_Container {
 	protected function deleteByRecord(DB_Record $record) {
 		$query = 'DELETE FROM `'.$this->table.'` WHERE ';
 		$databaseSchema = $this->getDatabaseSchema();
-		$query .= $databaseSchema['primaryKey'].' = \''.$record->getPK().'\'';
+		$query .= '`'.$databaseSchema['primaryKey'].'` = \''.$record->getPK().'\'';
 		$this->deleteByQuery($query, $record);
 	}
 	
@@ -191,7 +192,7 @@ class DB_Container {
 	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
 	 */
 	protected function insertByQuery($query, DB_Record $record) {
-		$result = DB_Connection::get()->query($query);
+		$result = $this->getConnection()->query($query);
 		$record->setContainer($this);
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($databaseSchema['primaryKey']))
@@ -222,7 +223,7 @@ class DB_Container {
 	 * NOTE: it should usually not be neccessary to use this method! Use save() instead.
 	 */
 	public function update($query, DB_Record $record = null) {
-		$result = DB_Connection::get()->query($query);
+		$result = $this->getConnection()->query($query);
 		
 		// clear cache
 		self::$containerCache[$this->getTable()] = array();
@@ -239,7 +240,7 @@ class DB_Container {
 	 * NOTE: it should usually not be neccessary to use this method! Use delete() instead.
 	 */
 	public function deleteByQuery($query, DB_Record $record = null) {
-		$result = DB_Connection::get()->query($query);
+		$result = $this->getConnection()->query($query);
 		
 		// clear cache
 		self::$containerCache[$this->getTable()] = array();
@@ -486,7 +487,7 @@ class DB_Container {
 			return $databaseSchema;
 		}
 			
-		$result = DB_Connection::get()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.DB_Connection::get()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
+		$result = $this->getConnection()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.$this->getConnection()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
 		while ($keyColumn = mysql_fetch_assoc($result)) {
 			$keyColumn['COLUMN_NAME'] = Text::underscoreToCamelCase($keyColumn['COLUMN_NAME']);
 			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY') {
@@ -528,6 +529,19 @@ class DB_Container {
 	 */
 	public function enableOptimisticLockingForProperties($properties = array()) {
 		$this->optimisticallyLockedProperties = $properties;
+	}
+	
+	/**
+	 * @return DB_Connection the connection that has been specifically set to be
+	 * used by this container or the default connection available via DB_Connection::get()
+	 * if none has been set.
+	 */
+	public function getConnection() {
+		return ($this->connection !== null) ? $this->connection : DB_Connection::get();
+	}
+	
+	public function setConnection(DB_Connection $connection) {
+		$this->connection = $connection;
 	}
 }
 
