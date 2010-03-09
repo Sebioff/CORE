@@ -64,7 +64,7 @@ class Core_MigrationsLoader {
 	
 	/**
 	 * Executes all sql queries in the given migration file
-	 * @var $var_array array associative array of key/values that are available
+	 * @param $var_array array associative array of key/values that are available
 	 * for use in the migration file. E.g.: array('key' = 'value') can be used
 	 * as $key in the migration file.
 	 */
@@ -72,8 +72,10 @@ class Core_MigrationsLoader {
 		extract($var_array);
 		$queries = array();
 		require $migrationFile;
+		DB_Connection::get()->beginTransaction();
 		foreach ($queries as $query)
 			DB_Connection::get()->query($query);
+		DB_Connection::get()->commit();
 	}
 }
 

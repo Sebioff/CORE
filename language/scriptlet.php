@@ -79,6 +79,9 @@ class Language_Scriptlet {
 			throw new Core_Exception('The language you want to switch to doesn\'t exist: '.$language);
 	}
 	
+	/**
+	 * @return Language_Scriptlet
+	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}

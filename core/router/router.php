@@ -241,6 +241,9 @@ class Router {
 		return '/'.IO_Utils::getRelativePath($path, $_SERVER['DOCUMENT_ROOT']);
 	}
 	
+	/**
+	 * @return Router
+	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}

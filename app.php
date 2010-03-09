@@ -221,6 +221,9 @@ class App {
 		return $lockfile->exists();
 	}
 	
+	/**
+	 * @return App
+	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}

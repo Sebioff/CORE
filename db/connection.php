@@ -74,6 +74,9 @@ class DB_Connection {
 		return $this->connectionOptions['query'];
 	}
 	
+	/**
+	 * @return DB_Connection
+	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}

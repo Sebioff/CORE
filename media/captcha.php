@@ -97,6 +97,9 @@ class Media_Captcha extends Scriptlet {
 		imagedestroy($img2);
 	}
 	
+	/**
+	 * @return Media_Captcha
+	 */
 	public static function get() {
 		return Router::get()->getModuleForRouteName('core')->getSubmodule('media_captcha');
 	}

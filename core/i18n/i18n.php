@@ -44,6 +44,9 @@ class I18N {
 		return ngettext($single, $plural, $number);
 	}
 
+	/**
+	 * @return I18N
+	 */
 	public static function get() {
 		return (self::$instance) ? self::$instance : self::$instance = new self();
 	}
