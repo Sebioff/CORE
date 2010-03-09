@@ -42,7 +42,7 @@ class DB_Container {
 
 	/**
 	 * Abstraction for MySQL's SELECT.
-	 * @param $options an options-array which might contain the following elements:
+	 * @param $options array an options-array which might contain the following elements:
 	 * $options['properties'] = the properties that should be selected
 	 * $options['conditions'] = array of conditions
 	 * $options['group'] = group by
@@ -50,7 +50,7 @@ class DB_Container {
 	 * $options['limit'] = limit
 	 * $options['offset'] = offset
 	 * $options['join'] = array of tables
-	 * @return an array of records fitting to the specified search parameters
+	 * @return array an array of records fitting to the specified search parameters
 	 */
 	public function select(array $options = array()) {
 		$records = array();
@@ -159,7 +159,7 @@ class DB_Container {
 	}
 	
 	/**
-	 * @param $args either an options-array or a record
+	 * @param $args array|DB_Record either an options-array or a record
 	 */
 	public function delete($args = array()) {
 		if (is_array($args))
@@ -372,8 +372,8 @@ class DB_Container {
 	 * of all other containers to the table the given container encapsulates with
 	 * the given container. Can be overriden by DB_Container::addReferencedContainer()
 	 * for single containers.
-	 * @param $container the container which is to be used to resolve all references
-	 * to the table of the container
+	 * @param $container DB_Container the container which is to be used to resolve
+	 * all references to the table of the container
 	 */
 	public static function addReferencedContainerGlobal(DB_Container $container) {
 		self::$globalReferencedContainers[$container->getTable()] = $container;
@@ -452,7 +452,7 @@ class DB_Container {
 	/**
 	 * Does just the same as mysql_real_escape_string(), but without need for an
 	 * open database connection.
-	 * @param $value the string which is to be escaped
+	 * @param $value string the string which is to be escaped
 	 */
 	public static function escape($value) {
 		if ($value === null)

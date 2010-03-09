@@ -51,7 +51,6 @@ abstract class Text {
 		$search[] = '/'.$beg.'([^\s\/]+@[a-z0-9.-]+\.[a-z]{2,6})'.$end.'/Ui';
 		$replace = array();
 		$replace[] = '\\1<a href="\\2" target="_blank">\\2</a>\\3';
-		$replace[] = '\\1<a href="\\2" target="_blank">\\2</a>\\3';
 		$replace[] = '\\1<a href="http://\\2" target="_blank">\\2</a>\\3';
 		$replace[] = '\\1<a href="ftp://\\2" target="_blank">\\2</a>\\3';
 		$replace[] = '\\1<a href="mailto:\\2" target="_blank" onClick="return mailto(this.href)">\\2</a>\\3';
