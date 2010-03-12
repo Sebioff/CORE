@@ -7,6 +7,8 @@ abstract class GUI_Control extends GUI_Panel {
 	protected $value;
 	protected $defaultValue;
 	private $focused = false;
+	private $preserveValue = false;
+	private $valueHasBeenSet = false;
 	
 	/** contains all validators of this control */
 	private $validators = array();
@@ -82,7 +84,7 @@ abstract class GUI_Control extends GUI_Panel {
 		parent::generateID();
 		
 		if (isset($_POST[$this->getID()]))
-			$this->value = $_POST[$this->getID()];
+			$this->setValue($_POST[$this->getID()]);
 	}
 	
 	/**
@@ -112,6 +114,9 @@ abstract class GUI_Control extends GUI_Panel {
 	
 	public function setValue($value) {
 		$this->value = $value;
+		$this->valueHasBeenSet = true;
+		if ($this->preserveValue)
+			$_SESSION['preservedValues'][$this->getID()] = $value;
 	}
 	
 	public function getDefaultValue() {
@@ -125,6 +130,20 @@ abstract class GUI_Control extends GUI_Panel {
 	public function addValidator(GUI_Validator $validator) {
 		$validator->setControl($this);
 		$this->validators[] = $validator;
+	}
+	
+	public function setPreserveValue($preserveValue = true) {
+		$this->preserveValue = $preserveValue;
+		if ($preserveValue == true) {
+			if (!isset($_SESSION['preservedValues'][$this->getID()]) || $this->valueHasBeenSet)
+				$_SESSION['preservedValues'][$this->getID()] = $this->getValue();
+			elseif (!$this->valueHasBeenSet)
+				$this->setValue($_SESSION['preservedValues'][$this->getID()]);
+		}
+	}
+	
+	public function getPreserveValue() {
+		return $this->preserveValue;
 	}
 }
 
