@@ -21,6 +21,10 @@ abstract class GUI_Control extends GUI_Panel {
 	}
 	
 	// CUSTOM METHODS ----------------------------------------------------------
+	/**
+	 * @return boolean true if this control has a validator instance of the given
+	 * class name, false otherwise.
+	 */
 	public function hasValidator($validatorClassName) {
 		foreach ($this->validators as $validator)
 			if ($validator instanceof $validatorClassName)
@@ -28,7 +32,27 @@ abstract class GUI_Control extends GUI_Panel {
 		return false;
 	}
 	
-	// OVERRIDES ---------------------------------------------------------------
+	/**
+	 * Resets this control and all child controls to their default values
+	 */
+	public function resetValue() {
+		// TODO use lambda-function with PHP 5.3
+		$this->walkRecursive(array('GUI_Control', 'resetValueFunction'));
+	}
+	
+	public static function resetValueFunction(GUI_Panel $panel) {
+		if ($panel instanceof GUI_Control)
+			$panel->setValue($panel->getDefaultValue());
+	}
+	
+	/**
+	 * Sets the focus on this control.
+	 */
+	public function setFocus($focused = true) {
+		$this->focused = $focused;
+	}
+	
+	// OVERRIDES / IMPLEMENTS --------------------------------------------------
 	public function display() {
 		if ($this->focused)
 			$this->addJS(sprintf('$("#%s").focus();', $this->getID()));
@@ -87,26 +111,6 @@ abstract class GUI_Control extends GUI_Panel {
 			$this->setValue($_POST[$this->getID()]);
 	}
 	
-	/**
-	 * Resets this control and all child controls to their default values
-	 */
-	public function resetValue() {
-		// TODO use lambda-function with PHP 5.3
-		$this->walkRecursive(array('GUI_Control', 'resetValueFunction'));
-	}
-	
-	public static function resetValueFunction(GUI_Panel $panel) {
-		if ($panel instanceof GUI_Control)
-			$panel->setValue($panel->getDefaultValue());
-	}
-	
-	/**
-	 * Sets the focus on this control.
-	 */
-	public function setFocus($focused = true) {
-		$this->focused = $focused;
-	}
-	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function getValue() {
 		return $this->value;
@@ -132,6 +136,11 @@ abstract class GUI_Control extends GUI_Panel {
 		$this->validators[] = $validator;
 	}
 	
+	/**
+	 * If preserving values is enabled, the value of this control is stored in
+	 * session and will be restored on new page loads.
+	 * @param $preserveValue boolean true if values should be preserved
+	 */
 	public function setPreserveValue($preserveValue = true) {
 		$this->preserveValue = $preserveValue;
 		if ($preserveValue == true) {
@@ -142,6 +151,9 @@ abstract class GUI_Control extends GUI_Panel {
 		}
 	}
 	
+	/**
+	 * @return boolean true if preserving value is enabled, false otherwise
+	 */
 	public function getPreserveValue() {
 		return $this->preserveValue;
 	}

@@ -7,7 +7,7 @@ abstract class Text {
 	/**
 	 * Example: some_string -> someString
 	 * @param $string
-	 * @param $ucfirst true if the first character should be uppercase
+	 * @param $ucfirst boolean true if the first character should be uppercase
 	 */
 	public static function underscoreToCamelCase($string, $ucfirst = false) {
 		$camelCase = ucwords(strtr(trim($string), '_', ' '));

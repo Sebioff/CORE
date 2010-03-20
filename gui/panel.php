@@ -33,7 +33,7 @@ class GUI_Panel {
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	/**
-	 * @param $name name of the panel, MAY NOT CONTAIN: -,
+	 * @param $name string name of the panel, MAY NOT CONTAIN: -,
 	 * Those chars are currently not prohibited by code (to save time), but don't use them!
 	 */
 	public function __construct($name, $title = '') {
@@ -105,7 +105,7 @@ class GUI_Panel {
 	 * the label
 	 * @param $additionalCSSClasses adds the given css classes to the label
 	 */
-	public function displayLabelForPanel($panelName, $additionalCSSClasses = array()) {
+	public function displayLabelForPanel($panelName, array $additionalCSSClasses = array()) {
 		if (!$this->hasPanel($panelName)) {
 			IO_Log::get()->warning('Tried to display label for non-existant panel: '.$panelName);
 			return;
@@ -180,15 +180,15 @@ class GUI_Panel {
 	}
 	
 	/**
-	 * @return a string of classes belonging to this panel, e.g. for use in
-	 * html output
+	 * @return string a string of classes belonging to this panel, e.g. for use
+	 * in html output
 	 */
 	public function getClassString() {
 		return implode(' ', $this->classes);
 	}
 	
 	/**
-	 * @return a string of html attributes belonging to this panel
+	 * @return string a string of html attributes belonging to this panel
 	 */
 	public function getAttributeString() {
 		$attributeString = null;
@@ -202,7 +202,7 @@ class GUI_Panel {
 	}
 	
 	/**
-	 * @return true if this panel has been submitted, false otherwhise
+	 * @return boolean true if this panel has been submitted, false otherwise
 	 */
 	public function hasBeenSubmitted() {
 		return isset($_POST[$this->getID().'-hasbeensubmitted']);
@@ -229,7 +229,8 @@ class GUI_Panel {
 	}
 	
 	/**
-	 * @return string a unique id used to identify this panel
+	 * (Re-)generates a page-unique ID for this panel and all child panels based
+	 * on the panel tree.
 	 */
 	protected function generateID() {
 		if ($this->parent)
@@ -264,8 +265,8 @@ class GUI_Panel {
 	
 	/**
 	 * Adds a custom error.
-	 * @param $message the error message to display
-	 * @param $panel the panel this error belongs to
+	 * @param $message string the error message to display
+	 * @param $panel GUI_Panel the panel this error belongs to
 	 */
 	public function addError($message, GUI_Panel $panel = null) {
 		if ($panel) {
@@ -293,7 +294,7 @@ class GUI_Panel {
 	/**
 	 * Executes the given callback for this panel and all child panels
 	 * Callback receives the panel as first parameter
-	 * @param $callback
+	 * @param $callback callback
 	 */
 	public function walkRecursive($callback) {
 		call_user_func($callback, $this);
@@ -312,6 +313,8 @@ class GUI_Panel {
 	 * This method is the method that you'll probably need most when creating
 	 * new panel classes. It is mainly intended to be used for setting the panels
 	 * template (using setTemplate()) and adding sub-panels (using addPanel()).
+	 * Always add new panels inside of this method, or you might get unexpected
+	 * behaviour from some methods.
 	 */
 	public function init() {
 		// callback
@@ -393,6 +396,17 @@ class GUI_Panel {
 		$this->title = $title;
 	}
 	
+	/**
+	 * IDs are primarily used to identify controls in HTTP
+	 * requests. They can also be used for CSS styling, though note that the ID
+	 * changes if the name of a parent panel of the panel is changed or the panel
+	 * is used in a different context. So, for styling CSS classes are usually
+	 * preferable over this IDs.
+	 * NOTE: because IDs change as the panel tree changes, you can only be sure
+	 * that this method returns the final panel ID if you call it after init() or
+	 * if always using the init()-methods as intended.
+	 * @return string the ID of this panel
+	 */
 	public function getID() {
 		return $this->ID;
 	}
@@ -421,8 +435,8 @@ class GUI_Panel {
 	
 	/**
 	 * For setting html attributes
-	 * @param $attribute the attribute name
-	 * @param $value the attribute value
+	 * @param $attribute string the attribute name
+	 * @param $value string the attribute value
 	 */
 	public function setAttribute($attribute, $value) {
 		$this->attributes[$attribute] = $value;
@@ -452,6 +466,9 @@ class GUI_Panel {
 		return $this->submittable;
 	}
 	
+	/**
+	 * @param $js string JavaScript belonging to this panel
+	 */
 	public function addJS($js) {
 		$this->js .= $js;
 	}

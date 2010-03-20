@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class for easy handing over values to the template.
+ */
 class GUI_Params {
 	private $params = array();
 	
