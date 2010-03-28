@@ -243,16 +243,17 @@ abstract class Security {
 		$this->privileges[$privilegeIdentifier]['description'] = $privilegeDescription;
 	}
 	
-	public function onSetup() {
-		Core_MigrationsLoader::executeMigration(dirname(__FILE__).'/migrations/001.setup.php', array('self' => $this));
-	}
-	
 	/**
-	 * @param $tablePrefix to be used for database tables
 	 * @param $securityImpl your implementation of Security
 	 */
 	public static function register(Security $securityImpl) {
+		// TODO use lambda function with PHP 5.3
 		CoreRoutes_Reset::addCallbackOnAfterReset(array($securityImpl, 'onSetup'));
+	}
+	
+	public function onSetup() {
+		// FIXME ugly!
+		Core_MigrationsLoader::executeMigration(dirname(__FILE__).'/migrations/001.setup.php', array('self' => $this));
 	}
 	
 	// TODO use late static binding PHP 5.3, remove $class parameter (use current class)
@@ -300,23 +301,22 @@ abstract class Security {
 		return array_keys($this->privileges);
 	}
 	
-	public function setContainerUsers($containerUsers) {
+	public function setContainerUsers(DB_Container $containerUsers) {
 		$this->containerUsers = $containerUsers;
 	}
 	
-	public function setContainerGroups($containerGroups) {
+	public function setContainerGroups(DB_Container $containerGroups) {
 		$this->containerGroups = $containerGroups;
 	}
 	
-	public function setContainerGroupsUsersAssoc($containerGroupsUsersAssoc) {
+	public function setContainerGroupsUsersAssoc(DB_Container $containerGroupsUsersAssoc) {
 		$this->containerGroupsUsersAssoc = $containerGroupsUsersAssoc;
 	}
 	
-	public function setContainerPrivileges($setContainerPrivileges) {
-		$this->containerPrivileges = $setContainerPrivileges;
+	public function setContainerPrivileges(DB_Container $containerPrivileges) {
+		$this->containerPrivileges = $containerPrivileges;
 	}
 	
-	// ABSTRACT METHODS --------------------------------------------------------
 	/**
 	 * @return DB_Container the container for users
 	 */
@@ -393,6 +393,7 @@ abstract class Security {
 		return $this->getTablePrefix().'_privileges';
 	}
 	
+	// ABSTRACT METHODS --------------------------------------------------------
 	/**
 	 * @return String prefix to be used for needed database tables
 	 */

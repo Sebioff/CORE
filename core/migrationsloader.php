@@ -6,17 +6,19 @@
  * structure + content)
  */
 class Core_MigrationsLoader {
+	// path of migration logfile, relative to PROJECT_PATH
 	const MIGRATION_LOG_FILE = '/config/log/migrations.log.xml';
 	
+	private static $migrationFolders = array();
+	
 	/**
-	 * Loads all migration files from the migration folder (in the order they where
-	 * created) and executes the contained mysql queries.
+	 * Loads all migration files from the migration folder (in alphabetical order)
+	 * and executes the contained mysql queries.
 	 * Every migration is executed only once.
 	 */
 	public static function load() {
-		$migrationFolder = PROJECT_PATH.'/migrations';
-		$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolder, PROJECT_PATH.'/..'));
-		$fileXPathParts = explode('/', $relativeMigrationFolder);
+		// add project migration folder
+		self::addMigrationFolder(PROJECT_PATH.'/migrations');
 		
 		// load migration logfile or create new one
 		if (file_exists(PROJECT_PATH.self::MIGRATION_LOG_FILE))
@@ -26,31 +28,36 @@ class Core_MigrationsLoader {
 			$xml = new SimpleXMLElement($baseMigrationLog);
 		}
 		
-		// create xpath to current migration folder if it doesn't exist
-		if (!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
-			$currentXMLNode = $xml;
-			$fileXPathPartsSize=count($fileXPathParts);
-			for ($i = 0; $i < $fileXPathPartsSize; $i++) {
-				$fileXPath = array_slice($fileXPathParts, 0, $i+1);
-				$fileXPath = implode('/', $fileXPath);
-				$result = $xml->xpath('/content/'.$fileXPath);
-				if (empty($result))
-					$currentXMLNode = $currentXMLNode[0]->addChild($fileXPathParts[$i]);
-				else
-					$currentXMLNode = $result;
+		foreach (self::$migrationFolders as $migrationFolderArray) {
+			$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolderArray['path'], PROJECT_PATH.'/..'));
+			$fileXPathParts = explode('/', $relativeMigrationFolder);
+			
+			// create xpath to current migration folder if it doesn't exist
+			if (!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
+				$currentXMLNode = $xml;
+				$fileXPathPartsSize = count($fileXPathParts);
+				for ($i = 0; $i < $fileXPathPartsSize; $i++) {
+					$fileXPath = array_slice($fileXPathParts, 0, $i+1);
+					$fileXPath = implode('/', $fileXPath);
+					$result = $xml->xpath('/content/'.$fileXPath);
+					if (empty($result))
+						$currentXMLNode = $currentXMLNode[0]->addChild($fileXPathParts[$i]);
+					else
+						$currentXMLNode = $result;
+				}
 			}
-		}
-		
-		// execute migration files if they haven't been before
-		$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolder, array('php'));
-		natsort($migrationFiles);
-		foreach ($migrationFiles as $migrationFile) {
-			$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
-			if (empty($result)) {
-				$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
-				$child = $result[0]->addChild('file');
-				$child->addAttribute('name', $migrationFile);
-				self::executeMigration($migrationFolder.'/'.$migrationFile);
+			
+			// execute migration files if they haven't been before
+			$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolderArray['path'], array('php'));
+			natsort($migrationFiles);
+			foreach ($migrationFiles as $migrationFile) {
+				$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
+				if (empty($result)) {
+					$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
+					$child = $result[0]->addChild('file');
+					$child->addAttribute('name', $migrationFile);
+					self::executeMigration($migrationFolderArray['path'].'/'.$migrationFile, $migrationFolderArray['vars']);
+				}
 			}
 		}
 		
@@ -76,6 +83,14 @@ class Core_MigrationsLoader {
 		foreach ($queries as $query)
 			DB_Connection::get()->query($query);
 		DB_Connection::get()->commit();
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
+	public static function addMigrationFolder($migrationFolderPath, array $var_array = array()) {
+		self::$migrationFolders[] = array(
+			'path' => $migrationFolderPath,
+			'vars' => $var_array
+		);
 	}
 }
 
