@@ -253,6 +253,13 @@ class DB_Container {
 	}
 	
 	/**
+	 * Removes all data from the table
+	 */
+	public function clear() {
+		$this->deleteByQuery('DELETE FROM '.$this->getTable().';');
+	}
+	
+	/**
 	 * @return string MySQL query string, build from the given array of options
 	 */
 	protected function buildQueryString(array $options) {
@@ -358,6 +365,7 @@ class DB_Container {
 			}
 		}
 		else {
+			$column = Text::underscoreToCamelCase($column);
 			$databaseSchema['constraints'][$column]['referencedContainer'] = $container;
 			if ($referencedColumn !== null) {
 				$databaseSchema['constraints'][$column]['type'] = 'foreignKey';
