@@ -7,6 +7,7 @@ class Scriptlet {
 	private $name = '';
 	private $routeName = '';
 	private $parent = null;
+	private $submodules = array();
 	
 	public function __construct($name) {
 		if ($name != Text::toLowerCase($name))
@@ -80,6 +81,54 @@ class Scriptlet {
 	    exit;
 	}
 	
+	public function addSubmodule(Scriptlet $submodule) {
+		$this->submodules[$submodule->getRouteName()] = $submodule;
+		$submodule->setParent($this);
+	}
+	
+	/**
+	 * @return Module
+	 */
+	// TODO: use $moduleName here instead of routename
+	// change getSubmoduleByName to getSubmoduleByRouteName
+	public function getSubmodule($moduleRouteName) {
+		if (isset($this->submodules[$moduleRouteName])) {
+			if (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges())
+				return $this->submodules[$moduleRouteName];
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * @return Module
+	 */
+	public function getSubmoduleByName($moduleName) {
+		foreach ($this->submodules as $submodule) {
+			if ($submodule->getName() == $moduleName) {
+				if (!($submodule instanceof Scriptlet_Privileged) || $submodule->checkPrivileges())
+					return $submodule;
+				else
+					return null;
+			}
+		}
+		return null;
+	}
+	
+	// TODO privilege checks are ignored here
+	public function getAllSubmodules() {
+		return $this->submodules;
+	}
+	
+	public function hasSubmodule($moduleRouteName) {
+		return (isset($this->submodules[$moduleRouteName]) && (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges()));
+	}
+
+	public function hasSubmodules() {
+		return !empty($this->submodules);
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	/**
 	 * @return Module
@@ -88,7 +137,7 @@ class Scriptlet {
 		return $this->parent;
 	}
 	
-	public function setParent(Module $parentModule) {
+	public function setParent(Scriptlet $parentModule) {
 		$this->parent = $parentModule;
 	}
 	

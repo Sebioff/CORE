@@ -50,7 +50,7 @@ class Router {
 				$currentModule = $this->moduleRoutes[$param];
 				$params[] = &$lastModule;
 			}
-			elseif (isset($currentModule) && $currentModule instanceof Module && $module = $currentModule->getSubmodule($param)) {
+			elseif (isset($currentModule) && $currentModule instanceof Scriptlet && $module = $currentModule->getSubmodule($param)) {
 				$currentModule = $module;
 				$lastModule['submodule'][] = array('module' => $param, 'params' => array(), 'submodule' => array());
 				$lastModule = &$lastModule['submodule'][count($lastModule['submodule']) - 1];
@@ -178,7 +178,7 @@ class Router {
 	}
 	
 	/**
-	 * @return Module the currently active module
+	 * @return Scriptlet the currently active module
 	 */
 	public function getCurrentModule() {
 		$currentModule = $this->moduleRoutes[$this->route];

@@ -11,6 +11,8 @@ class Core_BacktracePrinter {
 	 * @param $errorType a custom error type, useful to categorize errors.
 	 */
 	public static function handle(array $backtrace, $customMessage = '', $errorType = '') {
+		header('HTTP/1.0 500 Internal Server Error');
+		
 		if (ob_get_level() > 0)
 			ob_end_clean();
 		
@@ -39,8 +41,6 @@ class Core_BacktracePrinter {
 	 */
 	public static function printBacktrace(array $backtrace, $customMessage = '', $errorType = '') {
 		switch (Router::get()->getRequestMode()) {
-			case Router::REQUESTMODE_AJAX:
-				header('HTTP/1.0 500 Internal Server Error');
 			case Router::REQUESTMODE_CLI:
 				echo self::backtraceToString($backtrace, $customMessage, $errorType);
 			break;

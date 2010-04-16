@@ -24,28 +24,8 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 			exit;
 		
 		foreach ($this->scripts as $script) {
-			$cronjobRecord = Rakuun_DB_Containers::getCronjobsContainer()->selectByPK($script->getIdentifier());
-			if (!$cronjobRecord) {
-				$cronjobRecord = new DB_Record();
-				$cronjobRecord->identifier = $script->getIdentifier();
-			}
-			
-			if (!$script->requiresExecution($cronjobRecord->lastExecution))
-				continue;
-			
-			$cronjobRecord->lastExecution = time();
-			try {
-				$executionStart = microtime(true);
-				$script->execute();
-				$cronjobRecord->lastExecutionDuration = microtime(true) - $executionStart;
-				$cronjobRecord->lastExecutionSuccessful = true;
-			}
-			catch (Core_Exception $ce) {
-				$cronjobRecord->lastExecutionSuccessful = false;
-				$this->onScriptException($ce, $script);
-			}
-			
-			Rakuun_DB_Containers::getCronjobsContainer()->save($cronjobRecord);
+			if ($script->requiresExecution($script->getRecord()->lastExecution))
+				$script->triggerExecution();
 		}
 	}
 	
@@ -60,6 +40,7 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 	
 	protected function addScript(Cronjob_Script $script) {
 		$this->scripts[] = $script;
+		$this->addSubmodule($script);
 	}
 	
 	// OVERRIDES / IMPLEMENTS --------------------------------------------------
@@ -72,6 +53,7 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 			return $this->cronjobContainer;
 			
 		$this->cronjobContainer = new DB_Container($this->databaseTableName);
+		return $this->cronjobContainer;
 	}
 }
 

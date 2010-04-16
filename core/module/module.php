@@ -11,7 +11,6 @@ class Module extends Scriptlet {
 	private $jsRouteReferences = array();
 	private $cssRouteReferences = array();
 	private $metaTags = array();
-	private $submodules = array();
 	private $jsAfterContent = '';
 	private $isInvalid = false;
 	
@@ -33,54 +32,6 @@ class Module extends Scriptlet {
 	
 	public function init() {
 		$this->mainPanel->init();
-	}
-	
-	public function addSubmodule(Scriptlet $submodule) {
-		$this->submodules[$submodule->getRouteName()] = $submodule;
-		$submodule->setParent($this);
-	}
-	
-	/**
-	 * @return Module
-	 */
-	// TODO: use $moduleName here instead of routename
-	// change getSubmoduleByName to getSubmoduleByRouteName
-	public function getSubmodule($moduleRouteName) {
-		if (isset($this->submodules[$moduleRouteName])) {
-			if (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges())
-				return $this->submodules[$moduleRouteName];
-		}
-		else {
-			return null;
-		}
-	}
-	
-	/**
-	 * @return Module
-	 */
-	public function getSubmoduleByName($moduleName) {
-		foreach ($this->submodules as $submodule) {
-			if ($submodule->getName() == $moduleName) {
-				if (!($submodule instanceof Scriptlet_Privileged) || $submodule->checkPrivileges())
-					return $submodule;
-				else
-					return null;
-			}
-		}
-		return null;
-	}
-	
-	// TODO privilege checks are ignored here
-	public function getAllSubmodules() {
-		return $this->submodules;
-	}
-	
-	public function hasSubmodule($moduleRouteName) {
-		return (isset($this->submodules[$moduleRouteName]) && (!($this->submodules[$moduleRouteName] instanceof Scriptlet_Privileged) || $this->submodules[$moduleRouteName]->checkPrivileges()));
-	}
-
-	public function hasSubmodules() {
-		return !empty($this->submodules);
 	}
 	
 	public function afterInit() {
