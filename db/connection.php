@@ -60,7 +60,14 @@ class DB_Connection {
 			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'');
 		}
 		
+		if (defined('CORE_LOG_SLOW_QUERIES'))
+			$queryStartTime = microtime(true);
+		
 		$result = mysql_query($query, $this->connection);
+		
+		if (defined('CORE_LOG_SLOW_QUERIES') && (microtime(true) - $queryStartTime) * 1000 > CORE_LOG_SLOW_QUERIES)
+			IO_Log::get()->warning('SLOW QUERY ['.round((microtime(true) - $queryStartTime) * 1000).'ms] '.$query);
+		
 		if (!$result)
 			throw new Core_QueryException('MySQL Query failed: '.mysql_error());
 			

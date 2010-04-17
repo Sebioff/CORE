@@ -29,6 +29,7 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * CORE_ENABLE_LOGGING		- can be set to "false" to disable logging
  * CORE_ENABLE_URLREWRITE	- can be set to "false" to disable rewriting urls even if mod_rewrite is available
  * CORE_TEMPORARY_DIRECTORY - can be used to define a different temporary folder than the one of the OS, see System::getTemporaryDirectory()
+ * CORE_LOG_SLOW_QUERIES	- can be set to an amount of milliseconds to log all queries that take more time than this
  * PROJECT_ENVIRONMENT		- overrides the environment that is automatically detected by Environment::getCurrentEnvironment()
  *
  * Callback defines:
