@@ -56,7 +56,7 @@ class Core_MigrationsLoader {
 					$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
 					$child = $result[0]->addChild('file');
 					$child->addAttribute('name', $migrationFile);
-					self::executeMigration($migrationFolderArray['path'].'/'.$migrationFile, $migrationFolderArray['vars']);
+					self::executeMigration($migrationFolderArray['path'].'/'.$migrationFile, $migrationFolderArray['vars'], $migrationFolderArray['connection']);
 				}
 			}
 		}
@@ -75,21 +75,24 @@ class Core_MigrationsLoader {
 	 * for use in the migration file. E.g.: array('key' = 'value') can be used
 	 * as $key in the migration file.
 	 */
-	public static function executeMigration($migrationFile, array $var_array = array()) {
+	public static function executeMigration($migrationFile, array $var_array = array(), DB_Connection $connection = null) {
 		extract($var_array);
 		$queries = array();
 		require $migrationFile;
-		DB_Connection::get()->beginTransaction();
+		if (!$connection)
+			$connection = DB_Connection::get();
+		$connection->beginTransaction();
 		foreach ($queries as $query)
-			DB_Connection::get()->query($query);
-		DB_Connection::get()->commit();
+			$connection->query($query);
+		$connection->commit();
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
-	public static function addMigrationFolder($migrationFolderPath, array $var_array = array()) {
+	public static function addMigrationFolder($migrationFolderPath, array $var_array = array(), DB_Connection $connection = null) {
 		self::$migrationFolders[] = array(
 			'path' => $migrationFolderPath,
-			'vars' => $var_array
+			'vars' => $var_array,
+			'connection' => $connection
 		);
 	}
 }

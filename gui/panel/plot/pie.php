@@ -8,8 +8,8 @@ require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_pie3d.php');
 class GUI_Panel_Plot_Pie extends GUI_Panel_Plot {
 	private $data = array();
 	public function __construct($name, $width = 600, $height = 300, $description = '', $title = '') {
-		$this->image = new PieGraph($width, $height, 'auto');
-		$this->image->SetScale('textlin');
+		$this->graph = new PieGraph($width, $height, 'auto');
+		$this->graph->SetScale('textlin');
 		
 		parent::__construct($name, $description, $title);
 	}
@@ -28,7 +28,7 @@ class GUI_Panel_Plot_Pie extends GUI_Panel_Plot {
 	
 	protected function beforeDisplay() {
 		$plot = new PiePlot3d($this->data);
-		$this->image->add($plot);
+		$this->graph->add($plot);
 		$plot->SetLegends($this->names);
 		$plot->SetAngle(30);
 		// Move the pie slightly to the left

@@ -31,7 +31,8 @@ class DB_Connection {
 	 * if there are multiple connections.
 	 */
 	public function __destruct() {
-		mysql_close($this->connection);
+		if ($this->connection)
+			mysql_close($this->connection);
 	}
 
 	/**
