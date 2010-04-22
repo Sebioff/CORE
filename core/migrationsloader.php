@@ -29,7 +29,7 @@ class Core_MigrationsLoader {
 		}
 		
 		foreach (self::$migrationFolders as $migrationFolderArray) {
-			$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolderArray['path'], PROJECT_PATH.'/..'));
+			$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolderArray['path'], CORE_PATH.'/..'));
 			$fileXPathParts = explode('/', $relativeMigrationFolder);
 			
 			// create xpath to current migration folder if it doesn't exist
