@@ -34,7 +34,7 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 	 * @param $ce Core_Exception
 	 * @param $script Cronjob_Script the script that failed
 	 */
-	protected function onScriptException(Core_Exception $ce, Cronjob_Script $script) {
+	public function onScriptException(Core_Exception $ce, Cronjob_Script $script) {
 		
 	}
 	
