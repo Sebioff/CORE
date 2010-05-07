@@ -13,7 +13,7 @@ class GUI_Control_SubmitButton extends GUI_Control_Submittable {
 		$callbackName = 'on'.Text::underscoreToCamelCase($this->getName(), true);
 		// first, check if parent has submit handler
 		if (method_exists($this->getParent(), $callbackName)) {
-			$this->addCallback($this->getParent(), $callbackName);
+			$this->addCallback(array($this->getParent(), $callbackName));
 		}
 		// if parent hasn't got submit handler, search in call history for submit handler
 		// (debug_backtrace() is a bit more expensive and usually checking the parent should be enough)
@@ -23,13 +23,13 @@ class GUI_Control_SubmitButton extends GUI_Control_Submittable {
 			while (($callingObject = $trace[$i]['object']) == $this)
 				$i++;
 			if (method_exists($callingObject, $callbackName)) {
-				$this->addCallback($callingObject, $callbackName);
+				$this->addCallback(array($callingObject, $callbackName));
 			}
 		}
 	}
 	
-	public function addCallback($object, $methodName) {
-		$this->callbacks[] = array($object, $methodName);
+	public function addCallback($callback, array $arguments = array()) {
+		$this->callbacks[] = array($callback, $arguments);
 	}
 	
 	protected function executeCallbacks() {
@@ -37,7 +37,7 @@ class GUI_Control_SubmitButton extends GUI_Control_Submittable {
 			return;
 		
 		foreach ($this->callbacks as $callback) {
-			$callback[0]->$callback[1]();
+			call_user_func_array($callback[0], $callback[1]);
 		}
 	}
 }
