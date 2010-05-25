@@ -43,9 +43,9 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 				$this->graph->img->SetMargin(60, 20, 35, 65);
 			break;
 			case self::LEGEND_POSITION_EAST:
-				$this->graph->legend->Pos(0.01, 0.01, 'left', 'top');
+				$this->graph->legend->Pos(0.01, 0.01, 'right', 'top');
 				$this->graph->legend->SetLayout(LEGEND_VERT);
-				$this->graph->img->SetMargin(140, 10, 10, 35);
+				$this->graph->img->SetMargin(30, 110, 10, 35);
 			break;
 			case self::LEGEND_POSITION_SOUTH:
 				$this->graph->legend->Pos(0.5, 0.9, 'center', 'top');
@@ -53,9 +53,9 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 				$this->graph->img->SetMargin(60, 20, 5, 65);
 			break;
 			case self::LEGEND_POSITION_WEST:
-				$this->graph->legend->Pos(0.01, 0.01, 'right', 'top');
+				$this->graph->legend->Pos(0.01, 0.01, 'left', 'top');
 				$this->graph->legend->SetLayout(LEGEND_VERT);
-				$this->graph->img->SetMargin(30, 110, 10, 35);
+				$this->graph->img->SetMargin(140, 10, 10, 35);
 			break;
 			default:
 				$this->addError('unknown legend position: '.$position);
