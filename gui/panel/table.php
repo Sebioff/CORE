@@ -64,6 +64,10 @@ class GUI_Panel_Table extends GUI_Panel {
 			$this->addError('Die \''.$line[0].'\' Zeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
 			return;
 		}
+		foreach ($line as $column) {
+			if ($column instanceof GUI_Panel)
+				$this->addPanel($column);
+		}
 		$this->lines[] = $line;
 	}
 	
@@ -74,6 +78,10 @@ class GUI_Panel_Table extends GUI_Panel {
 			$this->addError('Die \''.$line[0].'\' Headerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
 			return;
 		}
+		foreach ($line as $column) {
+			if ($column instanceof GUI_Panel)
+				$this->addPanel($column);
+		}
 		$this->header[] = $line;
 	}
 	
@@ -83,6 +91,10 @@ class GUI_Panel_Table extends GUI_Panel {
 		if (count($line) != $this->numberOfColumns) {
 			$this->addError('Die \''.$line[0].'\' Footerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
 			return;
+		}
+		foreach ($line as $column) {
+			if ($column instanceof GUI_Panel)
+				$this->addPanel($column);
 		}
 		$this->footer[] = $line;
 	}

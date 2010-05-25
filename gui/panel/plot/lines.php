@@ -10,9 +10,7 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 		$this->graph = new Graph($width, $height, 'auto');
 		$this->graph->SetScale('textlin');
 		// format the image
-		$this->graph->legend->Pos(0.5, 0.09, 'center', 'bottom');
-		$this->graph->legend->SetLayout(LEGEND_HOR);
-		$this->graph->img->SetMargin(60, 20, 35, 65);
+		$this->setLegendPosition(parent::LEGEND_POSITION_NORTH);
 		if ($title)
 			$this->graph->title->Set($title);
 		
@@ -21,6 +19,8 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 
 	public function addLine(array $line, $name = '', $color = '') {
 		$plot = new LinePlot($line);
+		if (Text::length($name) > 10)
+			$name = substr($name, 0, 10);
 		$plot->SetLegend($name);
 		$plot->SetWeight(2);
 		if (Text::length($color) > 0)
