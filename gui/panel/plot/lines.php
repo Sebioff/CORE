@@ -33,8 +33,8 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 	}
 	
 	public function setXNames(array $names) {
-		$this->graph->xaxis->setTickLabels($names);
-		if (Text::length($names[0]) > 2)
+		$this->graph->xaxis->setTickLabels(array_values($names));
+		if (Text::length(reset($names)) > 2)
 			$this->graph->xaxis->SetLabelAngle(90);
 	}
 }
