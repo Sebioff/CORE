@@ -23,6 +23,8 @@ class DB_Connection {
 	 */
 	public function __construct($connectionOptions = DB_CONNECTION) {
 		$this->connectionOptions = parse_url($connectionOptions);
+		if (!isset($this->connectionOptions['pass']))
+			$this->connectionOptions['pass'] = '';
 	}
 	
 	/**
@@ -45,11 +47,8 @@ class DB_Connection {
 	public function query($query) {
 		if (!$this->connection) {
 			// connect to database server
-			$server = isset($this->connectionOptions['port'])?$this->connectionOptions['host'].':'.$this->connectionOptions['port']:$this->connectionOptions['host'];
-			if (isset($this->connectionOptions['pass']))
-				$this->connection = mysql_connect($server, $this->connectionOptions['user'], $this->connectionOptions['pass']);
-			else
-				$this->connection = mysql_connect($server, $this->connectionOptions['user']);
+			$server = isset($this->connectionOptions['port']) ? $this->connectionOptions['host'].':'.$this->connectionOptions['port'] : $this->connectionOptions['host'];
+			$this->connection = mysql_connect($server, $this->connectionOptions['user'], $this->connectionOptions['pass'], true);
 				
 			if (!$this->connection)
 				throw new Core_Exception('Can\'t connect to database server: '.mysql_error());
@@ -58,12 +57,12 @@ class DB_Connection {
 			if (!mysql_select_db($this->getDatabaseName(), $this->connection))
 				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
 				
-			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'');
+			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'', $this->connection);
 		}
 		
 		if (defined('CORE_LOG_SLOW_QUERIES'))
 			$queryStartTime = microtime(true);
-		
+			
 		$result = mysql_query($query, $this->connection);
 		
 		if (defined('CORE_LOG_SLOW_QUERIES') && (microtime(true) - $queryStartTime) * 1000 > CORE_LOG_SLOW_QUERIES)
