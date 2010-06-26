@@ -63,4 +63,5 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 		}
 	}
 }
+
 ?>

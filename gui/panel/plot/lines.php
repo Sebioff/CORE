@@ -1,9 +1,10 @@
 <?php
+
 //require jpgraph
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph.php');
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph.php';
 //require the plot files
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_line.php');
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_plotline.php');
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_line.php';
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_plotline.php';
 
 class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 	public function __construct($name, $width = 600, $height = 300, $description = '', $title = '') {
@@ -38,4 +39,5 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 			$this->graph->xaxis->SetLabelAngle(90);
 	}
 }
+
 ?>

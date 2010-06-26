@@ -54,7 +54,7 @@ class IO_File {
 	/**
 	 * Reads an amount of bytes from the file, specified by $length
 	 * @param $length the amount of bytes to read (all, if not given)
-	 * @return the amount of read bytes
+	 * @return string the read bytes
 	 */
 	public function read($length = null) {
 		if ($length === null)
@@ -62,8 +62,8 @@ class IO_File {
 			
 		$result = fread($this->resource, $length);
 		
-		if (!$result)
-			throw new Core_Exception('Can\' read file (mode is '.$this->mode.').');
+		if ($result === false)
+			throw new Core_Exception('Can\'t read file (mode is '.$this->mode.').');
 		else
 			return $result;
 	}
@@ -76,9 +76,16 @@ class IO_File {
 	public function write($string) {
 		$result = fwrite($this->resource, $string);
 		if ($result === false)
-			throw new Core_Exception('Can\' write file (mode is '.$this->mode.').');
+			throw new Core_Exception('Can\'t write file (mode is '.$this->mode.').');
 		else
 			return $result;
+	}
+	
+	/**
+	 * @return int the unix timestamp at which this file has been modified last
+	 */
+	public function getLastModifiedTime() {
+		return filemtime($this->file);
 	}
 }
 

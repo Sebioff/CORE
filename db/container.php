@@ -260,6 +260,14 @@ class DB_Container {
 	}
 	
 	/**
+	 * @return boolean true if the table for this container exists, false otherwise
+	 */
+	public function tableExists() {
+		$result = mysql_fetch_row($this->getConnection()->query('SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA = \''.$this->getConnection()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\''));
+		return !empty($result);
+	}
+	
+	/**
 	 * @return string MySQL query string, build from the given array of options
 	 */
 	protected function buildQueryString(array $options) {
@@ -272,6 +280,8 @@ class DB_Container {
 		if (isset($options['join']))
 			$query .= ', `'.implode('`, `', $options['join']).'`';
 		if (isset($options['conditions'])) {
+			if (!is_array($options['conditions']))
+				throw new Core_Exception('"conditions" must be an array.');
 			$conditions = array();
 			foreach ($options['conditions'] as $condition) {
 				$valueCount = count($condition);

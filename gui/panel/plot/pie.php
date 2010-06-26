@@ -1,9 +1,10 @@
 <?php
+
 //require jpgraph
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph.php');
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph.php';
 //require the plot files
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_pie.php');
-require_once(dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_pie3d.php');
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_pie.php';
+require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_pie3d.php';
 
 class GUI_Panel_Plot_Pie extends GUI_Panel_Plot {
 	private $data = array();
@@ -37,4 +38,5 @@ class GUI_Panel_Plot_Pie extends GUI_Panel_Plot {
 		parent::beforeDisplay();
 	}
 }
+
 ?>

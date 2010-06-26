@@ -48,6 +48,9 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 		return ($_SERVER['SERVER_ADDR'] == $_SERVER['REMOTE_ADDR']);
 	}
 	
+	/**
+	 * @return DB_Container
+	 */
 	public function getCronjobContainer() {
 		if ($this->cronjobContainer)
 			return $this->cronjobContainer;
