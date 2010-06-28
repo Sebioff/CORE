@@ -6,6 +6,7 @@
 class GUI_Panel_PageView extends GUI_Panel {
 	private $itemsPerPage = 10;
 	private $container = null;
+	private $enableAjax = false;
 	
 	public function __construct($name, DB_Container $container, $title = '') {
 		parent::__construct($name, $title);
@@ -16,7 +17,34 @@ class GUI_Panel_PageView extends GUI_Panel {
 	}
 	
 	public function init() {
+		if ($this->enableAjax)
+			$this->getModule()->addJsRouteReference('core_js', '/jquery/jquery.ajaxify.js');
+		
 		$this->addPanel(new GUI_Panel_PageView_Pages($this));
+	}
+	
+	public function afterInit() {
+		parent::afterInit();
+		
+		if ($this->enableAjax) {
+			$this->addJS(sprintf('
+				$("#%1$s-pages a").ajaxify({
+					"append": "",
+					"type": "POST",
+					"dataFilter": function(data, type) {
+						var panelNames = ["%1$s"];
+						$.core.replacePanels(data, panelNames);
+					},
+					"data": {
+						"core_ajax": "1",
+						"refreshPanels": "%1$s"
+					},
+					"error": function(xhr) {
+						alert(xhr.responseText);
+					}
+				});
+			', $this->getID()));
+		}
 	}
 	
 	public function getOptions() {
@@ -58,11 +86,20 @@ class GUI_Panel_PageView extends GUI_Panel {
 	public function getItemsPerPage() {
 		return $this->itemsPerPage;
 	}
+	
 	/**
 	 * @return DB_Container
 	 */
 	public function getContainer() {
 		return $this->container;
+	}
+	
+	/**
+	 * @param boolean $enableAjax true to enable ajax for switching pages (default),
+	 * false to disable
+	 */
+	public function enableAjax($enableAjax = true) {
+		$this->enableAjax = $enableAjax;
 	}
 }
 
