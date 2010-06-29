@@ -56,6 +56,8 @@ class DB_Container {
 		$records = array();
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
+		if (isset($options['join']))
+			$query .= ' AS table_1_alias';
 		$query .= $this->buildQueryString($options);
 		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
@@ -277,8 +279,12 @@ class DB_Container {
 		}
 		
 		$query = '';
-		if (isset($options['join']))
-			$query .= ', `'.implode('`, `', $options['join']).'`';
+		if (isset($options['join'])) {
+			$joinCount = count($options['join']);
+			for ($i = 0; $i < $joinCount; $i++) {
+				$query .= ', `'.$options['join'][$i].'` AS table_'.($i + 2).'_alias';
+			}
+		}
 		if (isset($options['conditions'])) {
 			if (!is_array($options['conditions']))
 				throw new Core_Exception('"conditions" must be an array.');

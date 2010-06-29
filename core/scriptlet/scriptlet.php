@@ -205,10 +205,11 @@ class Scriptlet {
 	}
 	
 	/**
+	 * Override e.g. if you want to cache different outputs for different users.
 	 * @return string the name of the file this scriptlets output will be cached
 	 * in
 	 */
-	private function getCacheFilePath() {
+	protected function getCacheFilePath() {
 		return System::getTemporaryDirectory().'/pagecache/'.md5($_SERVER['REQUEST_URI']).'.cache';
 	}
 	

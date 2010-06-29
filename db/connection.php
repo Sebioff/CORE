@@ -55,7 +55,7 @@ class DB_Connection {
 			
 			// set active database
 			if (!mysql_select_db($this->getDatabaseName(), $this->connection))
-				throw new Core_Exception('Can\'t connect to database: '.mysql_error());
+				throw new Core_Exception('Can\'t connect to database: '.mysql_error($this->connection));
 				
 			mysql_query('SET NAMES \'utf8\' COLLATE \'utf8_general_ci\'', $this->connection);
 		}
@@ -69,7 +69,7 @@ class DB_Connection {
 			IO_Log::get()->warning('SLOW QUERY ['.round((microtime(true) - $queryStartTime) * 1000).'ms] '.$query);
 		
 		if (!$result)
-			throw new Core_QueryException('MySQL Query failed: '.mysql_error());
+			throw new Core_QueryException('MySQL Query failed: '.mysql_error($this->connection));
 			
 		return $result;
 	}
