@@ -49,15 +49,16 @@ class DB_Container {
 	 * $options['order'] = order
 	 * $options['limit'] = limit
 	 * $options['offset'] = offset
-	 * $options['join'] = array of tables
+	 * $options['join'] = array of tables; aliases can be defined as array('table' => 'alias')
+	 * $options['alias'] = alias to be used for the table belonging to this container
 	 * @return array an array of records fitting to the specified search parameters
 	 */
 	public function select(array $options = array()) {
 		$records = array();
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
-		if (isset($options['join']))
-			$query .= ' AS table_1_alias';
+		if (isset($options['alias']))
+		$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
 		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
@@ -282,7 +283,10 @@ class DB_Container {
 		if (isset($options['join'])) {
 			$joinCount = count($options['join']);
 			for ($i = 0; $i < $joinCount; $i++) {
-				$query .= ', `'.$options['join'][$i].'` AS table_'.($i + 2).'_alias';
+				if (is_array($options['join'][$i]))
+					$query .= ', `'.key($options['join'][$i]).'` AS `'.current($options['join'][$i]).'`';
+				else
+					$query .= ', `'.$options['join'][$i].'`';
 			}
 		}
 		if (isset($options['conditions'])) {
