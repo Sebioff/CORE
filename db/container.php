@@ -102,6 +102,8 @@ class DB_Container {
 	/**
 	 * Saves an record into the database
 	 * If the record hasn't been saved before it is inserted, otherwise it is updated
+	 * @throws Core_Exception with optimistic locking enabled if the record has
+	 * been modified in the meantime
 	 */
 	public function save(DB_Record $record) {
 		$properties = array();

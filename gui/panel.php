@@ -33,8 +33,7 @@ class GUI_Panel {
 	
 	// CONSTRUCTORS ------------------------------------------------------------
 	/**
-	 * @param $name string name of the panel, MAY NOT CONTAIN: -,
-	 * Those chars are currently not prohibited by code (to save time), but don't use them!
+	 * @param $name string name of the panel
 	 */
 	public function __construct($name, $title = '') {
 		$this->setName($name);
@@ -60,7 +59,7 @@ class GUI_Panel {
 		$this->beforeDisplay();
 		
 		if ($this->isSubmittable()) {
-			echo sprintf('<form id="%s" action="%s" method="post" enctype="multipart/form-data" accept-charset="UTF-8">', $this->getID(), $_SERVER['REQUEST_URI']);
+			echo sprintf('<form id="%sForm" action="%s" method="post" enctype="multipart/form-data" accept-charset="UTF-8">', $this->getID(), $_SERVER['REQUEST_URI']);
 			// fix for IE not submitting button name in post data if form is submitted with enter in forms with only one input
 			echo '<!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" name="IESucks" /><![endif]-->';
 		}
@@ -127,16 +126,18 @@ class GUI_Panel {
 	 * @param $toBeginning bool by default the child panel is added to the end of the
 	 * panel list. In some cases (e.g. if you iterate over the panel list) it
 	 * can be useful to add a panel to the beginning of the list instead.
+	 * @throws Core_Exception if a panel with the same name already exists or the
+	 * name is invalid for other reasons
 	 */
 	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
 		if ($this->hasPanel($panel->getName()))
-			throw new Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
+			throw new Core_Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
 
 		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
 		// quite unlikely that a panels name is equal to the name of an attribute.
 		// -> the following check could be removed then.
 		if (!$this->hasPanel($panel->getName()) && isset($this->{$panel->getName()}))
-			throw new Exception('Panel name is not allowed (already used internally): '.$panel->getName());
+			throw new Core_Exception('Panel name is not allowed (already used internally): '.$panel->getName());
 		
 		$panel->setParent($this);
 		$panel->beforeInit();
@@ -352,7 +353,7 @@ class GUI_Panel {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();
 				$module->addJsRouteReference('core_js', 'jquery/jquery.validate.js');
-				$this->addJS(sprintf('$(function() {$("#%s").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\"", invalidHandler: function(form, validator) {hasBeenSubmitted = false;}}); %s});', $this->getID(), $validators));
+				$this->addJS(sprintf('$(function() {$("#%sForm").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\"", invalidHandler: function(form, validator) {hasBeenSubmitted = false;}}); %s});', $this->getID(), $validators));
 			}
 			
 			if ($this->hasBeenSubmitted()) {
@@ -375,14 +376,22 @@ class GUI_Panel {
 		if (array_key_exists($panelName, $this->panels))
 			return $this->panels[$panelName];
 		else
-			throw new CORE_Exception('Child panel does not exist: '.$panelName);
+			throw new Core_Exception('Child panel does not exist: '.$panelName);
 	}
 	
 	public function getName() {
 		return $this->_name;
 	}
 	
+	/**
+	 * Sets the name of this panel. The name may not contain uppercase letters
+	 * and: -,
+	 * @param string $name the name of this panel
+	 * @throws Core_Exception if the panel name is invalid
+	 */
 	protected function setName($name) {
+		if (preg_match('/[-,\p{Lu}]+/', $name))
+			throw new Core_Exception('Panel name may not contain uppercase letters and: -,');
 		$this->_name = $name;
 		$this->generateID();
 	}
@@ -399,7 +408,7 @@ class GUI_Panel {
 	 * IDs are primarily used to identify controls in HTTP
 	 * requests. They can also be used for CSS styling, though note that the ID
 	 * changes if the name of a parent panel of the panel is changed or the panel
-	 * is used in a different context. So, for styling CSS classes are usually
+	 * is used in a different context. So, for styling, CSS classes are usually
 	 * preferable over this IDs.
 	 * NOTE: because IDs change as the panel tree changes, you can only be sure
 	 * that this method returns the final panel ID if you call it after init() or
@@ -408,6 +417,16 @@ class GUI_Panel {
 	 */
 	public function getID() {
 		return $this->ID;
+	}
+	
+	/**
+	 * Returns the ID for this panel which has to be used in ajax calls.
+	 */
+	public function getAjaxID() {
+		$ajaxID = $this->getID();
+		if ($this->isSubmittable())
+			$ajaxID .= 'Form';
+		return $ajaxID;
 	}
 	
 	public function setSuccessMessage($successMessage) {

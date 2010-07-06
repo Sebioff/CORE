@@ -24,7 +24,7 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 		foreach ($this->refreshPanels as $panel)
 			$refreshPanelsIDs[] = $panel->getID();
 		$totalRefreshPanelsIDs = $refreshPanelsIDs;
-		$totalRefreshPanelsIDs[] = $formPanel->getID();
+		$totalRefreshPanelsIDs[] = $formPanel->getAjaxID();
 		$totalRefreshPanelsString = implode(',', $totalRefreshPanelsIDs);
 		$this->addJS(sprintf('
 			$("#%1$s").ajaxify({
@@ -47,7 +47,7 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 					alert(xhr.responseText);
 				}
 			});
-		', $formPanel->getID(), $totalRefreshPanelsString, $this->getID()));
+		', $formPanel->getAjaxID(), $totalRefreshPanelsString, $this->getID()));
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

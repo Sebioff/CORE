@@ -55,6 +55,7 @@ class IO_File {
 	 * Reads an amount of bytes from the file, specified by $length
 	 * @param $length the amount of bytes to read (all, if not given)
 	 * @return string the read bytes
+	 * @throws Core_Exception if the file can't be read
 	 */
 	public function read($length = null) {
 		if ($length === null)
@@ -72,6 +73,7 @@ class IO_File {
 	 * Writes into the file.
 	 * @param $string the string to write
 	 * @return the number of written bytes
+	 * @throws Core_Exception if the file can't be written
 	 */
 	public function write($string) {
 		$result = fwrite($this->resource, $string);

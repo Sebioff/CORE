@@ -6,7 +6,7 @@
 class GUI_Panel_PageView extends GUI_Panel {
 	private $itemsPerPage = 10;
 	private $container = null;
-	private $enableAjax = false;
+	private $enableAjax = true;
 	
 	public function __construct($name, DB_Container $container, $title = '') {
 		parent::__construct($name, $title);
@@ -32,18 +32,18 @@ class GUI_Panel_PageView extends GUI_Panel {
 					"append": "",
 					"type": "POST",
 					"dataFilter": function(data, type) {
-						var panelNames = ["%1$s"];
+						var panelNames = ["%2$s"];
 						$.core.replacePanels(data, panelNames);
 					},
 					"data": {
 						"core_ajax": "1",
-						"refreshPanels": "%1$s"
+						"refreshPanels": "%2$s"
 					},
 					"error": function(xhr) {
 						alert(xhr.responseText);
 					}
 				});
-			', $this->getID()));
+			', $this->getID(), $this->getAjaxID()));
 		}
 	}
 	

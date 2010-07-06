@@ -71,6 +71,12 @@ class Language_Scriptlet {
 			return $this->defaultLanguage;
 	}
 	
+	/**
+	 * Switches to the given language.
+	 * @param string $language identifier for the language that sould be switched
+	 * to
+	 * @throws Core_Exception if the given language hasn't been made available before
+	 */
 	public function setCurrentLanguage($language) {
 		if (in_array($language, $this->availableLanguages)) {
 			$this->currentLanguage = $language;

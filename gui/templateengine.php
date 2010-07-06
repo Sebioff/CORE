@@ -8,7 +8,7 @@ class GUI_TemplateEngine {
 		if (array_key_exists($value, $this->_params))
 			return $this->_params[$value];
 		else
-			throw new CORE_Exception('Template parameter value does not exist: '.$value);
+			throw new Core_Exception('Template parameter value does not exist: '.$value);
 	}
 	
 	public function __set($key, $value) {
@@ -27,7 +27,7 @@ class GUI_TemplateEngine {
 		if ($this->objectContext && method_exists($this->objectContext, $name))
 			return call_user_method_array($name, $this->objectContext, $arguments);
 		else
-			throw new CORE_Exception('Template method does not exist: '.$name);
+			throw new Core_Exception('Template method does not exist: '.$name);
 	}
 	
 	public function render($template) {

@@ -10,6 +10,10 @@ class Scriptlet {
 	private $submodules = array();
 	private $cacheForSeconds = 0;
 	
+	/**
+	 * @param string $name the name of this scriptlet
+	 * @throws Core_Exception if an invalid name is given
+	 */
 	public function __construct($name) {
 		if ($name != Text::toLowerCase($name))
 			throw new Core_Exception('Use lowercase scriptlet names.');

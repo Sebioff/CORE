@@ -39,6 +39,9 @@ class GUI_Panel_Main extends GUI_Panel {
 		$panels = explode(',', $_POST['refreshPanels']);
 		$panelsCount = count($panels);
 		for ($i = 0; $i < $panelsCount; $i++) {
+			// the ajax ID of submittable panels ends with "Form"
+			if (preg_match('/Form$/', $panels[$i]))
+				$panels[$i] = substr($panels[$i], 0, -4);
 			$panelTree = explode('-', $panels[$i]);
 			$currentPanel = $this;
 			$panelTreeCount = count($panelTree);

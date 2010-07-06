@@ -43,6 +43,8 @@ class DB_Connection {
 	 * extensive our database abstraction/ORM will be even NEVER).
 	 * Every database query has to use this function.
 	 * @return the queries result
+	 * @throws Core_Exception if connecting to the database isn't possible
+	 * @throws Core_QueryException if the query fails
 	 */
 	public function query($query) {
 		if (!$this->connection) {

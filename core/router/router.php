@@ -161,6 +161,7 @@ class Router {
 	
 	/**
 	 * Registers a scriptlet under a given route
+	 * @throws Core_Exception if a scriptlet with the same route name already exists
 	 */
 	public function addScriptletRoute($routeName, Scriptlet $scriptlet) {
 		if (!in_array($routeName, $this->moduleRoutes))

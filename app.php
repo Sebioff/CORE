@@ -157,6 +157,7 @@ class App {
 	/**
 	 * Registers a module.
 	 * @param $module_ the module
+	 * @throws Core_Exception if a module with the same name already exists
 	 */
 	public function addModule(Scriptlet $module) {
 		if (!in_array($module->getName(), $this->modules)) {
@@ -231,6 +232,7 @@ class App {
 	
 	/**
 	 * Checks that basic server configurations are set as needed
+	 * @throws Core_Exception if something is wrong with the server configuration
 	 */
 	private static function systemCheck() {
 		$extensions = array('mbstring', 'gd', 'mysql');
