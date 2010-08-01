@@ -23,6 +23,7 @@ class Scriptlet {
 	}
 	
 	/**
+	 * @param $params associative array of url parameters
 	 * @return the url to this scriptlet.
 	 */
 	public function getUrl(array $params = array()) {
@@ -152,7 +153,7 @@ class Scriptlet {
 	
 	public final function output() {
 		if ($this->cacheForSeconds > 0) {
-			$cacheFile = new IO_File($this->getCacheFilePath());
+			$cacheFile = new IO_File(self::getPageCacheDirectory().'/'.$this->getCacheFileName());
 			// content not yet cached or cache expired?
 			if (!$this->canServeCachedVersion()) {
 				ob_start();
@@ -197,9 +198,9 @@ class Scriptlet {
 	public function canServeCachedVersion() {
 		if ($this->cacheForSeconds > 0) {
 			clearstatcache();
-			if (!file_exists(System::getTemporaryDirectory().'/pagecache'))
-				mkdir(System::getTemporaryDirectory().'/pagecache', 0770);
-			$cacheFilePath = $this->getCacheFilePath();
+			if (!file_exists(self::getPageCacheDirectory()))
+				mkdir(self::getPageCacheDirectory(), 0770);
+			$cacheFilePath = self::getPageCacheDirectory().'/'.$this->getCacheFileName();
 			$cacheFile = new IO_File($cacheFilePath);
 			return ($cacheFile->exists() && time() - $cacheFile->getLastModifiedTime() < $this->cacheForSeconds);
 		}
@@ -210,11 +211,20 @@ class Scriptlet {
 	
 	/**
 	 * Override e.g. if you want to cache different outputs for different users.
+	 * The cache files are stored relative to the returned path of Scriptlet::getPageCacheDirectory().
 	 * @return string the name of the file this scriptlets output will be cached
 	 * in
 	 */
-	protected function getCacheFilePath() {
-		return System::getTemporaryDirectory().'/pagecache/'.md5($_SERVER['REQUEST_URI']).'.cache';
+	protected function getCacheFileName() {
+		return md5($_SERVER['REQUEST_URI']).'.cache';
+	}
+	
+	/**
+	 * Returns the path to the directory where scriptlet output will be cached.
+	 * @return string the path to the directory where scriptlet output will be cached
+	 */
+	public static final function getPageCacheDirectory() {
+		return System::getTemporaryDirectory().'/pagecache';
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------

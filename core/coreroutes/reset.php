@@ -19,9 +19,13 @@ class CoreRoutes_Reset extends Module {
 		// clear global cache
 		$GLOBALS['cache']->clearAll();
 		
+		// clear page cache
+		IO_Utils::deleteFolder(Scriptlet::getPageCacheDirectory());
+		
 		// clear session
 		unset($_SESSION);
 		
+		// rebuild database
 		Core_MigrationsLoader::load();
 		
 		if (defined('CALLBACK_ONAFTERRESET'))
