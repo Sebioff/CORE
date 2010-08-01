@@ -153,7 +153,8 @@ class DB_Container {
 			$this->update($query, $record);
 			// count
 			if ($usesOptimisticLocking) {
-				if (mysql_affected_rows() <= 0)
+				// TODO add property keys/values that have been modified to exception message
+				if ($this->getConnection()->getNumberOfAffectedRows() <= 0)
 					throw new Core_Exception('Concurrent version modification.');
 				
 				// record is now up to date
@@ -201,7 +202,7 @@ class DB_Container {
 		$record->setContainer($this);
 		$databaseSchema = $this->getDatabaseSchema();
 		if (isset($databaseSchema['primaryKey']))
-			$record->$databaseSchema['primaryKey'] = mysql_insert_id();
+			$record->$databaseSchema['primaryKey'] = $this->getConnection()->getLastInsertID();
 		
 		// clear cache
 		self::$containerCache[$this->getTable()] = array();

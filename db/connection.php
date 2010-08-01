@@ -91,6 +91,20 @@ class DB_Connection {
 	}
 	
 	/**
+	 * @return int the ID of the last inserted record
+	 */
+	public function getLastInsertID() {
+		return mysql_insert_id($this->connection);
+	}
+	
+	/**
+	 * @return int the number of rows affected by the last query
+	 */
+	public function getNumberOfAffectedRows() {
+		return mysql_affected_rows($this->connection);
+	}
+	
+	/**
 	 * Deletes ALL tables in the database (even those belonging to other projects)
 	 */
 	public function deleteTables() {
