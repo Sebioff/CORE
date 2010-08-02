@@ -56,6 +56,25 @@ abstract class Text {
 		$replace[] = '\\1<a href="mailto:\\2" target="_blank" onClick="return mailto(this.href)">\\2</a>\\3';
 		return nl2br(preg_replace($search, $replace, $string));
 	}
+	
+	/**
+	 * Shortens a string to a given $maxLength. $appendText is appended to the
+	 * end of the string if provided and if the string is longer than $maxLength
+	 * (note that the string is shortened in a way so that it is not longer than
+	 * $maxLength in total, that is, with $appendText counted in).
+	 * @param string $string the string to shorten
+	 * @param int $maxLength the maximum length the final string should have
+	 * @param string $appendText a text that is appended to the string if it is
+	 * longer than $maxLength; the length of $appendText may not exceed $maxLengh
+	 */
+	public static function shorten($string, $maxLength, $appendText = '') {
+		if (self::length($string) > $maxLength) {
+			return mb_substr($string, 0, $maxLength - self::length($appendText), 'UTF-8').$appendText;
+		}
+		else {
+			return $string;
+		}
+	}
 }
 
 ?>

@@ -153,9 +153,20 @@ class DB_Container {
 			$this->update($query, $record);
 			// count
 			if ($usesOptimisticLocking) {
-				// TODO add property keys/values that have been modified to exception message
-				if ($this->getConnection()->getNumberOfAffectedRows() <= 0)
-					throw new Core_Exception('Concurrent version modification.');
+				if ($this->getConnection()->getNumberOfAffectedRows() <= 0) {
+					$currentVersionRecord = $this->selectByPK($record->getPK());
+					$exception = new Core_ConcurrentModificationException();
+					$modifiedPropertyDescriptions = array();
+					foreach ($record->getModifiedProperties() as $property => $oldValue) {
+						$newValue = $currentVersionRecord->get($property);
+						if ($newValue != $oldValue) {
+							$exception->addModifiedProperty($property, $oldValue, $newValue);
+							$modifiedPropertyDescriptions[] = $property.' was '.Text::shorten($oldValue, 10, '...').', is '.Text::shorten($newValue, 10, '...');
+						}
+					}
+					$exception->setMessage('Concurrent version modification ('.implode('; ', $modifiedPropertyDescriptions).').');
+					throw $exception;
+				}
 				
 				// record is now up to date
 				$modifiedProperties = &$record->getModifiedProperties();
@@ -573,6 +584,26 @@ class DB_Container {
 	
 	public function setConnection(DB_Connection $connection) {
 		$this->connection = $connection;
+	}
+}
+
+class Core_ConcurrentModificationException extends Exception {
+	private $modifiedProperties = array();
+	
+	public final function setMessage($message) {
+		$this->message = $message;
+	}
+	
+	/**
+	 * @return array of properties that have been modified in the form
+	 * 'property_name' => array(oldValue, newValue)
+	 */
+	public function getModifiedProperties() {
+		return $modifiedProperties;
+	}
+	
+	public function addModifiedProperty($propertyName, $oldValue, $newValue) {
+		$this->modifiedProperties[$propertyName] = array($oldValue, $newValue);
 	}
 }
 

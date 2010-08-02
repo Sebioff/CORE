@@ -80,6 +80,7 @@ class DB_Record {
 	}
 	
 	/**
+	 * @param $property string the name of the property to get (in camel case notation)
 	 * @return the plain value of the given property, without resolving any references
 	 * or null if the property doesn't exist
 	 */
