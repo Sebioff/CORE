@@ -22,9 +22,9 @@
 			<?php $traceCount = count($backtrace); ?>
 			<?php foreach ($backtrace as $backtraceMessage): ?>
 				<div class="traceLine clearfix">
-					<div class="traceNumber">#<?php echo $traceCount-$nr; ?></div>
+					<div class="traceNumber">#<?php echo ($traceCount - $nr); ?></div>
 					<div class="traceMessage">
-						<?php echo isset($backtraceMessage['class'])?$backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function']:$backtraceMessage['function'] ?>(<?= isset($backtraceMessage['args']) ? implode(', ', $backtraceMessage['args']) : ''; ?>)
+						<?php echo isset($backtraceMessage['class']) ? $backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function'] : $backtraceMessage['function']; ?>(<?= isset($backtraceMessage['args']) ? implode(', ', $backtraceMessage['args']) : ''; ?>)
 						<?php if (isset($backtraceMessage['file'])): ?>
 							in <?php echo $backtraceMessage['file'].'('.$backtraceMessage['line'].')'; ?>
 						<?php endif;?>

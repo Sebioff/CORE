@@ -38,7 +38,7 @@ abstract class Cronjob_Script extends Scriptlet implements Scriptlet_Privileged 
 		}
 		catch (Core_Exception $ce) {
 			$cronjobRecord->lastExecutionSuccessful = false;
-			$this->getParent()->onScriptException($ce, $this);
+			$this->getParent()->triggerOnScriptException($ce, $this);
 		}
 		
 		$this->getParent()->getCronjobContainer()->save($cronjobRecord);

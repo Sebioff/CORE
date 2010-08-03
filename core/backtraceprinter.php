@@ -56,8 +56,8 @@ class Core_BacktracePrinter {
 		$customMessage = str_replace('<br>', "\n", $customMessage);
 		$string = $errorType.'! '.$customMessage."\n\n";
 		foreach ($backtrace as $backtraceMessage) {
-			$string .= '#'.($traceCount-$nr)."\t";
-			$string .= (isset($backtraceMessage['class'])?$backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function']:$backtraceMessage['function']).'('.(isset($backtraceMessage['args']) ? implode(', ', $backtraceMessage['args']) : '').')';
+			$string .= '#'.($traceCount - $nr).':'."\t";
+			$string .= (isset($backtraceMessage['class']) ? $backtraceMessage['class'].$backtraceMessage['type'].$backtraceMessage['function'] : $backtraceMessage['function']).'('.(isset($backtraceMessage['args']) ? implode(', ', $backtraceMessage['args']) : '').')';
 			if (isset($backtraceMessage['file']))
 				$string .= ' in '.$backtraceMessage['file'].'('.$backtraceMessage['line'].')';
 			$string .= "\n";

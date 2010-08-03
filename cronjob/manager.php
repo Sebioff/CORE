@@ -24,9 +24,15 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 			exit;
 		
 		foreach ($this->scripts as $script) {
-			if ($script->requiresExecution($script->getRecord()->lastExecution))
+			if ($script->requiresExecution($script->getRecord()->lastExecution)) {
 				$script->triggerExecution();
+			}
 		}
+	}
+	
+	public final function triggerOnScriptException(Core_Exception $ce, Cronjob_Script $script) {
+		DB_Connection::get()->rollbackAll();
+		$this->onScriptException($ce, $script);
 	}
 	
 	/**
@@ -34,7 +40,7 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 	 * @param $ce Core_Exception
 	 * @param $script Cronjob_Script the script that failed
 	 */
-	public function onScriptException(Core_Exception $ce, Cronjob_Script $script) {
+	protected function onScriptException(Core_Exception $ce, Cronjob_Script $script) {
 		
 	}
 	

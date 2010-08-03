@@ -587,7 +587,7 @@ class DB_Container {
 	}
 }
 
-class Core_ConcurrentModificationException extends Exception {
+class Core_ConcurrentModificationException extends Core_Exception {
 	private $modifiedProperties = array();
 	
 	public final function setMessage($message) {

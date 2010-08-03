@@ -149,6 +149,14 @@ class DB_Connection {
 	}
 	
 	/**
+	 * Commits all open transactions
+	 */
+	public function commitAll() {
+		while ($this->transactionLevel)
+			$this->commit();
+	}
+	
+	/**
 	 * Drops all database operations started since the last beginTransaction()
 	 */
 	public function rollback() {
@@ -164,6 +172,14 @@ class DB_Connection {
 			$result = $this->query('ROLLBACK TO SAVEPOINT CORE'.$this->transactionLevel);
 		}
 		return $result;
+	}
+	
+	/**
+	 * Rollbacks all open transactions
+	 */
+	public function rollbackAll() {
+		while ($this->transactionLevel)
+			$this->rollback();
 	}
 }
 
