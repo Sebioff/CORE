@@ -16,10 +16,9 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 	}
 	
 	protected function beforeDisplay() {
-		$time = microtime(true);
-		$filename = ini_get('upload_tmp_dir').'/'.$time;
+		$filename = System::getTemporaryDirectory().DS.microtime(true);
 		$this->graph->stroke($filename);
-		$this->setURL(App::get()->getModule('plotimage')->getUrl(array('time' => $time)));
+		$this->setURL(App::get()->getModule(GUI_Panel_Plot_Image::SCRIPTLET_NAME)->getUrl(array('img' => basename($filename))));
 		
 		parent::beforeDisplay();
 	}

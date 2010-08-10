@@ -1,12 +1,19 @@
 <?php
 
 class GUI_Panel_Plot_Image extends Scriptlet {
+	const SCRIPTLET_NAME = 'plotimage';
+	
+	public function __construct() {
+		parent::__construct(self::SCRIPTLET_NAME);
+	}
+	
 	public function display() {
 		header('Content-type: image/png');
-		$image = imagecreatefrompng(ini_get('upload_tmp_dir').'/'.$this->getParam('time'));
+		$filename = System::getTemporaryDirectory().DS.$this->getParam('img');
+		$image = imagecreatefrompng($filename);
 		imagepng($image);
 		imagedestroy($image);
-		$file = new IO_File(ini_get('upload_tmp_dir').'/'.$this->getParam('time'));
+		$file = new IO_File($filename);
 		$file->delete();
 	}
 }
