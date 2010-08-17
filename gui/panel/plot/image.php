@@ -9,7 +9,7 @@ class GUI_Panel_Plot_Image extends Scriptlet {
 	
 	public function display() {
 		header('Content-type: image/png');
-		$filename = System::getTemporaryDirectory().DS.$this->getParam('img');
+		$filename = ini_get('upload_tmp_dir').DS.$this->getParam('img');
 		$image = imagecreatefrompng($filename);
 		imagepng($image);
 		imagedestroy($image);
