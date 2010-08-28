@@ -1,4 +1,4 @@
-<ul id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>>
+<ul id="<?= $this->getID(); ?>" <?= $this->getAttributeString(); ?>>
 	<? foreach ($this->getItems() as $item): ?>
 		<li>
 			<? if ($item instanceof GUI_Panel): ?>

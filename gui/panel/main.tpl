@@ -1,1 +1,1 @@
-<? $this->displayPage() ?>
+<? $this->displayPage(); ?>

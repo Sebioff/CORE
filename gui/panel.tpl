@@ -1,12 +1,12 @@
-<? if($this->hasErrors()): ?>
+<? if ($this->hasErrors()): ?>
 	<div class="core_common_error">
-		<? $this->displayErrors() ?>
+		<? $this->displayErrors(); ?>
 	</div>
 <? endif; ?>
 
-<? foreach($this->panels as $panel): ?>
-	<? if(!($panel instanceof GUI_Control_Submitbutton) && $panel->getTitle()): ?>
-		<? $this->displayLabelForPanel($panel->getName()) ?>: 
+<? foreach ($this->panels as $panel): ?>
+	<? if (!($panel instanceof GUI_Control_Submitbutton) && $panel->getTitle()): ?>
+		<? $this->displayLabelForPanel($panel->getName()); ?>:
 	<? endif; ?>
-	<? $panel->display() ?> <? $panel->displayErrors() ?>
+	<? $panel->display(); ?> <? $panel->displayErrors(); ?>
 <? endforeach; ?>

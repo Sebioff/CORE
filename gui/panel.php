@@ -8,6 +8,12 @@
  * Panels can have error messages attached to them. If you add validators to a
  * panel the validator automatically attaches its error message to the panel
  * if anything is wrong.
+ *
+ * Magic callbacks:
+ * @method onBUTTONNAME() (executed after the panel has been submitted by a GUI_Control_SubmitButton;
+ * 		BUTTONNAME equals the submitting buttons name in camel case notation)
+ * @method ajaxACTION (can be called via ajax, e.g. using $.core.ajaxRequest; ACTION
+ * 		can be chosen freely, the method name just needs to start with "ajax")
  */
 class GUI_Panel {
 	public $params;
@@ -476,7 +482,7 @@ class GUI_Panel {
 		return Router::get()->getCurrentModule();
 	}
 	
-	protected function hasPanel($panelName) {
+	public function hasPanel($panelName) {
 		return array_key_exists($panelName, $this->panels);
 	}
 	
@@ -493,6 +499,10 @@ class GUI_Panel {
 	
 	public function getJS() {
 		return $this->js;
+	}
+	
+	public function getPanels() {
+		return $this->panels;
 	}
 }
 

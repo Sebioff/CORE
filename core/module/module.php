@@ -155,6 +155,24 @@ class Module extends Scriptlet {
 	public function isInvalid() {
 		return $this->isInvalid;
 	}
+	
+	/**
+	 * @return GUI_Panel the panel with the given ID or null if it doesn't exist
+	 */
+	public function getPanelByID($panelID) {
+		$panelTree = explode('-', $panelID);
+		$panelTreeCount = count($panelTree);
+		$currentPanel = $this->mainPanel;
+		for ($j = 1; $j < $panelTreeCount; $j++) {
+			if (!$currentPanel->hasPanel($panelTree[$j])) {
+				return null;
+			}
+			
+			$currentPanel = $currentPanel->{$panelTree[$j]};
+		}
+		
+		return $currentPanel;
+	}
 }
 
 ?>

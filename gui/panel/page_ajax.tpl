@@ -1,6 +1,6 @@
 <div id="ajax_result">
-	<? $this->displayContentAjax() ?>
+	<? $this->displayContentAjax(); ?>
 	<div id="ajax_js">
-		<?= $this->getJsAfterContent() ?>
+		<?= $this->getJsAfterContent(); ?>
 	</div>
 </div>

@@ -42,18 +42,7 @@ class GUI_Panel_Main extends GUI_Panel {
 			// the ajax ID of submittable panels ends with "Form"
 			if (preg_match('/Form$/', $panels[$i]))
 				$panels[$i] = substr($panels[$i], 0, -4);
-			$panelTree = explode('-', $panels[$i]);
-			$currentPanel = $this;
-			$panelTreeCount = count($panelTree);
-			for ($j = 1; $j < $panelTreeCount; $j++) {
-				if (!$currentPanel->hasPanel($panelTree[$j])) {
-					break;
-				}
-				
-				$currentPanel = $currentPanel->{$panelTree[$j]};
-			}
-			
-			if ($currentPanel->getID() == $panels[$i]) {
+			if ($currentPanel = $this->getModule()->getPanelByID($panels[$i])) {
 				echo $currentPanel->display();
 			}
 		}

@@ -37,6 +37,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 					},
 					"data": {
 						"core_ajax": "1",
+						"core_ajax_method": "display",
 						"refreshPanels": "%2$s"
 					},
 					"error": function(xhr) {

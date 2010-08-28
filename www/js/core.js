@@ -13,6 +13,7 @@ $().ready( function() {
 });
 
 (function($) {
+	// core object -------------------------------------------------------------
 	$.core = function() {}
 	
 	// extracts specific panels from a bunch of code
@@ -29,12 +30,7 @@ $().ready( function() {
 	
 	// loads panel data using ajax
 	$.core.loadPanels = function(panelNames, callback) {
-		$.post(document.location.href, { core_ajax: true, refreshPanels: panelNames.join(',') },
-			function(panelData) {
-				if (callback != null)
-					callback(panelData);
-			}
-		);
+		$.core.ajaxRequest('', 'display', { refreshPanels: panelNames.join(',') }, callback);
 	}
 	
 	// refreshs panels using ajax
@@ -54,5 +50,20 @@ $().ready( function() {
 		}
 		// execute loaded js
 		$("body").append("<script type=\"text/javascript\">" + $(panelData).find("#ajax_js").text() + "</script>");
+	}
+	
+	$.core.ajaxRequest = function(panelAjaxID, panelMethod, parameters, successCallback) {
+		var params = { core_ajax: true, core_ajax_panel: panelAjaxID, core_ajax_method: panelMethod };
+		if (parameters !== undefined) {
+			for (attribute in parameters) {
+				params[attribute] = parameters[attribute];
+			}
+		}
+		$.post(document.location.href, params,
+			function(panelData) {
+				if (successCallback != null)
+					successCallback(panelData);
+			}
+		);
 	}
 })(jQuery);

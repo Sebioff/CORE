@@ -1,1 +1,1 @@
-<label for="<?= $this->params->panel->getID() ?>" <?= $this->getAttributeString() ?>><?= $this->getTitle() ?></label>
+<label for="<?= $this->params->panel->getID(); ?>" <?= $this->getAttributeString(); ?>><?= $this->getTitle(); ?></label>

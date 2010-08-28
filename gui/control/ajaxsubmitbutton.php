@@ -40,6 +40,7 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 				},
 				"data": {
 					"core_ajax": "1",
+					"core_ajax_method": "display",
 					"refreshPanels": "%2$s"
 				},
 				"buttons": "#%3$s",
