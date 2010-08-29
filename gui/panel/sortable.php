@@ -6,6 +6,7 @@
 class GUI_Panel_Sortable extends GUI_Panel {
 	private $saveTo;
 	private $propertyName;
+	private $options = array();
 	
 	/**
 	 * @param DB_Record $saveTo the record used to store sorting information
@@ -23,6 +24,9 @@ class GUI_Panel_Sortable extends GUI_Panel {
 		
 		$this->setTemplate(dirname(__FILE__).'/sortable.tpl');
 		$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery-ui.js');
+		$additionalOptions = '';
+		foreach ($this->options as $key => $value)
+			$additionalOptions .= ', '.$key.': '.$value;
 		$this->addJS(sprintf('$("#%1$s").sortable({
 			update: function(event, ui) {
 				var positions = $(this).sortable("toArray");
@@ -30,7 +34,8 @@ class GUI_Panel_Sortable extends GUI_Panel {
 					positions[i] = positions[i].replace(/%1$s-/, "");
 				$.core.ajaxRequest("%1$s", "ajaxSave", { positions: positions.join(",") });
 			}
-		});', $this->getAjaxID()));
+			%2$s
+		});', $this->getAjaxID(), $additionalOptions));
 	}
 	
 	/**
@@ -53,6 +58,20 @@ class GUI_Panel_Sortable extends GUI_Panel {
 	public function ajaxSave() {
 		$this->saveTo->{Text::underscoreToCamelCase($this->propertyName)} = $_POST['positions'];
 		$this->saveTo->save();
+	}
+	
+	// GETTERS / SETTERS -------------------------------------------------------
+	public function setOption($name, $value) {
+		$this->options[$name] = $value;
+	}
+	
+	/**
+	 * Specifies an element used to drag the panels
+	 * @param String $cssSelector a jQuery css selector for an element/elements
+	 * used for dragging the child panels
+	 */
+	public function setHandle($cssSelector) {
+		$this->setOption('handle', '"'.$cssSelector.'"');
 	}
 }
 
