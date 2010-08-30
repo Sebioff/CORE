@@ -23,6 +23,7 @@ class Router {
 	private $requestParams = null;
 	private $requestMode = self::REQUESTMODE_GET;
 	private $enableURLRewrite = true;
+	private $currentModule = null;
 	
 	private function __construct() {
 		// Singleton
@@ -132,6 +133,14 @@ class Router {
 			
 		if (!isset($this->moduleRoutes[$this->route]))
 			throw new Core_Exception('Route to module does not exist: '.$this->route);
+		
+		// find currently active module
+		$this->currentModule = $this->moduleRoutes[$this->route];
+		$module = isset($this->params[0]) ? $this->params[0] : null;
+		while (isset($module['submodule'][0]['module'])) {
+			$this->currentModule = $this->currentModule->getSubmodule($module['submodule'][0]['module']);
+			$module = $module['submodule'][0];
+		}
 	}
 	
 	/**
@@ -191,18 +200,7 @@ class Router {
 	 * @return Scriptlet the currently active module
 	 */
 	public function getCurrentModule() {
-		$currentModule = $this->moduleRoutes[$this->route];
-		
-		$module = isset($this->params[0])?$this->params[0]:null;
-		while (isset($module['submodule'][0]['module'])) {
-			$currentModule = $currentModule->getSubmodule($module['submodule'][0]['module']);
-			$module = $module['submodule'][0];
-		}
-		
-		if ($currentModule)
-			return $currentModule;
-		else
-			throw new Core_Exception('Module doesn\'t exist.');
+		return $this->currentModule;
 	}
 	
 	/**

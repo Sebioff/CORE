@@ -2,6 +2,7 @@
 
 /**
  * Provides a navigation for modules.
+ * TODO needs refactoring; addModuleNode and display have duplicate code in CMS_Navigation_Node
  */
 class CMS_Navigation {
 	private $nodes = array();

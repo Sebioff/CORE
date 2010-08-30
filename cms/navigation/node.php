@@ -5,6 +5,7 @@ class CMS_Navigation_Node {
 	private $cssClasses = array();
 	private $module = null;
 	private $nodes = array();
+	private $level = 1;
 	
 	public function __construct(Module $module, $title, $cssClasses = array()) {
 		$this->title = $title;
@@ -15,11 +16,11 @@ class CMS_Navigation_Node {
 	public function render() {
 		$result = $this->getLink()->render();
 		if ($this->nodes) {
-			$result .= '<ul>';
+			$result .= '<ul class="core_navigation_level'.$this->getLevel().'">';
 			$i = 0;
 			$nodeCount = count($this->nodes);
 			foreach ($this->nodes as $node) {
-				$classes = $this->getCssClasses();
+				$classes = $node->getCssClasses();
 				$classes[] = 'core_navigation_node';
 				if ($nodeCount > 1 && $i == 0)
 					$classes[] = 'core_navigation_node_first';
@@ -27,11 +28,11 @@ class CMS_Navigation_Node {
 					$classes[] = 'core_navigation_node_last';
 				if ($nodeCount == 1)
 					$classes[] = 'core_navigation_node_single';
-				if ($node->isActive($this->getModule())) {
+				if ($node->isActive($node->getModule())) {
 					$classes[] = 'core_navigation_node_active';
 					$classes[] = 'core_navigation_node_inpath';
 				}
-				elseif ($node->isInPath($this->getModule())) {
+				elseif ($node->isInPath($node->getModule())) {
 					$classes[] = 'core_navigation_node_inpath';
 				}
 				$result .= '<li class="'.implode(' ', $classes).'">';
@@ -49,11 +50,12 @@ class CMS_Navigation_Node {
 	}
 	
 	public function isInPath(Module $module) {
+		if ($this->isActive($module))
+			return true;
+		
 		foreach ($module->getAllSubmodules() as $subModule) {
-			if ($this->isActive($subModule))
+			if ($this->isInPath($subModule))
 				return true;
-			else
-				return $this->isInPath($subModule);
 		}
 		
 		return false;
@@ -69,8 +71,9 @@ class CMS_Navigation_Node {
 	 * @param $module
 	 * @return CMS_Navigation_Node the newly added navigation node
 	 */
-	public function addModuleNode($nodeTitle, Module $module) {
-		$node = new CMS_Navigation_Node($nodeTitle, $module);
+	public function addModuleNode(Module $module, $nodeTitle, $cssClasses = array()) {
+		$node = new CMS_Navigation_Node($module, $nodeTitle, $cssClasses);
+		$node->setLevel($this->getLevel() + 1);
 		$this->nodes[] = $node;
 		return $node;
 	}
@@ -97,6 +100,14 @@ class CMS_Navigation_Node {
 	
 	public function setModule(Module $module) {
 		$this->module = $module;
+	}
+	
+	public function getLevel() {
+		return $this->level;
+	}
+	
+	public function setLevel($level) {
+		$this->level = $level;
 	}
 }
 
