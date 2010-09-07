@@ -48,7 +48,8 @@ class Scriptlet {
 	
 	/**
 	 * @param $name
-	 * @return string the value of the scriptlet parameter identified by $name
+	 * @return string the value of the scriptlet parameter identified by $name or
+	 * null if not set
 	 */
 	public function getParam($name) {
 		$params = Router::get()->getParamsForScriptlet($this);

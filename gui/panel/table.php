@@ -10,6 +10,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	private $numberOfColumns = 0;
 	private $enableSortable = false;
 	private $sorterOptions = array();
+	private $tableCssClasses = array();
 	
 	private static $firstTableOnPage = true;
 	
@@ -56,6 +57,13 @@ class GUI_Panel_Table extends GUI_Panel {
 		}
 	}
 	
+	public function displayCell($cell) {
+		if ($cell instanceof GUI_Panel)
+			$cell->display();
+		else
+			echo $cell;
+	}
+	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function addLine(array $line) {
 		if ($this->numberOfColumns == 0)
@@ -99,6 +107,18 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->footer[] = $line;
 	}
 	
+	/**
+	 * Sets a css class for given rows/columns
+	 * To set a class for every n-th column, set $line to null
+	 * To set a class for every n-th line, set $column to null
+	 * @param string $class
+	 * @param int $column
+	 * @param int $line
+	 */
+	public function addTableCssClass($class, $column = null, $line = null) {
+		$this->tableCssClasses[$column][$line]['classes'][] = $class;
+	}
+	
 	public function getLines() {
 		return $this->lines;
 	}
@@ -129,6 +149,25 @@ class GUI_Panel_Table extends GUI_Panel {
 	
 	public function getColumnCount() {
 		return $this->numberOfColumns;
+	}
+	
+	public function getTrAttributeString($row) {
+		if (isset($this->tableCssClasses[null][$row]['classes']))
+			return 'class="'.implode(' ', $this->tableCssClasses[null][$row]['classes']).'"';
+		else
+			return '';
+	}
+	
+	public function getTdAttributeString($column, $row) {
+		$classes = array();
+		if (isset($this->tableCssClasses[$column][null]['classes']))
+			$classes = array_merge($classes, $this->tableCssClasses[$column][null]['classes']);
+		if (isset($this->tableCssClasses[$column][$row]['classes']))
+			$classes = array_merge($classes, $this->tableCssClasses[$column][$row]['classes']);
+		if ($classes)
+			return 'class="'.implode(' ', $classes).'"';
+		else
+			return '';
 	}
 }
 

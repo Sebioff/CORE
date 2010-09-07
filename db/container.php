@@ -58,7 +58,7 @@ class DB_Container {
 
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		if (isset($options['alias']))
-		$query .= 'AS `'.$options['alias'].'`';
+			$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
 		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
