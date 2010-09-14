@@ -53,6 +53,13 @@ class CMS_Navigation_Node {
 		if ($this->isActive($module))
 			return true;
 		
+		// is a module of any subnode of this node active?
+		foreach ($this->nodes as $node) {
+			if ($node->isInPath($node->getModule()))
+				return true;
+		}
+		
+		// is any submodule of this node active?
 		foreach ($module->getAllSubmodules() as $subModule) {
 			if ($this->isInPath($subModule))
 				return true;

@@ -10,9 +10,9 @@
  * if anything is wrong.
  *
  * Magic callbacks:
- * @method onBUTTONNAME() (executed after the panel has been submitted by a GUI_Control_SubmitButton;
+ * @method void onBUTTONNAME() (executed after the panel has been submitted by a GUI_Control_SubmitButton;
  * 		BUTTONNAME equals the submitting buttons name in camel case notation)
- * @method ajaxACTION (can be called via ajax, e.g. using $.core.ajaxRequest; ACTION
+ * @method void ajaxACTION() (can be called via ajax, e.g. using $.core.ajaxRequest; ACTION
  * 		can be chosen freely, the method name just needs to start with "ajax")
  */
 class GUI_Panel {
