@@ -108,6 +108,9 @@ class App {
 			require_once PROJECT_PATH.'/config/environments/config.live.php';
 		}
 		
+		// add project migration folder
+		Core_MigrationsLoader::addMigrationFolder(PROJECT_PATH.'/migrations');
+		
 		// get project modules
 		require_once PROJECT_PATH.'/config/modules.php';
 		

@@ -17,9 +17,6 @@ class Core_MigrationsLoader {
 	 * Every migration is executed only once.
 	 */
 	public static function load() {
-		// add project migration folder
-		self::addMigrationFolder(PROJECT_PATH.'/migrations');
-		
 		// load migration logfile or create new one
 		if (file_exists(PROJECT_PATH.self::MIGRATION_LOG_FILE))
 			$xml = simplexml_load_file(PROJECT_PATH.self::MIGRATION_LOG_FILE);

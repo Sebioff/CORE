@@ -23,6 +23,10 @@ class Cronjob_Manager extends Scriptlet implements Scriptlet_Privileged {
 		if (!$this->checkPrivileges())
 			exit;
 		
+		$this->triggerExecution();
+	}
+	
+	public function triggerExecution() {
 		foreach ($this->scripts as $script) {
 			if ($script->requiresExecution($script->getRecord()->lastExecution)) {
 				$script->triggerExecution();
