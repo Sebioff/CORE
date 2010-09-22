@@ -38,6 +38,10 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 		if (Text::length(reset($names)) > 2)
 			$this->graph->xaxis->SetLabelAngle(90);
 	}
+	
+	public function setXTickInterval($interval) {
+		$this->graph->xaxis->SetTextTickInterval($interval);
+	}
 }
 
 ?>
