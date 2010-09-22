@@ -65,6 +65,9 @@ class DB_Connection {
 		if (defined('CORE_LOG_SLOW_QUERIES'))
 			$queryStartTime = microtime(true);
 			
+		if (defined('CORE_DEBUG_SHOW_QUERIES') && CORE_DEBUG_SHOW_QUERIES)
+			dump($query);
+			
 		$result = mysql_query($query, $this->connection);
 		
 		if (defined('CORE_LOG_SLOW_QUERIES') && (microtime(true) - $queryStartTime) * 1000 > CORE_LOG_SLOW_QUERIES)
