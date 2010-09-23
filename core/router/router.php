@@ -99,9 +99,11 @@ class Router {
 			elseif (isset($this->moduleRoutes[$firstParam])) {
 				$this->route = $firstParam;
 			}
-			else {
-				$this->requestParams = $requestURI;
-			}
+		}
+		// no route found? check for "empty route" special case
+		if ($this->route === null && isset($this->moduleRoutes[''])) {
+			array_unshift($this->requestParams, '');
+			$this->route = '';
 		}
 		
 		$this->generateParams();
@@ -208,13 +210,7 @@ class Router {
 	 * for the given scriptlet
 	 */
 	public function getParamsForScriptlet(Scriptlet $searchedScriptlet) {
-		$module = $searchedScriptlet;
-		$path = array($module->getRouteName());
-		while ($module = $module->getParent()) {
-			$path[] = $module->getRouteName();
-		}
-		
-		$module = isset($this->params[0])?$this->params[0]:null;
+		$module = isset($this->params[0]) ? $this->params[0] : null;
 		while (isset($module['module'])) {
 			if ($module['module'] == $searchedScriptlet->getRouteName()) {
 				break;
