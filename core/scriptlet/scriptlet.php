@@ -37,7 +37,7 @@ class Scriptlet {
 		if (count(Language_Scriptlet::get()->getAvailableLanguages()) > 1)
 			$route = Language_Scriptlet::get()->getCurrentLanguage().'/'.$route;
 		
-		$completeRoute = PROJECT_ROOTURI.'/'.$route;
+		$completeRoute = rtrim(PROJECT_ROOTURI.'/'.$route, '/'); // trim trailing slash on empty route
 		
 		foreach ($params as $param => $value) {
 			$completeRoute .= '/'.$param.'_'.$value;
