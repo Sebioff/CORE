@@ -37,6 +37,9 @@ class Router {
 	 * generates an array for each module specified in the uri
 	 * eg: /module/param1/param2
 	 * => array('module'=>module, 'params'=>array(param1,param2));
+	 * FIXME theres a problem with modules that got identical names, e.g.: if there
+	 * is a module with route info and one with route intern/info, the latter one
+	 * can't be reached...
 	 * @return array
 	 */
 	private function generateParams() {
