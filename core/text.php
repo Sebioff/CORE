@@ -75,6 +75,10 @@ abstract class Text {
 			return $string;
 		}
 	}
+	
+	public static function replace($search, $replace, $subject, &$count = null) {
+		return str_replace($search, $replace, $subject, $count);
+	}
 }
 
 ?>
