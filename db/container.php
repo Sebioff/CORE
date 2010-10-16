@@ -118,12 +118,20 @@ class DB_Container {
 			$query .= ' (`'.implode('`, `', $properties).'`) VALUES';
 			$query .= ' (\''.implode('\', \'', $values).'\')';
 			$this->insertByQuery($query, $record);
+			$databaseSchema = $this->getDatabaseSchema();
+			// populate not-yet-set record properties with default values
+			foreach ($databaseSchema['columns'] as $columnName => $columnProperties) {
+				if (!$record->get($columnName)) {
+					$record->$columnName = $columnProperties['defaultValue'];
+				}
+			}
 		}
 		else {
 			// update
 			$options = array();
 			$usesOptimisticLocking = false;
-			foreach ($record->getModifiedProperties() as $property => $oldValue) {
+			$modifiedProperties = $record->getModifiedProperties();
+			foreach ($modifiedProperties as $property => $oldValue) {
 				$propertyDBName = Text::camelCaseToUnderscore($property);
 				$propertyValue = self::escape($record->get($property));
 				$properties[] = $propertyDBName;
@@ -148,7 +156,11 @@ class DB_Container {
 			}
 			$query .= implode(', ', $updates);
 			$databaseSchema = $this->getDatabaseSchema();
-			$options['conditions'][] = array('`'.$databaseSchema['primaryKey'].'` = ?', $record->getPK());
+			// check if PK has been changed
+			if (isset($modifiedProperties[$databaseSchema['primaryKey']]))
+				$options['conditions'][] = array('`'.$databaseSchema['primaryKey'].'` = ?', $modifiedProperties[$databaseSchema['primaryKey']]);
+			else
+				$options['conditions'][] = array('`'.$databaseSchema['primaryKey'].'` = ?', $record->getPK());
 			$query .= $this->buildQueryString($options);
 			$this->update($query, $record);
 			// count
@@ -212,7 +224,7 @@ class DB_Container {
 		$result = $this->getConnection()->query($query);
 		$record->setContainer($this);
 		$databaseSchema = $this->getDatabaseSchema();
-		if (isset($databaseSchema['primaryKey']))
+		if (isset($databaseSchema['primaryKey']) && !$record->getPK())
 			$record->$databaseSchema['primaryKey'] = $this->getConnection()->getLastInsertID();
 		
 		// clear cache
@@ -528,8 +540,16 @@ class DB_Container {
 		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table)) {
 			return $databaseSchema;
 		}
-			
-		$result = $this->getConnection()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = \''.$this->getConnection()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
+		
+		// load columns
+		$result = $this->getConnection()->query('SELECT COLUMN_NAME, COLUMN_DEFAULT FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = \''.$this->getConnection()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
+		while ($column = mysql_fetch_assoc($result)) {
+			$column['COLUMN_NAME'] = Text::underscoreToCamelCase($column['COLUMN_NAME']);
+			$databaseSchema['columns'][$column['COLUMN_NAME']]['defaultValue'] = $column['COLUMN_DEFAULT'];
+		}
+		
+		// load keys
+		$result = $this->getConnection()->query('SELECT COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = \''.$this->getConnection()->getDatabaseName().'\' AND TABLE_NAME = \''.$this->table.'\'');
 		while ($keyColumn = mysql_fetch_assoc($result)) {
 			$keyColumn['COLUMN_NAME'] = Text::underscoreToCamelCase($keyColumn['COLUMN_NAME']);
 			if ($keyColumn['CONSTRAINT_NAME'] == 'PRIMARY') {

@@ -37,13 +37,6 @@ class DB_Record {
 		}
 		
 		// mark property as modified
-		/*
-		 * FIXME this is wrong! not-yet-existing properties need to be marked as
-		 * modified as well, e.g. if a newly created record is saved, then modified,
-		 * then saved again it doesn't work atm. The problem is to get their "old"
-		 * value as this depends on the database schema. Either DB_Container::getDatabaseSchema()
-		 * should contain this information or we need an extra query here.
-		 */
 		if (array_key_exists($property, $this->properties) && !array_key_exists($property, $this->modifiedProperties) && $value != $this->properties[$property]) {
 			$this->modifiedProperties[$property] = $this->properties[$property];
 		}
