@@ -7,47 +7,53 @@
  * TODO needs refactoring; addModuleNode and display have duplicate code in CMS_Navigation_Node
  */
 class CMS_Navigation {
-	private $nodes = array();
+	private $headNode = null;
+	
+	public function __construct() {
+		$this->headNode = new CMS_Navigation_HeadNode();
+	}
+	
+	/**
+	 * Adds a new navigation node.
+	 * @param $node CMS_Navigation_Node
+	 */
+	public function addNode(CMS_Navigation_Node $node) {
+		$this->headNode->addNode($node);
+	}
 	
 	/**
 	 * Adds a new navigation node for a given module.
+	 * @deprecated TODO remove as soon as it isn't used in Rakuun source anymore, use addNode() instead
 	 * @param $nodeTitle text to display for the module
 	 * @param $module
-	 * @return CMS_Navigation_Node the newly added navigation node
+	 * @return CMS_Navigation_ModuleNode the newly added navigation node
 	 */
 	public function addModuleNode(Module $module, $nodeTitle, $cssClasses = array()) {
-		$node = new CMS_Navigation_Node($module, $nodeTitle, $cssClasses);
-		$this->nodes[] = $node;
+		$node = new CMS_Navigation_ModuleNode($module, $nodeTitle, $cssClasses);
+		$this->addNode($node);
 		return $node;
 	}
 	
 	public function display() {
-		$result = '<ul class="core_navigation">';
-		$i = 0;
-		$nodeCount = count($this->nodes);
-		foreach ($this->nodes as $node) {
-			$classes = $node->getCssClasses();
-			$classes[] = 'core_navigation_node';
-			if ($nodeCount > 1 && $i == 0)
-					$classes[] = 'core_navigation_node_first';
-			if ($nodeCount > 1 && $i == $nodeCount - 1)
-					$classes[] = 'core_navigation_node_last';
-			if ($nodeCount == 1)
-					$classes[] = 'core_navigation_node_single';
-			if ($node->isActive($node->getModule())) {
-				$classes[] = 'core_navigation_node_active';
-				$classes[] = 'core_navigation_node_inpath';
-			}
-			elseif ($node->isInPath($node->getModule())) {
-				$classes[] = 'core_navigation_node_inpath';
-			}
-			$result .= '<li class="'.implode(' ', $classes).'">';
-			$result .= $node->render();
-			$result .= '</li>';
-			$i++;
-		}
-		$result .= '</ul>';
-		echo $result;
+		echo $this->headNode->render();
+	}
+}
+
+class CMS_Navigation_HeadNode extends CMS_Navigation_Node {
+	public function __construct() {
+		parent::__construct('');
+	}
+	
+	public function renderTitle() {
+		return '';
+	}
+	
+	public function getLink() {
+		return null;
+	}
+	
+	public function isActive() {
+		return false;
 	}
 }
 

@@ -1,22 +1,20 @@
 <?php
 
-class CMS_Navigation_Node {
+abstract class CMS_Navigation_Node {
+	protected $nodes = array();
 	private $title = '';
 	private $cssClasses = array();
-	private $module = null;
-	private $nodes = array();
-	private $level = 1;
+	private $level = 0;
 	
-	public function __construct(Module $module, $title, $cssClasses = array()) {
+	public function __construct($title, $cssClasses = array()) {
 		$this->title = $title;
-		$this->module = $module;
 		$this->cssClasses = $cssClasses;
 	}
 	
 	public function render() {
-		$result = $this->getLink()->render();
+		$result = $this->renderTitle();
 		if ($this->nodes) {
-			$result .= '<ul class="core_navigation_level'.$this->getLevel().'">';
+			$result .= '<ul class="'.(($this->getLevel() == 0) ? 'core_navigation' : 'core_navigation_level'.$this->getLevel()).'">';
 			$i = 0;
 			$nodeCount = count($this->nodes);
 			foreach ($this->nodes as $node) {
@@ -28,11 +26,11 @@ class CMS_Navigation_Node {
 					$classes[] = 'core_navigation_node_last';
 				if ($nodeCount == 1)
 					$classes[] = 'core_navigation_node_single';
-				if ($node->isActive($node->getModule())) {
+				if ($node->isActive()) {
 					$classes[] = 'core_navigation_node_active';
 					$classes[] = 'core_navigation_node_inpath';
 				}
-				elseif ($node->isInPath($node->getModule())) {
+				elseif ($node->isInPath()) {
 					$classes[] = 'core_navigation_node_inpath';
 				}
 				$result .= '<li class="'.implode(' ', $classes).'">';
@@ -45,44 +43,45 @@ class CMS_Navigation_Node {
 		return $result;
 	}
 	
-	public function getLink() {
-		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getUrl());
+	public function renderTitle() {
+		 return $this->getLink()->render();
 	}
 	
-	public function isInPath(Module $module) {
-		if ($this->isActive($module))
+	/**
+	 * @return GUI_Control_Link
+	 */
+	public abstract function getLink();
+	
+	/**
+	 * @return boolean true if this node or any of its sub nodes is active, false
+	 * otherwise
+	 */
+	public function isInPath() {
+		if ($this->isActive())
 			return true;
 		
 		// is a module of any subnode of this node active?
 		foreach ($this->nodes as $node) {
-			if ($node->isInPath($node->getModule()))
-				return true;
-		}
-		
-		// is any submodule of this node active?
-		foreach ($module->getAllSubmodules() as $subModule) {
-			if ($this->isInPath($subModule))
+			if ($node->isInPath())
 				return true;
 		}
 		
 		return false;
 	}
 	
-	public function isActive(Module $module) {
-		return (Router::get()->getCurrentModule() == $module);
-	}
+	/**
+	 * @return boolean true if this node represents the currently active page, false
+	 * otherwise
+	 */
+	public abstract function isActive();
 	
 	/**
-	 * Adds a new navigation node for a given module.
-	 * @param $nodeTitle text to display for the module
-	 * @param $module
-	 * @return CMS_Navigation_Node the newly added navigation node
+	 * Adds a new sub navigation node.
+	 * @param $node CMS_Navigation_Node
 	 */
-	public function addModuleNode(Module $module, $nodeTitle, $cssClasses = array()) {
-		$node = new CMS_Navigation_Node($module, $nodeTitle, $cssClasses);
+	public function addNode(CMS_Navigation_Node $node) {
 		$node->setLevel($this->getLevel() + 1);
 		$this->nodes[] = $node;
-		return $node;
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -96,17 +95,6 @@ class CMS_Navigation_Node {
 	
 	public function getCssClasses() {
 		return $this->cssClasses;
-	}
-	
-	/**
-	 * @return Module
-	 */
-	public function getModule() {
-		return $this->module;
-	}
-	
-	public function setModule(Module $module) {
-		$this->module = $module;
 	}
 	
 	public function getLevel() {
