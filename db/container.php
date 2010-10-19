@@ -2,6 +2,11 @@
 
 /**
  * DB_Container is an abstraction of a database table
+ *
+ * TODO there should be some sort of "versioned cache" that is cleared if the project
+ * gets updated. E.g., if mayor changes are made to the way the database schema
+ * is stored there will be crashes in a running LIVE environment.
+ *
  * Magic methods:
  * @method array selectByPROPERTY()
  * @method array selectByPROPERTYFirst()
@@ -120,9 +125,11 @@ class DB_Container {
 			$this->insertByQuery($query, $record);
 			$databaseSchema = $this->getDatabaseSchema();
 			// populate not-yet-set record properties with default values
-			foreach ($databaseSchema['columns'] as $columnName => $columnProperties) {
-				if (!$record->get($columnName)) {
-					$record->$columnName = $columnProperties['defaultValue'];
+			if (isset($databaseSchema['columns'])) { // this check is only neccessary while the todo about "versioned caches" isn't resolved (see top of file)
+				foreach ($databaseSchema['columns'] as $columnName => $columnProperties) {
+					if (!$record->get($columnName)) {
+						$record->$columnName = $columnProperties['defaultValue'];
+					}
 				}
 			}
 		}
