@@ -1,18 +1,11 @@
 <?php
 
-class CMS_Navigation_ModuleNode extends CMS_Navigation_Node {
+class CMS_Navigation_ModuleNode extends CMS_Navigation_UrlNode {
 	private $module = null;
 	
 	public function __construct(Module $module, $title, $cssClasses = array()) {
-		parent::__construct($title, $cssClasses);
+		parent::__construct($module->getUrl(), $title, $cssClasses);
 		$this->module = $module;
-	}
-	
-	/**
-	 * @return GUI_Control_Link
-	 */
-	public function getLink() {
-		return new GUI_Control_Link('core_navigation_node_link', $this->getTitle(), $this->module->getUrl());
 	}
 	
 	private function isModuleInPath(Module $module) {
