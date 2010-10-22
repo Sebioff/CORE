@@ -96,7 +96,13 @@ abstract class GUI_Control extends GUI_Panel {
 		$validatorsString = '';
 		if (!empty($validators)) {
 			$validators[] = sprintf('messages: {%s}', implode(', ', $messages));
-			$validatorsString = sprintf('$("#%s").rules("add", {%s});', $this->getID(), implode(', ', $validators));
+			/*
+			 * We can't apply rules to non-existing DOM elements without getting
+			 * an error as of jQuery 1.4.3, jQuery Validate 1.7, so we have to check
+			 * if the element actually exists (on the client side, no satisfactory
+			 * way to do so on the server side atm).
+			 */
+			$validatorsString = sprintf('$("#%s").each(function(){$(this).rules("add", {%s})});', $this->getID(), implode(', ', $validators));
 		}
 		
 		$validatorsString .= parent::getJsValidators();

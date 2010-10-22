@@ -48,6 +48,14 @@ class GUI_Validator_Digits extends GUI_Validator {
 	}
 	
 	public function getJs() {
+		if ($this->minValue > 0 || $this->maxValue < self::INFINITY) {
+			if ($this->minValue > 0 && $this->maxValue < self::INFINITY)
+				return array('range', '['.$this->minValue.', '.$this->maxValue.']');
+		 	else if ($this->minValue > 0)
+		 		return array('min', $this->minValue);
+		 	else if ($this->maxValue < self::INFINITY)
+		 		return array('max', $this->maxValue);
+		}
 		return array('digits', 'true');
 	}
 }
