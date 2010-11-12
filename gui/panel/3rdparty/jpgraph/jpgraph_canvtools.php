@@ -5,7 +5,7 @@
  // Created:     2002-08-23
  // Ver:         $Id: jpgraph_canvtools.php 1857 2009-09-28 14:38:14Z ljp $
  //
- // Copyright (c) Aditus Consulting. All rights reserved.
+ // Copyright (c) Asial Corporation. All rights reserved.
  //========================================================================
  */
 
@@ -388,7 +388,7 @@ class CanvasRectangleText {
     private $iShadowWidth=3,$iShadowColor='';
 
     function __construct($aTxt='',$xl=0,$yt=0,$w=0,$h=0) {
-        $this->iTxt = new Text($aTxt);
+        $this->iTxt = new JPGRAPH_Text($aTxt);
         $this->ix = $xl;
         $this->iy = $yt;
         $this->iw = $w;

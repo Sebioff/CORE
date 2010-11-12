@@ -14,8 +14,8 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * @method Module getMODULENAMEModule()
  *
  * Required defines:
- * CORE_PATH				- path on the server to CORE's main folder (defined in constants.php)
- * PROJECT_NAME				- unique name of the project (defined in constants.php)
+ * CORE_PATH				- path on the server to CORE's main folder (defined in config/constants.php)
+ * PROJECT_NAME				- unique name of the project (defined in config/constants.php)
  * PROJECT_VERSION			- current project version, should be increased with each build (defined in config/constants.php)
  * DB_CONNECTION			- defines the main db connection, see class DB_Connection (defined in config/environments/config.*.php)
  *

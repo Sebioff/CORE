@@ -1,6 +1,10 @@
 <?php
 
+require_once CORE_PATH.'/gui/panel/3rdparty/jpgraph/jpgraph_theme.inc.php';
+
 abstract class GUI_Panel_Plot extends GUI_Panel_Image {
+	public static $defaultTheme = 'UniversalTheme';
+	
 	protected $graph = null;
 	protected $height = 300;
 	protected $width = 600;
@@ -13,6 +17,7 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 	public function __construct($name, $description = '', $title = '') {
 		// wrap it... we don't need an url here
 		parent::__construct($name, '', $description, $title);
+		$this->graph->setTheme(new self::$defaultTheme());
 	}
 	
 	protected function beforeDisplay() {

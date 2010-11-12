@@ -5,7 +5,7 @@
  // Created:     2001-11-12
  // Ver:         $Id: jpgraph_gantt.php 1809 2009-09-09 13:07:33Z ljp $
  //
- // Copyright (c) Aditus Consulting. All rights reserved.
+ // Copyright (c) Asial Corporation. All rights reserved.
  //========================================================================
  */
 
@@ -212,7 +212,7 @@ class GanttActivityInfo {
     }
 
     function GetWidth($aImg) {
-        $txt = new TextProperty();
+        $txt = new JPGRAPH_TextProperty();
         $txt->SetFont($this->iFFamily,$this->iFStyle,$this->iFSize);
         $n = count($this->iTitles) ;
         $rm=$this->iRightColMargin;
@@ -253,7 +253,7 @@ class GanttActivityInfo {
 
         if( !$this->iShow ) return;
 
-        $txt = new TextProperty();
+        $txt = new JPGRAPH_TextProperty();
         $txt->SetFont($this->iFFamily,$this->iFStyle,$this->iFSize);
         $txt->SetColor($this->iFontColor);
         $txt->SetAlign($this->iHeaderAlign,'top');
@@ -2001,7 +2001,7 @@ class GanttScale {
         $this->divider->SetColor('gray');
         $this->divider->SetStyle('fancy');
 
-        $this->tableTitle=new TextProperty();
+        $this->tableTitle=new JPGRAPH_TextProperty();
         $this->tableTitle->Show(false);
         $this->actinfo = new GanttActivityInfo();
     }
@@ -3052,9 +3052,9 @@ class GanttPlotObject {
     protected $iLabelLeftMargin=2; // Title margin
 
     function __construct() {
-        $this->title = new TextProperty();
+        $this->title = new JPGRAPH_TextProperty();
         $this->title->Align('left','center');
-        $this->caption = new TextProperty();
+        $this->caption = new JPGRAPH_TextProperty();
     }
 
     function GetCSIMArea() {
@@ -3277,7 +3277,7 @@ class GanttBar extends GanttPlotObject {
         $this->iVPos = $aPos;
         $this->iHeightFactor = $aHeightFactor;
         $this->title->Set($aLabel);
-        $this->caption = new TextProperty($aCaption);
+        $this->caption = new JPGRAPH_TextProperty($aCaption);
         $this->caption->Align("left","center");
         $this->leftMark =new PlotMark();
         $this->leftMark->Hide();
@@ -3635,7 +3635,7 @@ class GanttVLine extends GanttPlotObject {
         $this->iLine->SetWeight($aWeight);
         $this->iLine->SetStyle($aStyle);
         $this->iStart = $aDate;
-        $this->title = new TextPropertyBelow();
+        $this->title = new JPGRAPH_TextPropertyBelow();
         $this->title->Set($aTitle);
     }
 

@@ -4,7 +4,6 @@
  * Provides a navigation for modules.
  * The navigation node hierarchy needs to be created from top to bottom or the behaviour
  * might be undefined.
- * TODO needs refactoring; addModuleNode and display have duplicate code in CMS_Navigation_Node
  */
 class CMS_Navigation {
 	private $headNode = null;
