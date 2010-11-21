@@ -173,7 +173,7 @@ class Router {
 		if ($this->getRequestMode() == self::REQUESTMODE_AJAX && $_POST['core_ajax_method'] != 'display') {
 			if (substr($_POST['core_ajax_method'], 0, 4) != 'ajax')
 				throw new Core_Exception('Invalid ajax method: '.$_POST['core_ajax_method']);
-			$module->getPanelByID($_POST['core_ajax_panel'])->$_POST['core_ajax_method']();
+			echo $module->getPanelByID($_POST['core_ajax_panel'])->$_POST['core_ajax_method']();
 		}
 		else {
 			$module->output();

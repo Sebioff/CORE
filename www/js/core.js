@@ -52,6 +52,8 @@ $().ready( function() {
 		$("body").append("<script type=\"text/javascript\">" + $(panelData).find("#ajax_js").text() + "</script>");
 	}
 	
+	// executes the ajaxACTION() method of a given panel. successCallback recieves
+	// as parameter whatever the ajaxACTION() method returns.
 	$.core.ajaxRequest = function(panelAjaxID, panelMethod, parameters, successCallback) {
 		var params = { core_ajax: true, core_ajax_panel: panelAjaxID, core_ajax_method: panelMethod };
 		if (parameters !== undefined) {

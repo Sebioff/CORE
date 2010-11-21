@@ -13,7 +13,9 @@
  * @method void onBUTTONNAME() (executed after the panel has been submitted by a GUI_Control_SubmitButton;
  * 		BUTTONNAME equals the submitting buttons name in camel case notation)
  * @method void ajaxACTION() (can be called via ajax, e.g. using $.core.ajaxRequest; ACTION
- * 		can be chosen freely, the method name just needs to start with "ajax")
+ * 		can be chosen freely, the method name just needs to start with "ajax"; the
+ * 		return value of this method will be handed back as parameter to the calling
+ * 		javascript methods sucessCallback)
  */
 class GUI_Panel {
 	public $params;
