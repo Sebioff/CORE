@@ -174,6 +174,10 @@ class DB_Connection {
 		else {
 			$result = $this->query('ROLLBACK TO SAVEPOINT CORE'.$this->transactionLevel);
 		}
+		
+		// clear caches
+		DB_Container::clearAllQueryCaches();
+		
 		return $result;
 	}
 	

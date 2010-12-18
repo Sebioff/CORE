@@ -489,6 +489,13 @@ class DB_Container {
 	}
 	
 	/**
+	 * Clears the SQL query cache for ALL containers.
+	 */
+	public static function clearAllQueryCaches() {
+		self::$containerCache = array();
+	}
+	
+	/**
 	 * Merges two options-arrays. Note that options defined in $majorOptions
 	 * will override options set in $minorOptions if they conflict.
 	 */

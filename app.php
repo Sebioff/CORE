@@ -17,7 +17,7 @@ require_once 'core/cache/global/session.php'; // can't be autoloaded since the a
  * CORE_PATH				- path on the server to CORE's main folder (defined in config/constants.php)
  * PROJECT_NAME				- unique name of the project (defined in config/constants.php)
  * PROJECT_VERSION			- current project version, should be increased with each build (defined in config/constants.php)
- * DB_CONNECTION			- defines the main db connection, see class DB_Connection (defined in config/environments/config.*.php)
+ * DB_CONNECTION			- defines the main db connection, see class DB_Connection (defined in config/local.php)
  *
  * Available defines:
  * PROJECT_PATH				- path to the projects main folder
@@ -74,7 +74,7 @@ class App {
 		define('PROJECT_PATH', realpath(dirname($backtrace[0]['file']).'/..'));
 		// setup autoloading (before session_start() or deserialization won't work)
 		spl_autoload_register(array('App_Autoloader', 'autoload'));
-		// overwrite $_SESSION
+		// overwrite $_SESSION to isolate data of different projects
 		session_start();
 		if (!isset($_SESSION[PROJECT_PATH]))
 			$_SESSION[PROJECT_PATH] = array();
