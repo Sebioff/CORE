@@ -174,6 +174,7 @@ class DB_Container {
 			if ($usesOptimisticLocking) {
 				if ($this->getConnection()->getNumberOfAffectedRows() <= 0) {
 					$currentVersionRecord = $this->selectByPK($record->getPK());
+					$currentVersionIsDifferent = false;
 					$exception = new Core_ConcurrentModificationException();
 					$modifiedPropertyDescriptions = array();
 					foreach ($record->getModifiedProperties() as $property => $oldValue) {
@@ -181,10 +182,14 @@ class DB_Container {
 						if ($newValue != $oldValue) {
 							$exception->addModifiedProperty($property, $oldValue, $newValue);
 							$modifiedPropertyDescriptions[] = $property.' was '.Text::shorten($oldValue, 10, '...').', is '.Text::shorten($newValue, 10, '...');
+							$currentVersionIsDifferent = true;
 						}
 					}
-					$exception->setMessage('Concurrent version modification ('.implode('; ', $modifiedPropertyDescriptions).').');
-					throw $exception;
+					// if for some reason (identical concurrent write) the database already contains the values we tried to write everything is fine
+					if ($currentVersionIsDifferent) {
+						$exception->setMessage('Concurrent version modification ('.implode('; ', $modifiedPropertyDescriptions).').');
+						throw $exception;
+					}
 				}
 				
 				// record is now up to date

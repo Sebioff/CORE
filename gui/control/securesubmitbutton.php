@@ -2,7 +2,7 @@
 
 /**
  * Submitbutton that is secured against being triggered by post-data being send
- * to the server without the user wanting it.
+ * to the server without the user wanting it (aka Cross-Site Request Forgery, CSRF).
  */
 class GUI_Control_SecureSubmitButton extends GUI_Control_SubmitButton {
 	// CONSTRUCTORS ------------------------------------------------------------
