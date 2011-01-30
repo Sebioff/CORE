@@ -361,7 +361,7 @@ class GUI_Panel {
 			if ($validators = $this->getJsValidators()) {
 				$module = Router::get()->getCurrentModule();
 				$module->addJsRouteReference('core_js', 'jquery/jquery.validate.js');
-				$this->addJS(sprintf('$(function() {$("#%sForm").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\"", invalidHandler: function(form, validator) {hasBeenSubmitted = false;}}); %s});', $this->getID(), $validators));
+				$this->addJS(sprintf('$(function() {$("#%sForm").validate({errorClass: "core_common_error", wrapper: "div class=\"core_common_error_js_wrapper\"", invalidHandler: function(form, validator) {$(this).find(":input[type=\'submit\']").removeClass(\'core_gui_submittable_disabled\');}}); %s});', $this->getID(), $validators));
 			}
 			
 			if ($this->hasBeenSubmitted()) {

@@ -1,15 +1,13 @@
-var hasBeenSubmitted = false;
-
-$().ready( function() {
-	$("form").submit(function() {
-		if (hasBeenSubmitted)
-			return false;
-		else {
-			hasBeenSubmitted = true;
-			// sadly we can't just disable the button, since disabled elements aren't submitted
-			$(this).find(":input[type='submit']").addClass('core_gui_submittable_disabled');
-		}
-	});
+$().ready(function() {
+	/*
+	 * TODO: In IE, if using live() the submit event fires twice when submitting
+	 * a form with enter. We SHOULD use live() here, but it's just not possible
+	 * in IE atm. See also: http://bugs.jquery.com/ticket/7444
+	 */
+	if ($.browser.msie)
+		$("form").bind("submit", $.core.formPreventDoubleSubmitEventHandler);
+	else
+		$("form").live("submit", $.core.formPreventDoubleSubmitEventHandler);
 });
 
 (function($) {
@@ -67,5 +65,18 @@ $().ready( function() {
 					successCallback(panelData);
 			}
 		);
+	}
+	
+	// bind this event handler to the submit event of a form to prevent double submits
+	$.core.formPreventDoubleSubmitEventHandler = function(event) {
+		if ($(this).find(":input[type='submit']").hasClass("core_gui_submittable_disabled")) {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			return false;
+		}
+		else {
+			// sadly we can't just disable the button, since disabled elements aren't submitted
+			$(this).find(":input[type='submit']").addClass("core_gui_submittable_disabled");
+		}
 	}
 })(jQuery);

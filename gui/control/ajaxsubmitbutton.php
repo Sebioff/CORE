@@ -27,7 +27,9 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 		$totalRefreshPanelsIDs[] = $formPanel->getAjaxID();
 		$totalRefreshPanelsString = implode(',', $totalRefreshPanelsIDs);
 		$this->addJS(sprintf('
-			$("#%1$s").ajaxify({
+			$("#%1$s")
+			.bind("submit", $.core.formPreventDoubleSubmitEventHandler)
+			.ajaxify({
 				"append": "",
 				"contentType": "application/x-www-form-urlencoded; charset=UTF-8",
 				"dataFilter": function(data, type) {
@@ -46,6 +48,7 @@ class GUI_Control_AjaxSubmitButton extends GUI_Control_SubmitButton {
 				"buttons": "#%3$s",
 				"error": function(xhr) {
 					alert(xhr.responseText);
+					$("#%3$s").removeClass("core_gui_submittable_disabled");
 				}
 			});
 		', $formPanel->getAjaxID(), $totalRefreshPanelsString, $this->getID()));
