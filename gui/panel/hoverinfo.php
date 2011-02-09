@@ -3,6 +3,9 @@
 class GUI_Panel_HoverInfo extends GUI_Panel {
 	private $text = '';
 	private $hoverText = '';
+	private $enableLocking = false;
+	private $enableAjax = false;
+	private $ajaxCallback = array();
 	
 	public function __construct($name, $text, $hoverText) {
 		parent::__construct($name);
@@ -19,12 +22,16 @@ class GUI_Panel_HoverInfo extends GUI_Panel {
 		
 		$module = Router::get()->getCurrentModule();
 		$module->addJsRouteReference('core_js', 'panel/hoverinfo.js');
-		$this->addJS(sprintf('new GUI_Panel_HoverInfo("%s", "%s");', $this->getID(), $this->getHoverText()));
+		$this->addJS(sprintf('new GUI_Panel_HoverInfo("%s", "%s", "%s", "%s");', $this->getID(), $this->getHoverText(), $this->enableLocking, $this->enableAjax ? $this->getAjaxID() : ''));
 	}
 	
 	public function __toString() {
 		$this->beforeDisplay();
 		return $this->render();
+	}
+	
+	public function ajaxOnHover() {
+		return call_user_func($this->ajaxCallback);
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
@@ -42,6 +49,17 @@ class GUI_Panel_HoverInfo extends GUI_Panel {
 	
 	public function getHoverText() {
 		return $this->hoverText;
+	}
+	
+	public function enableAjax($enableAjax, array $ajaxCallback = array()) {
+		if ($enableAjax && !$ajaxCallback)
+			throw new Core_Exception('A callback is needed for enabling ajax');
+		$this->enableAjax = $enableAjax;
+		$this->ajaxCallback = $ajaxCallback;
+	}
+	
+	public function enableLocking($enableLocking = true) {
+		$this->enableLocking = $enableLocking;
 	}
 }
 
