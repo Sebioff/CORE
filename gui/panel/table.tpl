@@ -52,6 +52,13 @@
 				</tr>
 				<? $rows++; ?>
 			<? endforeach; ?>
+			<? if ($this->getFoldEvery() > 0): ?>
+				<tr id="<?= $this->getAjaxID(); ?>-fold">
+					<td colspan="<?= $this->getColumnCount(); ?>">
+						<? $this->displayPanel('foldlink'); ?>
+					</td>
+				</tr>
+			<? endif; ?>
 		</tbody>
 	<? endif; ?>
 </table>

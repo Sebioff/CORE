@@ -11,6 +11,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	private $enableSortable = false;
 	private $sorterOptions = array();
 	private $tableCssClasses = array();
+	private $foldEvery = 0;
 	
 	private static $firstTableOnPage = true;
 	
@@ -20,15 +21,22 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->setTemplate(dirname(__FILE__).'/table.tpl');
 		$this->setAttribute('summary', $title);
 		$this->addClasses('core_gui_table');
+		if (self::$firstTableOnPage) {
+			$this->addJS('
+				var foldedAfter = new Array();
+				var foldEvery = new Array();
+			');
+		}
 	}
 	
 	public function afterInit() {
-		parent::afterInit();
+		parent::afterInit();		
 		
-		if ($this->enabledSortable()) {
-			$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
+		if (self::$firstTableOnPage) {
+			self::$firstTableOnPage = false;
+			if ($this->enabledSortable()) {
+				$this->getModule()->addJsRouteReference('core_js', 'jquery/jquery.tablesorter.js');
 			
-			if (self::$firstTableOnPage) {
 				$this->addJS('
 					$.tablesorter.addParser(
 						{
@@ -42,19 +50,19 @@ class GUI_Panel_Table extends GUI_Panel {
 							type: "numeric"
 						}
 					);
+					$("#'.$this->getID().'").tablesorter(
+						{
+							'.$this->getSorterOptions().'
+						}
+					);
 				');
-				self::$firstTableOnPage = false;
+				$this->addClasses('core_gui_table_sortable');
 			}
-			
-			$this->addJS('
-				$("#'.$this->getID().'").tablesorter(
-					{
-						'.$this->getSorterOptions().'
-					}
-				);
-			');
-			$this->addClasses('core_gui_table_sortable');
 		}
+		$this->addJS('
+			foldedAfter[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
+			foldEvery[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
+		');
 	}
 	
 	public function displayCell($cell) {
@@ -65,6 +73,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
+	
 	public function addLine(array $line) {
 		if ($this->numberOfColumns == 0)
 			$this->numberOfColumns = count($line);
@@ -120,7 +129,7 @@ class GUI_Panel_Table extends GUI_Panel {
 	}
 	
 	public function getLines() {
-		return $this->lines;
+		return $this->foldEvery > 0 ? array_slice($this->lines, 0, $this->getModule()->getParam('fold') > 0 ? $this->getModule()->getParam('fold') + $this->foldEvery : $this->foldEvery, true) : $this->lines;
 	}
 	
 	public function getHeaders() {
@@ -168,6 +177,45 @@ class GUI_Panel_Table extends GUI_Panel {
 			return 'class="'.implode(' ', $classes).'"';
 		else
 			return '';
+	}
+	
+	public function setFoldEvery($rows, $caption = 'weiter', $successJsCallback = null) {
+		$this->foldEvery = (int)$rows;
+		$this->addPanel($link = new GUI_Control_JsLink('foldlink', $caption, ''));
+		$module = $this->getModule();
+		$link->setUrl($module->getUrl(array_merge($module->getParams(), array('fold' => $module->getParam('fold') > 0 ? $module->getParam('fold') + $this->foldEvery : $this->foldEvery))));
+		$link->setJs('
+			$.core.ajaxRequest(
+				\''.$this->getAjaxID().'\',
+				\'ajaxGetFoldedLines\',
+				{ after: foldedAfter[\''.$this->getName().'\'], every: foldEvery[\''.$this->getName().'\'] },
+				function(data) {
+					$(data).insertBefore($(\'#'.$this->getAjaxID().'-fold\'));
+					foldedAfter[\''.$this->getName().'\'] += foldEvery[\''.$this->getName().'\'];
+					'.($successJsCallback === null ? '' : $successJsCallback).'
+				}
+			);
+			return false;
+		');
+		$link->setAttribute('id', $this->getAjaxID().'-foldlink');
+	}
+	
+	public function getFoldEvery() {
+		return $this->foldEvery;
+	}
+	
+	// AJAX-CALLBACKS ----------------------------------------------------------
+	
+	public function ajaxGetFoldedLines() {
+		$str = '';
+		foreach (array_slice($this->lines, $_POST['after'], $_POST['every']) as $line) {
+			$str .= '<tr>';
+			foreach ($line as $col) {
+				$str .= '<td>'.($col instanceof GUI_Panel ? $col->render() : $col).'</td>';
+			}
+			$str .= '</tr>';
+		}
+		return $str;
 	}
 }
 
