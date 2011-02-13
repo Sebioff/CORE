@@ -32,10 +32,12 @@ $().ready(function() {
 	}
 	
 	// refreshs panels using ajax
-	$.core.refreshPanels = function(panelNames) {
+	$.core.refreshPanels = function(panelNames, callback) {
 		$.core.loadPanels(panelNames, 
 			function(panelData) {
 				$.core.replacePanels(panelData, panelNames);
+				if (callback != null)
+					callback(panelData);
 			}
 		);
 	}
