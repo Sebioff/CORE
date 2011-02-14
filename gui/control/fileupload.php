@@ -74,41 +74,45 @@ class GUI_Control_FileUpload extends GUI_Control {
 	protected function validate() {
 		parent::validate();
 		
-		if (!is_uploaded_file($this->value['tmp_name'])) {
-			$this->addError('Possible file upload attack: '.$this->value['tmp_name']);
-		}
-		else if ($this->value['size'] > $this->getMaxFilesize()) {
-			$this->addError('Filesize is greater than ('.round($this->getMaxFilesize() / 1024, 2).' KB)');
-		}
-		else if (!in_array($this->value['type'], $this->allowedFiletypes)) {
-			$this->addError('Filetype is not allowed here: '.$this->value['type']);
-		}
-		else if (!in_array($this->value['error'], array(UPLOAD_ERR_OK, UPLOAD_ERR_NO_FILE))) {
-			switch ($this->value['error']) {
-				case UPLOAD_ERR_INI_SIZE:
-					$this->addError('The uploaded file exceeds the upload_max_filesize directive in php.ini');
-				break;
-				case UPLOAD_ERR_FORM_SIZE:
-					$this->addError('The uploaded file exceeds the MAX_FILE_SIZE ('.round($this->getMaxFilesize() / 1024, 2).' KB) directive that was specified in the HTML form');
-				break;
-				case UPLOAD_ERR_PARTIAL:
-					$this->addError('The uploaded file was only partially uploaded');
-				break;
-				case UPLOAD_ERR_NO_FILE:
-					/* do not display this message, confuses user when formular contains other elements
-					 * and he didn't want to upload a file
-					$this->error('No file was uploaded');
-	 				*/
-				break;
-				case UPLOAD_ERR_NO_TMP_DIR:
-					$this->addError('Missing a temporary folder.');
-				break;
-				case UPLOAD_ERR_CANT_WRITE:
-					$this->addError('Failed to write file to disk');
-				break;
-				case UPLOAD_ERR_EXTENSION:
-					$this->addError('File upload stopped by extension');
-				break;
+		if ($this->value['error'] != UPLOAD_ERR_NO_FILE) {
+			if ($this->value['error'] != UPLOAD_ERR_OK) {
+				switch ($this->value['error']) {
+					case UPLOAD_ERR_INI_SIZE:
+						$this->addError('The uploaded file exceeds the upload_max_filesize directive in php.ini');
+					break;
+					case UPLOAD_ERR_FORM_SIZE:
+						$this->addError('The uploaded file exceeds the MAX_FILE_SIZE ('.round($this->getMaxFilesize() / 1024, 2).' KB) directive that was specified in the HTML form');
+					break;
+					case UPLOAD_ERR_PARTIAL:
+						$this->addError('The uploaded file was only partially uploaded');
+					break;
+					case UPLOAD_ERR_NO_FILE:
+						/* do not display this message, confuses user when formular contains other elements
+						 * and he didn't want to upload a file
+						$this->error('No file was uploaded');
+		 				*/
+					break;
+					case UPLOAD_ERR_NO_TMP_DIR:
+						$this->addError('Missing a temporary folder.');
+					break;
+					case UPLOAD_ERR_CANT_WRITE:
+						$this->addError('Failed to write file to disk');
+					break;
+					case UPLOAD_ERR_EXTENSION:
+						$this->addError('File upload stopped by extension');
+					break;
+				}
+			}
+			if (!$this->hasErrors()) {
+				if (!is_uploaded_file($this->value['tmp_name'])) {
+					$this->addError('Possible file upload attack: '.$this->value['tmp_name']);
+				}
+				else if ($this->value['size'] > $this->getMaxFilesize()) {
+					$this->addError('Filesize is greater than ('.round($this->getMaxFilesize() / 1024, 2).' KB)');
+				}
+				else if (!in_array($this->value['type'], $this->allowedFiletypes)) {
+					$this->addError('Filetype is not allowed here: '.$this->value['type']);
+				}
 			}
 		}
 		return $this->errors;
