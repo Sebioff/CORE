@@ -74,7 +74,16 @@ class GUI_Control_FileUpload extends GUI_Control {
 	protected function validate() {
 		parent::validate();
 		
-		if (!in_array($this->value['error'], array(UPLOAD_ERR_OK, UPLOAD_ERR_NO_FILE))) {
+		if (!is_uploaded_file($this->value['tmp_name'])) {
+			$this->addError('Possible file upload attack: '.$this->value['tmp_name']);
+		}
+		else if ($this->value['size'] > $this->getMaxFilesize()) {
+			$this->addError('Filesize is greater than ('.round($this->getMaxFilesize() / 1024, 2).' KB)');
+		}
+		else if (!in_array($this->value['type'], $this->allowedFiletypes)) {
+			$this->addError('Filetype is not allowed here: '.$this->value['type']);
+		}
+		else if (!in_array($this->value['error'], array(UPLOAD_ERR_OK, UPLOAD_ERR_NO_FILE))) {
 			switch ($this->value['error']) {
 				case UPLOAD_ERR_INI_SIZE:
 					$this->addError('The uploaded file exceeds the upload_max_filesize directive in php.ini');
@@ -100,15 +109,6 @@ class GUI_Control_FileUpload extends GUI_Control {
 				case UPLOAD_ERR_EXTENSION:
 					$this->addError('File upload stopped by extension');
 				break;
-			}
-			if (!is_uploaded_file($this->value['tmp_name'])) {
-				$this->addError('Possible file upload attack: '.$this->value['tmp_name']);
-			}
-			else if ($this->value['size'] > $this->getMaxFilesize()) {
-				$this->addError('Filesize is greater than ('.round($this->getMaxFilesize() / 1024, 2).' KB)');
-			}
-			else if (!in_array($this->value['type'], $this->allowedFiletypes)) {
-				$this->addError('Filetype is not allowed here: '.$this->value['type']);
 			}
 		}
 		return $this->errors;
