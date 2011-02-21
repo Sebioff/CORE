@@ -62,6 +62,7 @@ class DB_Record {
 				}
 				else {
 					$container = new DB_Container($reference['referencedTable']);
+					$container->setConnection($this->container->getConnection());
 				}
 				$this->resolvedProperties[$property] = $container->{'selectBy'.Text::underscoreToCamelCase($reference['referencedColumn'], true).'First'}($this->properties[$property]);
 				
