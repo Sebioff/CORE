@@ -1,1 +1,1 @@
-<input type="radio" name="<?= $this->getGroup() ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?><?= $this->getSelected() ? ' checked="checked"' : '' ?>  /> <? if ($this->getTitle() != ''): ?><label for="<?= $this->getID() ?>"><?= $this->getTitle() ?></label><? endif; ?>
+<input type="radio" name="<?= $this->getGroup(); ?>" id="<?= $this->getID(); ?>" value="<?= $this->getValue(); ?>" <?= $this->getAttributeString(); ?><?= $this->getSelected() ? ' checked="checked"' : ''; ?> />

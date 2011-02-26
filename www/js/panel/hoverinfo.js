@@ -11,8 +11,10 @@ function GUI_Panel_HoverInfo(controlID, hoverText, enableLocking, controlAjaxID)
 			if (!fixed[controlID])
 				$("body").append('<div id="' + controlID + '_hover" class="core_gui_hoverinfo" style="position:absolute;">' + (ajaxControlContent ? ajaxControlContent : hoverText) + '</div>');
 			if (!ajaxControlContent) {
+				$("#"+controlID+"_hover").addClass('core_ajax_loading');
 				$.core.ajaxRequest(controlAjaxID, 'ajaxOnHover', undefined, function(data) {
 					ajaxControlContent = data;
+					$("#"+controlID+"_hover").removeClass('core_ajax_loading');
 					$("#"+controlID+"_hover").html(data);
 				});
 			}

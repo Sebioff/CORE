@@ -1,1 +1,1 @@
-<input type="checkbox" name="<?= $this->getGroup() ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue() ?>" <?= $this->getAttributeString() ?><?= $this->getSelected() ? ' checked="checked"' : '' ?>  /> <label for="<?= $this->getID() ?>"><?= $this->getTitle() ?></label>
+<input type="checkbox" name="<?= $this->getGroup(); ?>" id="<?= $this->getID() ?>" value="<?= $this->getValue(); ?>" <?= $this->getAttributeString(); ?><?= $this->getSelected() ? ' checked="checked"' : ''; ?> />

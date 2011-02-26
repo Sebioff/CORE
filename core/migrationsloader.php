@@ -27,20 +27,26 @@ class Core_MigrationsLoader {
 		
 		foreach (self::$migrationFolders as $migrationFolderArray) {
 			$relativeMigrationFolder = strtolower(IO_Utils::getRelativePath($migrationFolderArray['path'], CORE_PATH.'/..'));
-			$fileXPathParts = explode('/', $relativeMigrationFolder);
+			$folderParts = explode('/', $relativeMigrationFolder);
+			$folderXPathParts = $folderParts;
+			$folderXPathPartsSize = count($folderXPathParts);
+			for ($i = 0; $i < $folderXPathPartsSize; $i++)
+				$folderXPathParts[$i] = 'folder[@name=\''.$folderXPathParts[$i].'\']';
+			$folderXPath = '/content/'.implode('/', $folderXPathParts);
 			
 			// create xpath to current migration folder if it doesn't exist
-			if (!count($xml->xpath('/content/'.$relativeMigrationFolder))) {
+			if (!$xml->xpath($folderXPath)) {
 				$currentXMLNode = $xml;
-				$fileXPathPartsSize = count($fileXPathParts);
-				for ($i = 0; $i < $fileXPathPartsSize; $i++) {
-					$fileXPath = array_slice($fileXPathParts, 0, $i+1);
-					$fileXPath = implode('/', $fileXPath);
-					$result = $xml->xpath('/content/'.$fileXPath);
-					if (empty($result))
-						$currentXMLNode = $currentXMLNode[0]->addChild($fileXPathParts[$i]);
-					else
+				for ($i = 0; $i < $folderXPathPartsSize; $i++) {
+					$partialFolderXPath = array_slice($folderXPathParts, 0, $i + 1);
+					$result = $xml->xpath('/content/'.implode('/', $partialFolderXPath));
+					if (empty($result)) {
+						$currentXMLNode = $currentXMLNode[0]->addChild('folder');
+						$currentXMLNode->addAttribute('name', $folderParts[$i]);
+					}
+					else {
 						$currentXMLNode = $result;
+					}
 				}
 			}
 			
@@ -48,9 +54,9 @@ class Core_MigrationsLoader {
 			$migrationFiles = IO_Utils::getFilesFromFolder($migrationFolderArray['path'], array('php'));
 			natsort($migrationFiles);
 			foreach ($migrationFiles as $migrationFile) {
-				$result = $xml->xpath(sprintf('/content/%s/file[@name=\'%s\']', implode('/', $fileXPathParts), $migrationFile));
+				$result = $xml->xpath(sprintf($folderXPath.'/file[@name=\'%s\']', $migrationFile));
 				if (empty($result)) {
-					$result = $xml->xpath(sprintf('/content/%s', implode('/', $fileXPathParts)));
+					$result = $xml->xpath($folderXPath);
 					$child = $result[0]->addChild('file');
 					$child->addAttribute('name', $migrationFile);
 					self::executeMigration($migrationFolderArray['path'].'/'.$migrationFile, $migrationFolderArray['vars'], $migrationFolderArray['connection']);

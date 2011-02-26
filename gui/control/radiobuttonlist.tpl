@@ -1,5 +1,5 @@
-<ul id="<?= $this->getID() ?>" <?= $this->getAttributeString() ?>>
+<ul id="<?= $this->getID(); ?>" <?= $this->getAttributeString(); ?>>
 	<? foreach ($this->getItems() as $radio): ?>
-		<li><? $radio->display(); ?></li>
+		<li><? $radio->display(); ?> <? $this->displayLabelForPanel($radio->getName()); ?></li>
 	<? endforeach; ?>
 </ul>
