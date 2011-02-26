@@ -2,6 +2,8 @@
 
 /**
  * Panel to display a html table
+ * TODO instead of having to prodive all data at once, there should be a possibility
+ * to provide only a part of the data (would be useful with folding enabled)
  */
 class GUI_Panel_Table extends GUI_Panel {
 	private $lines = array();
@@ -21,16 +23,10 @@ class GUI_Panel_Table extends GUI_Panel {
 		$this->setTemplate(dirname(__FILE__).'/table.tpl');
 		$this->setAttribute('summary', $title);
 		$this->addClasses('core_gui_table');
-		if (self::$firstTableOnPage) {
-			$this->addJS('
-				var foldedAfter = new Array();
-				var foldEvery = new Array();
-			');
-		}
 	}
 	
 	public function afterInit() {
-		parent::afterInit();		
+		parent::afterInit();
 		
 		if (self::$firstTableOnPage) {
 			self::$firstTableOnPage = false;
@@ -50,19 +46,34 @@ class GUI_Panel_Table extends GUI_Panel {
 							type: "numeric"
 						}
 					);
-					$("#'.$this->getID().'").tablesorter(
-						{
-							'.$this->getSorterOptions().'
-						}
-					);
 				');
-				$this->addClasses('core_gui_table_sortable');
+				
 			}
+			
+			$this->addJS('
+				var foldedAfter = new Array();
+				var foldEvery = new Array();
+			');
 		}
-		$this->addJS('
-			foldedAfter[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
-			foldEvery[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
-		');
+		
+		if ($this->enableSortable) {
+			$this->addJS('
+				$("#'.$this->getID().'").tablesorter(
+					{
+						'.$this->getSorterOptions().'
+					}
+				);
+			');
+			
+			$this->addClasses('core_gui_table_sortable');
+		}
+
+		if ($this->foldEvery) {
+			$this->addJS('
+				foldedAfter[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
+				foldEvery[\''.$this->getName().'\'] = '.$this->getFoldEvery().';
+			');
+		}
 	}
 	
 	public function displayCell($cell) {
@@ -73,14 +84,13 @@ class GUI_Panel_Table extends GUI_Panel {
 	}
 	
 	// GETTERS / SETTERS -------------------------------------------------------
-	
 	public function addLine(array $line) {
 		if ($this->numberOfColumns == 0)
 			$this->numberOfColumns = count($line);
-		if (count($line) != $this->numberOfColumns) {
-			$this->addError('Die \''.$line[0].'\' Zeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
-			return;
-		}
+			
+		if (count($line) != $this->numberOfColumns)
+			throw new Core_Exception('Die \''.$line[0].'\' Zeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
+		
 		foreach ($line as $column) {
 			if ($column instanceof GUI_Panel)
 				$this->addPanel($column);
@@ -91,10 +101,10 @@ class GUI_Panel_Table extends GUI_Panel {
 	public function addHeader(array $line) {
 		if ($this->numberOfColumns == 0)
 			$this->numberOfColumns = count($line);
-		if (count($line) != $this->numberOfColumns) {
-			$this->addError('Die \''.$line[0].'\' Headerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
-			return;
-		}
+			
+		if (count($line) != $this->numberOfColumns)
+			throw new CORE_Exception('Die \''.$line[0].'\' Headerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
+			
 		foreach ($line as $column) {
 			if ($column instanceof GUI_Panel)
 				$this->addPanel($column);
@@ -105,10 +115,10 @@ class GUI_Panel_Table extends GUI_Panel {
 	public function addFooter(array $line) {
 		if ($this->numberOfColumns == 0)
 			$this->numberOfColumns = count($line);
-		if (count($line) != $this->numberOfColumns) {
-			$this->addError('Die \''.$line[0].'\' Footerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
-			return;
-		}
+			
+		if (count($line) != $this->numberOfColumns)
+			throw new CORE_Exception('Die \''.$line[0].'\' Footerzeile hat zu viele / wenige Spalten und wurde nicht angefügt!');
+			
 		foreach ($line as $column) {
 			if ($column instanceof GUI_Panel)
 				$this->addPanel($column);
@@ -205,15 +215,18 @@ class GUI_Panel_Table extends GUI_Panel {
 	}
 	
 	// AJAX-CALLBACKS ----------------------------------------------------------
-	
 	public function ajaxGetFoldedLines() {
 		$str = '';
-		foreach (array_slice($this->lines, $_POST['after'], $_POST['every']) as $line) {
-			$str .= '<tr>';
+		$rows = $_POST['after'];
+		foreach (array_slice($this->lines, $rows, $_POST['every']) as $line) {
+			$str .= '<tr '.$this->getTrAttributeString($rows).'>';
+			$columns = 0;
 			foreach ($line as $col) {
-				$str .= '<td>'.($col instanceof GUI_Panel ? $col->render() : $col).'</td>';
+				$str .= '<td '.$this->getTdAttributeString($columns, $rows).'>'.($col instanceof GUI_Panel ? $col->render() : $col).'</td>';
+				$columns++;
 			}
 			$str .= '</tr>';
+			$rows++;
 		}
 		return $str;
 	}
