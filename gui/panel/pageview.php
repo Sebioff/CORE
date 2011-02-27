@@ -7,6 +7,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 	private $itemsPerPage = 10;
 	private $container = null;
 	private $enableAjax = true;
+	private $page = 0;
 	
 	public function __construct($name, DB_Container $container, $title = '') {
 		parent::__construct($name, $title);
@@ -59,14 +60,18 @@ class GUI_Panel_PageView extends GUI_Panel {
 	 * @return int the number of the currently opened page
 	 */
 	public function getPage() {
-		if ($this->getModule()->getParam($this->getName().'-page')) {
-			$page = (int)$this->getModule()->getParam($this->getName().'-page');
+		$page = ($this->page) ? $this->page : (int)$this->getModule()->getParam($this->getName().'-page');
+		if ($page) {
 			if ($page > $this->getPageCount())
 				$page = $this->getPageCount();
 			return $page;
 		}
 		else
 			return 1;
+	}
+	
+	public function setPage($page) {
+		$this->page = $page;
 	}
 	
 	/**
