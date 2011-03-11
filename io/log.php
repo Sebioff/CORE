@@ -111,9 +111,13 @@ class IO_Log {
 	
 	private function writeToFile($msg, $fileNamePrefix = self::LOGFILE_PREFIX) {
 		$logFileName = self::getLogfilePath().'/'.$fileNamePrefix.'_'.date('Y-m-d').'.'.self::LOGFILE_EXTENSION;
-		if (file_put_contents($logFileName, $msg.System::getNewLine(), FILE_APPEND) === false) {
-			throw new Core_Exception('Log file \''.$logFileName.'\' could not be written!');
+		$file = new IO_File($logFileName);
+		if (!$file->exists()) {
+			$file->create();
+			chmod($logFileName, 666);
 		}
+		$file->open(IO_File::WRITE_APPEND);
+		$file->write($msg.System::getNewLine());
 	}
 	
 	public static function getLogfilePath() {
