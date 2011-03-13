@@ -48,23 +48,26 @@ class GUI_Panel_PageView extends GUI_Panel {
 					$(window).bind("hashchange", function(e) {
 						var that = $("#%1$s"),
 						data = GUI_Panel_PageView__data["%1$s"],
-						url = e.getState( "%1$s" ) || document.location.href;
-					        
-						if (data.cache[url] ) {
+						url = e.getState("%1$s") || document.location.href;
+						
+						if (data.cache[url]) {
 							$.core.ajaxCurrentUrl = url;
 							var panelNames = ["%2$s"];
 							$.core.replacePanels(data.cache[url], panelNames);
 						}
 						else {
+							that.addClass("core_ajax_loading");
 							$.core.ajaxCurrentUrl = url;
 							var panelNames = ["%2$s"];
 							$.core.refreshPanels(panelNames, function(panelData) {
 								data.cache[url] = panelData;
+								that.removeClass("core_ajax_loading");
 							});
 						}
 					});
-					    
-					$(window).trigger("hashchange");
+					
+					if (currentUrl.indexOf("#") >= 0)
+						$(window).trigger("hashchange");
 				', $this->getID(), $this->getAjaxID()));
 			}
 			
