@@ -14,6 +14,8 @@ $().ready(function() {
 	// core object -------------------------------------------------------------
 	$.core = function() {}
 	
+	$.core.ajaxCurrentUrl = document.location.href;
+	
 	// extracts specific panels from a bunch of code
 	$.core.extractPanels = function(panelData, panelNames) {
 		var result = new Array();
@@ -61,7 +63,7 @@ $().ready(function() {
 				params[attribute] = parameters[attribute];
 			}
 		}
-		$.post(document.location.href, params,
+		$.post($.core.ajaxCurrentUrl, params,
 			function(panelData) {
 				if (successCallback != null)
 					successCallback(panelData);

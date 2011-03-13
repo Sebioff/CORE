@@ -4,6 +4,8 @@
  * A panel that has methods to display its content on different pages
  */
 class GUI_Panel_PageView extends GUI_Panel {
+	private static $firstPageViewOnPage = true;
+	
 	private $itemsPerPage = 10;
 	private $container = null;
 	private $enableAjax = true;
@@ -19,31 +21,62 @@ class GUI_Panel_PageView extends GUI_Panel {
 	
 	public function init() {
 		if ($this->enableAjax)
-			$this->getModule()->addJsRouteReference('core_js', '/jquery/jquery.ajaxify.js');
-		
+			$this->getModule()->addJsRouteReference('core_js', '/jquery/jquery.bbq.js');
+			
 		$this->addPanel(new GUI_Panel_PageView_Pages($this));
 	}
 	
 	public function afterInit() {
 		parent::afterInit();
-		
 		if ($this->enableAjax) {
-			$this->addJS(sprintf('
-				$("#%1$s-pages a").ajaxify({
-					"append": "",
-					"type": "POST",
-					"dataFilter": function(data, type) {
-						var panelNames = ["%2$s"];
-						$.core.replacePanels(data, panelNames);
-					},
-					"data": {
-						"core_ajax": "1",
-						"core_ajax_method": "display",
-						"refreshPanels": "%2$s"
-					},
-					"error": function(xhr) {
-						alert(xhr.responseText);
+			if (Router::get()->getRequestMode() != Router::REQUESTMODE_AJAX) {
+				if (self::$firstPageViewOnPage) {
+					self::$firstPageViewOnPage = false;
+					$this->addJS('
+						GUI_Panel_PageView__data = {};
+					');
+				}
+				
+				$this->addJS(sprintf('
+					currentUrl = document.location.href;
+			 		GUI_Panel_PageView__data["%1$s"] = {
+			 			cache: {
+							currentUrl: $("#%2$s")
+						}
 					}
+					
+					$(window).bind("hashchange", function(e) {
+						var that = $("#%1$s"),
+						data = GUI_Panel_PageView__data["%1$s"],
+						url = e.getState( "%1$s" ) || document.location.href;
+					        
+						if (data.cache[url] ) {
+							$.core.ajaxCurrentUrl = url;
+							var panelNames = ["%2$s"];
+							$.core.replacePanels(data.cache[url], panelNames);
+						}
+						else {
+							$.core.ajaxCurrentUrl = url;
+							var panelNames = ["%2$s"];
+							$.core.refreshPanels(panelNames, function(panelData) {
+								data.cache[url] = panelData;
+							});
+						}
+					});
+					    
+					$(window).trigger("hashchange");
+				', $this->getID(), $this->getAjaxID()));
+			}
+			
+			$this->addJS(sprintf('
+				$("#%1$s-pages a").click(function(e){
+					var state = {},
+					url = $(this).attr("href");
+      
+					state["%1$s"] = url;
+				    $.bbq.pushState(state);
+
+					return false;
 				});
 			', $this->getID(), $this->getAjaxID()));
 		}
