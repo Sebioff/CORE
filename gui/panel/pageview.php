@@ -28,6 +28,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 	
 	public function afterInit() {
 		parent::afterInit();
+		
 		if ($this->enableAjax) {
 			if (Router::get()->getRequestMode() != Router::REQUESTMODE_AJAX) {
 				if (self::$firstPageViewOnPage) {
@@ -48,7 +49,10 @@ class GUI_Panel_PageView extends GUI_Panel {
 					$(window).bind("hashchange", function(e) {
 						var that = $("#%1$s"),
 						data = GUI_Panel_PageView__data["%1$s"],
-						url = e.getState("%1$s") || document.location.href;
+						url = e.getState("%1$s") || "";
+						
+						if (!url || data.url === url) return;
+						data.url = url;
 						
 						if (data.cache[url]) {
 							$.core.ajaxCurrentUrl = url;
@@ -78,7 +82,7 @@ class GUI_Panel_PageView extends GUI_Panel {
       
 					state["%1$s"] = url;
 				    $.bbq.pushState(state);
-
+				    
 					return false;
 				});
 			', $this->getID(), $this->getAjaxID()));
@@ -122,7 +126,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function setItemsPerPage($itemsPerPage) {
-		$this->itemsPerPage = $itemsPerPage;
+		//$this->itemsPerPage = $itemsPerPage;
 	}
 	
 	public function getItemsPerPage() {
