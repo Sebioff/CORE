@@ -126,7 +126,7 @@ class GUI_Panel_PageView extends GUI_Panel {
 	
 	// GETTERS / SETTERS -------------------------------------------------------
 	public function setItemsPerPage($itemsPerPage) {
-		//$this->itemsPerPage = $itemsPerPage;
+		$this->itemsPerPage = $itemsPerPage;
 	}
 	
 	public function getItemsPerPage() {
