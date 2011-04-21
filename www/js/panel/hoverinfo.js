@@ -1,7 +1,9 @@
 var fixed = new Array();
+var loading = new Array();
 
 function GUI_Panel_HoverInfo(controlID, hoverText, enableLocking, controlAjaxID) {
 	fixed[controlID] = false;
+	loading[controlID] = false;
 	posX = new Array();
 	posY = new Array();
 	var ajaxControlContent = '';
@@ -10,11 +12,13 @@ function GUI_Panel_HoverInfo(controlID, hoverText, enableLocking, controlAjaxID)
 		$("#"+controlID).mouseover(function() {
 			if (!fixed[controlID])
 				$("body").append('<div id="' + controlID + '_hover" class="core_gui_hoverinfo" style="position:absolute;">' + (ajaxControlContent ? ajaxControlContent : hoverText) + '</div>');
-			if (!ajaxControlContent) {
+			if (!ajaxControlContent && !loading[controlID]) {
 				$("#"+controlID+"_hover").addClass('core_ajax_loading');
+				loading[controlID] = true;
 				$.core.ajaxRequest(controlAjaxID, 'ajaxOnHover', undefined, function(data) {
 					ajaxControlContent = data;
 					$("#"+controlID+"_hover").removeClass('core_ajax_loading');
+					loading[controlID] = false;
 					$("#"+controlID+"_hover").html(data);
 				});
 			}
