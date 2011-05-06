@@ -170,6 +170,10 @@ class GUI_Panel_Table extends GUI_Panel {
 		return $this->numberOfColumns;
 	}
 	
+	public function getLineCount() {
+		return count($this->lines);
+	}
+	
 	public function getTrAttributeString($row) {
 		if (isset($this->tableCssClasses[null][$row]['classes']))
 			return 'class="'.implode(' ', $this->tableCssClasses[null][$row]['classes']).'"';
@@ -195,6 +199,7 @@ class GUI_Panel_Table extends GUI_Panel {
 		$module = $this->getModule();
 		$link->setUrl($module->getUrl(array_merge($module->getParams(), array('fold' => $module->getParam('fold') > 0 ? $module->getParam('fold') + $this->foldEvery : $this->foldEvery))));
 		$link->setJs('
+			$(\'#'.$this->getAjaxID().'\').addClass(\'core_ajax_loading\');
 			$.core.ajaxRequest(
 				\''.$this->getAjaxID().'\',
 				\'ajaxGetFoldedLines\',
@@ -202,6 +207,7 @@ class GUI_Panel_Table extends GUI_Panel {
 				function(data) {
 					$(data).insertBefore($(\'#'.$this->getAjaxID().'-fold\'));
 					foldedAfter[\''.$this->getName().'\'] += foldEvery[\''.$this->getName().'\'];
+					$(\'#'.$this->getAjaxID().'\').removeClass(\'core_ajax_loading\');
 					'.($successJsCallback === null ? '' : $successJsCallback).'
 				}
 			);
@@ -231,5 +237,4 @@ class GUI_Panel_Table extends GUI_Panel {
 		return $str;
 	}
 }
-
 ?>
