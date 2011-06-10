@@ -16,7 +16,6 @@
 class DB_Container {
 	private static $globalReferencedContainers = array();
 	private static $containerCache = array();
-	private static $databaseSchemata = array();
 	
 	private $recordClass = '';
 	private $table = '';
@@ -65,11 +64,12 @@ class DB_Container {
 		if (isset($options['alias']))
 			$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
-		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
-			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
+		$tableName = $this->getFullyQualifiedTable();
+		if (isset(self::$containerCache[$tableName][$this->getRecordClass()][$query]))
+			return self::$containerCache[$tableName][$this->getRecordClass()][$query];
 			
 		$result = $this->getConnection()->query($query);
-
+		
 		// create records from query result
 		while ($row = mysql_fetch_assoc($result)) {
 			$record = new $this->recordClass();
@@ -81,7 +81,7 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
-		self::$containerCache[$this->getTable()][$this->getRecordClass()][$query] = $records;
+		self::$containerCache[$tableName][$this->getRecordClass()][$query] = $records;
 		
 		return $records;
 	}
@@ -174,6 +174,7 @@ class DB_Container {
 			if ($usesOptimisticLocking) {
 				if ($this->getConnection()->getNumberOfAffectedRows() <= 0) {
 					$currentVersionRecord = $this->selectByPK($record->getPK());
+					$currentVersionIsDifferent = false;
 					$exception = new Core_ConcurrentModificationException();
 					$modifiedPropertyDescriptions = array();
 					foreach ($record->getModifiedProperties() as $property => $oldValue) {
@@ -181,10 +182,14 @@ class DB_Container {
 						if ($newValue != $oldValue) {
 							$exception->addModifiedProperty($property, $oldValue, $newValue);
 							$modifiedPropertyDescriptions[] = $property.' was '.Text::shorten($oldValue, 10, '...').', is '.Text::shorten($newValue, 10, '...');
+							$currentVersionIsDifferent = true;
 						}
 					}
-					$exception->setMessage('Concurrent version modification ('.implode('; ', $modifiedPropertyDescriptions).').');
-					throw $exception;
+					// if for some reason (identical concurrent write) the database already contains the values we tried to write everything is fine
+					if ($currentVersionIsDifferent) {
+						$exception->setMessage('Concurrent version modification ('.implode('; ', $modifiedPropertyDescriptions).').');
+						throw $exception;
+					}
 				}
 				
 				// record is now up to date
@@ -235,7 +240,7 @@ class DB_Container {
 			$record->$databaseSchema['primaryKey'] = $this->getConnection()->getLastInsertID();
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute insertCallbacks
 		foreach ($this->insertCallbacks as $insertCallback)
@@ -262,7 +267,7 @@ class DB_Container {
 		$result = $this->getConnection()->query($query);
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute updateCallbacks
 		foreach ($this->updateCallbacks as $updateCallback)
@@ -279,7 +284,7 @@ class DB_Container {
 		$result = $this->getConnection()->query($query);
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute deleteCallbacks
 		foreach ($this->deleteCallbacks as $deleteCallback)
@@ -437,7 +442,7 @@ class DB_Container {
 	 * all references to the table of the container
 	 */
 	public static function addReferencedContainerGlobal(DB_Container $container) {
-		self::$globalReferencedContainers[$container->getTable()] = $container;
+		self::$globalReferencedContainers[$container->getFullyQualifiedTable()] = $container;
 		
 		// handle self-references
 		$databaseSchema = &$container->getDatabaseSchema();
@@ -545,13 +550,12 @@ class DB_Container {
 	 * This way, primary keys and foreign keys can be resolved easily.
 	 */
 	public function &getDatabaseSchema() {
-		$databaseSchema = &self::$databaseSchemata[$this->getTable()];
 		/*
 		 * We COULD always return the version from the cache, but the database schema
 		 * is pretty often needed, so it's even faster to just keep a copy of it
 		 * in this object.
 		 */
-		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table)) {
+		if ($databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->getFullyQualifiedTable())) {
 			return $databaseSchema;
 		}
 		
@@ -578,7 +582,7 @@ class DB_Container {
 			}
 		}
 
-		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $databaseSchema);
+		$GLOBALS['cache']->set('SCHEMA_'.$this->getFullyQualifiedTable(), $databaseSchema);
 		return $databaseSchema;
 	}
 	
@@ -587,6 +591,14 @@ class DB_Container {
 	 */
 	public function getTable() {
 		return $this->table;
+	}
+	
+	/**
+	 * @return string the fully qualified (unique) name of the table this container
+	 * encapsulates
+	 */
+	public function getFullyQualifiedTable() {
+		return $this->getConnection()->getDatabaseName().'.'.$this->getTable();
 	}
 	
 	/**
