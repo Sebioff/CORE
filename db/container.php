@@ -1,11 +1,23 @@
 <?php
 
 /**
- * DB_Container is an abstraction of a database table
+ * DB_Container is an abstraction of a database table. It provides methods for accessing
+ * and manipulating the data without the need to write SQL queries.
+ * Of course it can't generate really sophisticated queries, but it is capable enough
+ * for most use-cases. Everywhere you would use a basic SELECT statement this class
+ * can be used to do the job more comfortable and readable. Database results are
+ * returned in the form of DB_Record objects, which can be easily operated on.
+ * Further highlights are automatic foreign key resolution and optimistic column-level
+ * row locking.
  *
  * TODO there should be some sort of "versioned cache" that is cleared if the project
  * gets updated. E.g., if mayor changes are made to the way the database schema
  * is stored there will be crashes in a running LIVE environment.
+ *
+ * FIXME ambiguous table names (e.g. tables with the same name but in different
+ * databases) might be a problem for gobally referenced containers when using multiple
+ * databases. Use getFullyQualifiedTable() instead of getTable() just like for the
+ * databaseSchema and containerCache.
  *
  * Magic methods:
  * @method array selectByPROPERTY()
@@ -65,8 +77,8 @@ class DB_Container {
 		if (isset($options['alias']))
 			$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
-		if (isset(self::$containerCache[$this->getTable()][$this->getRecordClass()][$query]))
-			return self::$containerCache[$this->getTable()][$this->getRecordClass()][$query];
+		if (isset(self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query]))
+			return self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query];
 			
 		$result = $this->getConnection()->query($query);
 
@@ -81,7 +93,7 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
-		self::$containerCache[$this->getTable()][$this->getRecordClass()][$query] = $records;
+		self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query] = $records;
 		
 		return $records;
 	}
@@ -235,7 +247,7 @@ class DB_Container {
 			$record->$databaseSchema['primaryKey'] = $this->getConnection()->getLastInsertID();
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute insertCallbacks
 		foreach ($this->insertCallbacks as $insertCallback)
@@ -262,7 +274,7 @@ class DB_Container {
 		$result = $this->getConnection()->query($query);
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute updateCallbacks
 		foreach ($this->updateCallbacks as $updateCallback)
@@ -279,7 +291,7 @@ class DB_Container {
 		$result = $this->getConnection()->query($query);
 		
 		// clear cache
-		self::$containerCache[$this->getTable()] = array();
+		self::$containerCache[$this->getFullyQualifiedTable()] = array();
 		
 		// execute deleteCallbacks
 		foreach ($this->deleteCallbacks as $deleteCallback)
@@ -545,13 +557,13 @@ class DB_Container {
 	 * This way, primary keys and foreign keys can be resolved easily.
 	 */
 	public function &getDatabaseSchema() {
-		$databaseSchema = &self::$databaseSchemata[$this->getTable()];
+		$databaseSchema = &self::$databaseSchemata[$this->getFullyQualifiedTable()];
 		/*
 		 * We COULD always return the version from the cache, but the database schema
 		 * is pretty often needed, so it's even faster to just keep a copy of it
 		 * in this object.
 		 */
-		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->table)) {
+		if ($databaseSchema || $databaseSchema = $GLOBALS['cache']->get('SCHEMA_'.$this->getFullyQualifiedTable())) {
 			return $databaseSchema;
 		}
 		
@@ -578,7 +590,7 @@ class DB_Container {
 			}
 		}
 
-		$GLOBALS['cache']->set('SCHEMA_'.$this->table, $databaseSchema);
+		$GLOBALS['cache']->set('SCHEMA_'.$this->getFullyQualifiedTable(), $databaseSchema);
 		return $databaseSchema;
 	}
 	
@@ -587,6 +599,14 @@ class DB_Container {
 	 */
 	public function getTable() {
 		return $this->table;
+	}
+	
+	/**
+	 * @return string the fully qualified (unique) name of the table this container
+	 * encapsulates
+	 */
+	public function getFullyQualifiedTable() {
+		return $this->getConnection()->getDatabaseName().'.'.$this->table;
 	}
 	
 	/**

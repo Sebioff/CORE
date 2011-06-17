@@ -35,7 +35,7 @@ abstract class System {
 		if (defined('CORE_TEMPORARY_DIRECTORY'))
 			return CORE_TEMPORARY_DIRECTORY;
 		else
-			sys_get_temp_dir();
+			return sys_get_temp_dir();
 	}
 }
 
