@@ -19,6 +19,10 @@
  * databases. Use getFullyQualifiedTable() instead of getTable() just like for the
  * databaseSchema and containerCache.
  *
+ * FIXME theres a problem when using setConnection() after the databaseSchema has
+ * already been loaded. E.g.: use addReferencedContainer() to modify the databaseSchema,
+ * then use setConnection() -> cache position changes, container reference is gone
+ *
  * Magic methods:
  * @method array selectByPROPERTY()
  * @method array selectByPROPERTYFirst()
