@@ -7,6 +7,9 @@ require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_line.php';
 require_once dirname(__FILE__).'/../3rdparty/jpgraph/jpgraph_plotline.php';
 
 class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
+	private $enableMarkers = true;
+	private $markerCount = 0;
+	
 	public function __construct($name, $width = 600, $height = 300, $description = '', $title = '') {
 		$this->graph = new Graph($width, $height, 'auto');
 		$this->graph->SetScale('textlin');
@@ -18,6 +21,9 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 		parent::__construct($name, $description, $title);
 	}
 
+	/**
+	 * @return LinePlot
+	 */
 	public function addLine(array $line, $name = '', $color = '') {
 		$plot = new LinePlot($line);
 		if (Text::length($name) > 10)
@@ -27,6 +33,15 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 		if (Text::length($color) > 0)
 			$plot->SetColor($color);
 		$this->graph->add($plot);
+		if ($this->enableMarkers) {
+			$this->markerCount++;
+			$plot->mark->SetColor($plot->color);
+			$plot->mark->SetFillColor($plot->color);
+			$plot->mark->setType($this->markerCount);
+			if ($this->markerCount >= 11)
+				$this->markerCount = 0;
+		}
+		return $plot;
 	}
 	
 	public function setTitle($title) {
@@ -41,6 +56,10 @@ class GUI_Panel_Plot_Lines extends GUI_Panel_Plot {
 	
 	public function setXTickInterval($interval) {
 		$this->graph->xaxis->SetTextTickInterval($interval);
+	}
+	
+	public function enableMarkers($enableMarkers) {
+		$this->enableMarkers = $enableMarkers;
 	}
 }
 

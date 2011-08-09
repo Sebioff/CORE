@@ -5,10 +5,10 @@
 */
 class UniversalTheme extends Theme
 {
-    protected $font_color       = '#444444';
-    protected $background_color = '#F4F4F4';
-    protected $axis_color       = '#888888';
-    protected $grid_color       = '#E3E3E3';
+    public $font_color       = '#444444';
+    public $background_color = '#F4F4F4';
+    public $axis_color       = '#888888';
+    public $grid_color       = '#E3E3E3';
 
     function GetColorList() {
         return array(
