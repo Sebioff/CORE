@@ -20,6 +20,8 @@ function GUI_Panel_HoverInfo(controlID, hoverText, enableLocking, controlAjaxID)
 					$("#"+controlID+"_hover").removeClass('core_ajax_loading');
 					loading[controlID] = false;
 					$("#"+controlID+"_hover").html(data);
+					if (fixed[controlID])
+						$("#"+controlID+"_hover").append('<a id="'+controlID+'_hover_close" class="core_gui_hoverinfo_close" href="#" onclick="GUI_Panel_HoverInfo_Close(\''+controlID+'\'); return false;" style="text-align:right; display:block;">close</a>');
 				});
 			}
 		});

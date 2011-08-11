@@ -8,6 +8,10 @@ class CMS_Navigation_UrlNode extends CMS_Navigation_Node {
 		$this->url = $url;
 	}
 	
+	public function setUrl($url) {
+		$this->url = $url;
+	}
+	
 	/**
 	 * @return GUI_Control_Link
 	 */
