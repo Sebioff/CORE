@@ -4,6 +4,10 @@
  * Provides functions for common text manipulation tasks.
  */
 abstract class Text {
+	public static $numberFormatDefaultDecimals = 2;
+	public static $numberFormatDefaultDecimalsSeparator = ',';
+	public static $numberFormatDefaultThousandsSeparator = '.';
+	
 	/**
 	 * Example: some_string -> someString
 	 * @param $string
@@ -55,6 +59,16 @@ abstract class Text {
 		$replace[] = '\\1<a href="ftp://\\2" target="_blank">\\2</a>\\3';
 		$replace[] = '\\1<a href="mailto:\\2" target="_blank" onClick="return mailto(this.href)">\\2</a>\\3';
 		return nl2br(preg_replace($search, $replace, $string));
+	}
+	
+	public static function formatNumber($number, $decimals = null, $decimalsSeparator = null, $thousandsSeparator = null) {
+		if ($decimals === null)
+			$decimals = self::$numberFormatDefaultDecimals;
+		if ($decimalsSeparator === null)
+			$decimalsSeparator = self::$numberFormatDefaultDecimalsSeparator;
+		if ($thousandsSeparator === null)
+			$thousandsSeparator = self::$numberFormatDefaultThousandsSeparator;
+		return number_format($number, (is_float($number) && round($number, $decimals) != floor($number)) ? $decimals : 0, $decimalsSeparator, $thousandsSeparator);
 	}
 	
 	/**
