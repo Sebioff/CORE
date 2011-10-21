@@ -22,8 +22,12 @@ abstract class GUI_Panel_Plot extends GUI_Panel_Image {
 	
 	protected function beforeDisplay() {
 		$filename = System::getTemporaryDirectory().DS.microtime(true);
-		$this->graph->stroke($filename);
-		$this->setURL(App::get()->getModule(GUI_Panel_Plot_Image::SCRIPTLET_NAME)->getUrl(array('img' => basename($filename))));
+		try {
+			$this->graph->stroke($filename);
+			$this->setURL(App::get()->getModule(GUI_Panel_Plot_Image::SCRIPTLET_NAME)->getUrl(array('img' => basename($filename))));
+		} catch (JpGraphExceptionL $e) {
+			$this->setURL(Router::get()->getStaticRoute('core_img').'/error.png');
+		}
 		
 		parent::beforeDisplay();
 	}
