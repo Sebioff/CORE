@@ -30,6 +30,10 @@
  * @method array countByPROPERTY()
  */
 class DB_Container {
+	/** Waits until all other transactions using the same rows are committed;
+	 * other sessions can read the rows but not modify them.  */
+	const LOCK_IN_SHARE_MODE = 1;
+	
 	private static $globalReferencedContainers = array();
 	private static $containerCache = array();
 	private static $databaseSchemata = array();
@@ -72,6 +76,7 @@ class DB_Container {
 	 * $options['offset'] = offset
 	 * $options['join'] = array of tables; aliases can be defined as array('table' => 'alias')
 	 * $options['alias'] = alias to be used for the table belonging to this container
+	 * $options['lock'] = the row lock mode, @see LOCK_* constant
 	 * @return array an array of records fitting to the specified search parameters
 	 */
 	public function select(array $options = array()) {
@@ -81,6 +86,10 @@ class DB_Container {
 		if (isset($options['alias']))
 			$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
+		if (isset($options['lock'])) {
+			if ($options['lock'] == self::LOCK_IN_SHARE_MODE)
+				$query .= ' LOCK IN SHARE MODE';
+		}
 		if (isset(self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query];
 			
