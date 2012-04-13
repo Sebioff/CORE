@@ -30,9 +30,14 @@
  * @method array countByPROPERTY()
  */
 class DB_Container {
-	/** Waits until all other transactions using the same rows are committed;
-	 * other sessions can read the rows but not modify them.  */
+	/** Waits until all other transactions using (which means: actually modifying,
+	 * not just reading) the same rows are committed; other sessions can read
+	 * the rows but not modify them.
+	 * => Blocks until all other transactions that change the same rows are committed */
 	const LOCK_IN_SHARE_MODE = 1;
+	/** Blocks until all other transactions that use a lock on the same rows or
+	 * that change the same rows are committed */
+	const LOCK_FOR_UPDATE = 2;
 	
 	private static $globalReferencedContainers = array();
 	private static $containerCache = array();
@@ -67,6 +72,14 @@ class DB_Container {
 
 	/**
 	 * Abstraction for MySQL's SELECT.
+	 * Queries are cached: two calls to this method with the same options and within
+	 * the same page-load return the same array of records; the cache is cleared
+	 * in case of changes to the record or transaction rollbacks; NOTE: however,
+	 * if the record is changed from a different script execution context (e.g.,
+	 * another user loading the page) this method might return old values. In situations
+	 * where you want to avoid this you can either use row-level locks (in which
+	 * case no cache is being used) or manually clear the query cache beforehand
+	 * by calling DB_Container::clearAllQueryCaches()
 	 * @param $options array an options-array which might contain the following elements:
 	 * $options['properties'] = the properties that should be selected
 	 * $options['conditions'] = array of conditions
@@ -82,6 +95,7 @@ class DB_Container {
 	public function select(array $options = array()) {
 		$records = array();
 
+		// build query string
 		$query = 'SELECT '.(isset($options['properties']) ? $options['properties'] : '`'.$this->table.'`.*').' FROM `'.$this->table.'`';
 		if (isset($options['alias']))
 			$query .= 'AS `'.$options['alias'].'`';
@@ -89,7 +103,11 @@ class DB_Container {
 		if (isset($options['lock'])) {
 			if ($options['lock'] == self::LOCK_IN_SHARE_MODE)
 				$query .= ' LOCK IN SHARE MODE';
+			elseif ($options['lock'] == self::LOCK_FOR_UPDATE)
+				$query .= ' FOR UPDATE';
 		}
+		
+		// return result from query cache if available
 		if (isset(self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query]))
 			return self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query];
 			
@@ -106,7 +124,9 @@ class DB_Container {
 			$records[] = $record;
 		}
 		
-		self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query] = $records;
+		// cache query result, but not if using locks (since this would prevent any locking otherwise)
+		if (!isset($options['lock']))
+			self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query] = $records;
 		
 		return $records;
 	}
@@ -150,7 +170,7 @@ class DB_Container {
 			$this->insertByQuery($query, $record);
 			$databaseSchema = $this->getDatabaseSchema();
 			// populate not-yet-set record properties with default values
-			if (isset($databaseSchema['columns'])) { // this check is only neccessary while the todo about "versioned caches" isn't resolved (see top of file)
+			if (isset($databaseSchema['columns'])) { // TODO this check is only neccessary while the todo about "versioned caches" isn't resolved (see top of file)
 				foreach ($databaseSchema['columns'] as $columnName => $columnProperties) {
 					if (!$record->get($columnName)) {
 						$record->$columnName = $columnProperties['defaultValue'];
