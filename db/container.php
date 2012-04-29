@@ -100,12 +100,12 @@ class DB_Container {
 		if (isset($options['alias']))
 			$query .= 'AS `'.$options['alias'].'`';
 		$query .= $this->buildQueryString($options);
-		if (isset($options['lock'])) {
-			if ($options['lock'] == self::LOCK_IN_SHARE_MODE)
-				$query .= ' LOCK IN SHARE MODE';
-			elseif ($options['lock'] == self::LOCK_FOR_UPDATE)
-				$query .= ' FOR UPDATE';
-		}
+//		if (isset($options['lock'])) {
+//			if ($options['lock'] == self::LOCK_IN_SHARE_MODE)
+//				$query .= ' LOCK IN SHARE MODE';
+//			elseif ($options['lock'] == self::LOCK_FOR_UPDATE)
+//				$query .= ' FOR UPDATE';
+//		}
 		
 		// return result from query cache if available
 		if (isset(self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query]))
@@ -125,7 +125,7 @@ class DB_Container {
 		}
 		
 		// cache query result, but not if using locks (since this would prevent any locking otherwise)
-		if (!isset($options['lock']))
+//		if (!isset($options['lock']))
 			self::$containerCache[$this->getFullyQualifiedTable()][$this->getRecordClass()][$query] = $records;
 		
 		return $records;
