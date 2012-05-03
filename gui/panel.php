@@ -139,13 +139,13 @@ class GUI_Panel {
 	 */
 	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
 		if ($this->hasPanel($panel->getName()))
-			throw new Core_Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
+			throw new Core_Exception('Panel names must be unique; a panel with'.$panel->getName().' name already exists: '.$panel->getName());
 
 		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
 		// quite unlikely that a panels name is equal to the name of an attribute.
 		// -> the following check could be removed then.
 		if (!$this->hasPanel($panel->getName()) && isset($this->{$panel->getName()}))
-			throw new Core_Exception('Panel name is not allowed (already used internally): '.$panel->getName());
+			throw new Core_Exception('Panel name '.$panel->getName().' is not allowed (already used internally): '.$panel->getName());
 		
 		$panel->setParent($this);
 		$panel->beforeInit();
