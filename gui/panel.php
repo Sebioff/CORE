@@ -1,6 +1,24 @@
 <?php
 
 /**
+ * @package CORE PHP Framework
+ * @copyright Copyright (C) 2012 Sebastian Mayer, Andreas Sicking, Andre Jährling
+ * @license GNU/GPL, see license.txt
+ * This file is part of CORE PHP Framework.
+ *
+ * CORE PHP Framework is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * CORE PHP Framework is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CORE PHP Framework. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
  * A panel is an element that containts any type of content that should be displayed.
  * Panels can have child panels.
  * If one of this child panels is a submittable control such as GUI_Control_SubmitButton
@@ -139,13 +157,13 @@ class GUI_Panel {
 	 */
 	public function addPanel(GUI_Panel $panel, $toBeginning = false) {
 		if ($this->hasPanel($panel->getName()))
-			throw new Core_Exception('Panel names must be unique; a panel with'.$panel->getName().' name already exists: '.$panel->getName());
+			throw new Core_Exception('Panel names must be unique; a panel with that name already exists: '.$panel->getName());
 
 		// TODO its probably better to rename all attributes (e.g. $name to $_name) so that it's
 		// quite unlikely that a panels name is equal to the name of an attribute.
 		// -> the following check could be removed then.
 		if (!$this->hasPanel($panel->getName()) && isset($this->{$panel->getName()}))
-			throw new Core_Exception('Panel name '.$panel->getName().' is not allowed (already used internally): '.$panel->getName());
+			throw new Core_Exception('Panel name is not allowed (already used internally): '.$panel->getName());
 		
 		$panel->setParent($this);
 		$panel->beforeInit();

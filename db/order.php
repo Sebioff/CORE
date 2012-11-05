@@ -1,4 +1,23 @@
 <?php
+
+/**
+ * @package CORE PHP Framework
+ * @copyright Copyright (C) 2012 Sebastian Mayer, Andreas Sicking, Andre Jährling
+ * @license GNU/GPL, see license.txt
+ * This file is part of CORE PHP Framework.
+ *
+ * CORE PHP Framework is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later version.
+ *
+ * CORE PHP Framework is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CORE PHP Framework. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /**
  * Orders an Array of DB_Records by another Array of DB_Records.
  * @param records: Array of DB_Records to sort
@@ -39,15 +58,15 @@ class DB_Order {
 		//Bubblesort
 		$n = count($this->records);
 		for ($i = 0; $i < $n; $i++) {
-			for ($j = $i; $j < $n; $j++) {	
+			for ($j = $i; $j < $n; $j++) {
 				$keyA = -1;
-				$keyB = -1;		
+				$keyB = -1;
 				for ($k = 0; $k < count($this->orders); $k++) {
 					if ($this->orders[$k] == $this->records[$i]->getPK())
 						$keyA = $k;
 					if ($this->orders[$k] == $this->records[$j]->getPK())
 						$keyB = $k;
-				}	
+				}
 				if ($keyA < $keyB) {
 					$_tmp = $this->records[$j];
 					$this->records[$j] = $this->records[$i];
@@ -63,7 +82,7 @@ class DB_Order {
 		//Bubblesort
 		$n = count($this->records);
 		for ($i = 0; $i < $n; $i++) {
-			for ($j = $i; $j < $n; $j++) {			
+			for ($j = $i; $j < $n; $j++) {
 				$keyA = $n;
 				$keyB = $n;
 				for ($k = 0; $k < count($this->orders); $k++) {
@@ -71,7 +90,7 @@ class DB_Order {
 						$keyA = $k;
 					if ($this->orders[$k] == $this->records[$j]->getPK())
 						$keyB = $k;
-				}				
+				}
 				if ($keyA > $keyB) {
 					$_tmp = $this->records[$j];
 					$this->records[$j] = $this->records[$i];
