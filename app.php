@@ -142,9 +142,11 @@ class App {
 		Router::get()->init();
 		
 		if (Environment::getCurrentEnvironment() == Environment::DEVELOPMENT) {
-			// always check for changed migrations on development (except when resetting)
-			if (!(Router::get()->getCurrentModule() instanceof CoreRoutes_Reset))
+			// always check for changed migrations and reset callbacks on development (except when resetting)
+			if (!(Router::get()->getCurrentModule() instanceof CoreRoutes_Reset)) {
 				Core_MigrationsLoader::load();
+				CoreRoutes_Reset::executeCallbacksOnAfterReset();
+			}
 		}
 		
 		Router::get()->runCurrentModule();
